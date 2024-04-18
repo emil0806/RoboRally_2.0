@@ -249,7 +249,14 @@ public class GameController {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
+                    if(command.isInteractive()) {
+                        board.setPhase(Phase.PLAYER_INTERACTION);
+                        return;
+                    }
                     executeCommand(currentPlayer, command);
+                    if(board.getPhase() == Phase.PLAYER_INTERACTION) {
+                        return;
+                    }
                 }
                 int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
@@ -309,6 +316,29 @@ public class GameController {
                     // DO NOTHING (for now)
             }
         }
+    }
+
+    public void executeCommandOption(@NotNull Command option) {
+        Player currentPlayer = board.getCurrentPlayer();
+        int step = board.getStep();
+        if(currentPlayer != null && option != null && board.getPhase() == Phase.PLAYER_INTERACTION) {
+            board.setPhase(Phase.ACTIVATION);
+            executeCommand(currentPlayer, option);
+            int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+            if (nextPlayerNumber < board.getPlayersNumber()) {
+                board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+            } else {
+                step++;
+                if (step < Player.NO_REGISTERS) {
+                    makeProgramFieldsVisible(step);
+                    board.setStep(step);
+                    board.setCurrentPlayer(board.getPlayer(0));
+                } else {
+                    startProgrammingPhase();
+                }
+            }
+        }
+
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
