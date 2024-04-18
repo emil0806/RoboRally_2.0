@@ -89,6 +89,50 @@ public class GameController {
         player.setHeading(player.getHeading().prev());
     }
 
+    public void fastThreeForward(@NotNull Player player) {
+        moveForward(player);
+        moveForward(player);
+        moveForward(player);
+    }
+
+    public void moveBackward(@NotNull Player player) {
+        if (player.board == board) {
+            Space space = player.getSpace();
+            Heading heading = player.getHeading().next().next();
+
+            Space target = board.getNeighbour(space, heading);
+            if (target != null) {
+                try {
+                    moveToSpace(player, target, heading);
+                } catch (ImpossibleMoveException e) {
+                    // we don't do anything here  for now; we just catch the
+                    // exception so that we do no pass it on to the caller
+                    // (which would be very bad style).
+                }
+            }
+        }
+    }
+
+    public void makeUTurn(@NotNull Player player) {
+        turnLeft(player);
+        turnLeft(player);
+    }
+
+    public void repeatPrevProgramming(@NotNull Player player) {
+        if (board.getStep() != 0) {
+            int i = board.getStep();
+            int j = 0;
+            if(player.getProgramField(i - 1).getCard() != null) {
+                while (player.getProgramField(i).getCard().command == Command.AGAIN && board.getStep() != 0) {
+                    i--;
+                    j++;
+                }
+                executeCommand(player, player.getProgramField(i - j).getCard().command);
+            }
+        }
+    }
+
+
     void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
         Player other = space.getPlayer();
@@ -228,6 +272,18 @@ public class GameController {
                     break;
                 case FAST_FORWARD:
                     this.fastForward(player);
+                    break;
+                case FAST_THREE_FORWARD:
+                    this.fastThreeForward(player);
+                    break;
+                case BACKWARD:
+                    this.moveBackward(player);
+                    break;
+                case U_TURN:
+                    this.makeUTurn(player);
+                    break;
+                case AGAIN:
+                    this.repeatPrevProgramming(player);
                     break;
                 default:
                     // DO NOTHING (for now)
