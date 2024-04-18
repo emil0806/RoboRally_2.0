@@ -58,19 +58,35 @@ public class GameController {
         }
     }
 
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player who should be moved
+     */
     // TODO Assignment A3
     public void fastForward(@NotNull Player player) {
-
+        moveForward(player);
+        moveForward(player);
     }
 
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn right
+     */
     // TODO Assignment A3
     public void turnRight(@NotNull Player player) {
-
+        player.setHeading(player.getHeading().next());
     }
 
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
     // TODO Assignment A3
     public void turnLeft(@NotNull Player player) {
-
+        player.setHeading(player.getHeading().prev());
     }
 
     void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
@@ -95,8 +111,26 @@ public class GameController {
         player.setSpace(space);
     }
 
-    public void moveCurrentPlayerToSpace(Space space) {
-        // TODO: Import or Implement this method. This method is only for debugging purposes. Not useful for the game.
+    /**
+     * ...
+     * @author David Wellejus, s220218@dtu.dk
+     * @param space player who should be moved
+     */
+    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
+        if(space.getPlayer() == null){
+            Player currentPlayer = board.getCurrentPlayer();
+
+            if(currentPlayer.getSpace() != null){
+                currentPlayer.getSpace().setPlayer(null);
+            }
+
+            currentPlayer.setSpace(space);
+            space.setPlayer(currentPlayer);
+
+            int nextPlayerNumber = (board.getPlayerNumber(currentPlayer) + 1) % board.getPlayersNumber();
+
+            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        }
     }
 
     private void makeProgramFieldsVisible(int register) {
