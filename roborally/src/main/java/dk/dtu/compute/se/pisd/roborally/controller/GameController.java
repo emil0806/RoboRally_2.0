@@ -127,7 +127,7 @@ public class GameController {
                     i--;
                     j++;
                 }
-                executeCommand(player, player.getProgramField(i - j).getCard().command);
+                executeCommand(player, player.getProgramField(board.getStep() - j).getCard().command);
             }
         }
     }
