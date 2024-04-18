@@ -89,12 +89,22 @@ public class GameController {
         player.setHeading(player.getHeading().prev());
     }
 
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
     public void fastThreeForward(@NotNull Player player) {
         moveForward(player);
         moveForward(player);
         moveForward(player);
     }
 
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
     public void moveBackward(@NotNull Player player) {
         if (player.board == board) {
             Space space = player.getSpace();
@@ -113,11 +123,21 @@ public class GameController {
         }
     }
 
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
     public void makeUTurn(@NotNull Player player) {
         turnLeft(player);
         turnLeft(player);
     }
 
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
     public void repeatPrevProgramming(@NotNull Player player) {
         if (board.getStep() != 0) {
             int i = board.getStep();
