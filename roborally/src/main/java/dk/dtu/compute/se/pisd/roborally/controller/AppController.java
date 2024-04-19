@@ -91,6 +91,7 @@ public class AppController implements Observer {
                 board.addWall(i, 3, Heading.NORTH);
             }
 
+
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();

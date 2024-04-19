@@ -32,6 +32,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeLineCap;
 import org.jetbrains.annotations.NotNull;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 
 /**
  * ...
@@ -45,6 +47,10 @@ public class SpaceView extends StackPane implements ViewObserver {
     final public static int SPACE_WIDTH = 60; // 75;
 
     public final Space space;
+    private ImageView northWallView;
+    private ImageView eastWallView;
+    private ImageView southWallView;
+    private ImageView westWallView;
 
 
     public SpaceView(@NotNull Space space) {
@@ -58,6 +64,18 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setPrefHeight(SPACE_HEIGHT);
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
+
+        Image northWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_North.png");
+        Image southWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_South.png");
+        Image eastWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_East.png");
+        Image westWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_West.png");
+
+        northWallView = new ImageView(northWallImage);
+        southWallView = new ImageView(southWallImage);
+        eastWallView = new ImageView(eastWallImage);
+        westWallView = new ImageView(westWallImage);
+
+        this.getChildren().addAll(northWallView, eastWallView, southWallView, westWallView);
 
         if ((space.x + space.y) % 2 == 0) {
             this.setStyle("-fx-background-color: white;");
@@ -93,6 +111,12 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     @Override
     public void updateView(Subject subject) {
+
+        northWallView.setVisible(space.getWalls().contains(Heading.NORTH));
+        eastWallView.setVisible(space.getWalls().contains(Heading.EAST));
+        southWallView.setVisible(space.getWalls().contains(Heading.SOUTH));
+        westWallView.setVisible(space.getWalls().contains(Heading.WEST));
+
         if (subject == this.space) {
             updatePlayer();
         }
