@@ -65,10 +65,19 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-        Image northWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_North.png");
-        Image southWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_South.png");
-        Image eastWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_East.png");
-        Image westWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_West.png");
+        Image northWallImage = null;
+        Image southWallImage = null;
+        Image westWallImage = null;
+        Image eastWallImage = null;
+
+        try{
+            northWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_North.png");
+            southWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_South.png");
+            eastWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_East.png");
+            westWallImage = new Image("C:/DTU/2.Semester/02324VideregåendeProgrammering/Assignment2/roborally2.0/roborally/src/main/resources/Wall_West.png");
+        } catch (Exception e){
+            System.out.println("Fejl ved indlæsning af billede: " + e.getMessage());
+        }
 
         northWallView = new ImageView(northWallImage);
         southWallView = new ImageView(southWallImage);
