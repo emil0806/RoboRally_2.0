@@ -153,7 +153,7 @@ public class GameController {
     }
 
 
-    void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
+    public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
         Player other = space.getPlayer();
         if (other != null){
@@ -262,6 +262,11 @@ public class GameController {
                 if (nextPlayerNumber < board.getPlayersNumber()) {
                     board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
                 } else {
+                    for (int i = 0; i < board.getPlayersNumber(); i++) {
+                        for (FieldAction action : board.getPlayer(i).getSpace().getActions()) {
+                            action.doAction(this, board.getPlayer(i).getSpace());
+                        }
+                    }
                     step++;
                     if (step < Player.NO_REGISTERS) {
                         makeProgramFieldsVisible(step);
