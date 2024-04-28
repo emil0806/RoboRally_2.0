@@ -26,7 +26,12 @@ import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.elements.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt;
+import dk.dtu.compute.se.pisd.roborally.view.elementsView.CheckpointView;
+import dk.dtu.compute.se.pisd.roborally.view.elementsView.ConveyorBeltView;
+import dk.dtu.compute.se.pisd.roborally.view.elementsView.EmptySpaceView;
+import dk.dtu.compute.se.pisd.roborally.view.elementsView.WallView;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
@@ -61,26 +66,12 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-        for(FieldAction action : space.getActions()) {
-            if(action instanceof ConveyorBelt) {
-                this.setStyle("-fx-background-color: blue;");
-            } else if ((space.x + space.y) % 2 == 0) {
-                this.setStyle("-fx-background-color: white;");
-            } else {
-                this.setStyle("-fx-background-color: black;");
-            }
-        }
-
-        // updatePlayer();
-
         // This space view should listen to changes of the space
         space.attach(this);
         update(space);
     }
 
     private void updatePlayer() {
-        this.getChildren().clear();
-
         Player player = space.getPlayer();
         if (player != null) {
             Polygon arrow = new Polygon(0.0, 0.0,
@@ -100,6 +91,15 @@ public class SpaceView extends StackPane implements ViewObserver {
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {
+            EmptySpaceView.draw(this);
+            WallView.draw(this);
+            for(FieldAction fieldAction : space.getActions()) {
+                if(fieldAction instanceof Checkpoint) {
+                    CheckpointView.draw(this, fieldAction);
+                } else if (fieldAction instanceof ConveyorBelt) {
+                    ConveyorBeltView.draw(this, fieldAction);
+                }
+            }
             updatePlayer();
         }
     }
