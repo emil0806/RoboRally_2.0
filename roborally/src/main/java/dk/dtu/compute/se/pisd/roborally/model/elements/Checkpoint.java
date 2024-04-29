@@ -12,14 +12,14 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Checkpoint extends FieldAction {
 
-    private int checkPointNum;
+    private int checkpointNum;
 
     public int getCheckPointNum() {
-        return checkPointNum;
+        return checkpointNum;
     }
 
     public void setCheckPointNum(int num) {
-        this.checkPointNum = num;
+        this.checkpointNum = num;
     }
     /**
      * ...
@@ -29,8 +29,8 @@ public class Checkpoint extends FieldAction {
      */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
-        if(space.getPlayer().getCheckpoints() == checkPointNum - 1) {
-            space.getPlayer().setCheckpoints(checkPointNum);
+        if(space.getPlayer().getCheckpoints() == checkpointNum - 1) {
+            space.getPlayer().setCheckpoints(checkpointNum);
             return true;
         }
         return false;

@@ -179,9 +179,9 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Checkpoint",
           "INSTANCE": {
-            "heading": "EAST"
+            "checkpointNum": 1
           }
         }
       ],
@@ -194,9 +194,8 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna",
           "INSTANCE": {
-            "heading": "SOUTH"
           }
         }
       ],

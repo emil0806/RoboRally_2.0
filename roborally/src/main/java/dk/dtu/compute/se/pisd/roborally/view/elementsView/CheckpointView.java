@@ -23,7 +23,7 @@ public class CheckpointView {
         Canvas canvas = new Canvas(SpaceView.SPACE_WIDTH, SpaceView.SPACE_HEIGHT);
         GraphicsContext context = canvas.getGraphicsContext2D();
         try {
-            Image checkpointImage = new Image("elements/" + checkpointNum + ".png");
+            Image checkpointImage = new Image("elements/" + checkpointNum + ".png", 60, 60, true, true);
             context.drawImage(checkpointImage,0,0);
         } catch (Exception e) {
             System.out.println("Image for checkpoint not found");
