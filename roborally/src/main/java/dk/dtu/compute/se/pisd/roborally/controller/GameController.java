@@ -342,6 +342,9 @@ public class GameController {
                     startProgrammingPhase();
                 }
             }
+            if(!board.isStepMode()) {
+                continuePrograms();
+            }
         }
 
     }
