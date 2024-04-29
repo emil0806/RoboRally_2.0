@@ -12,10 +12,10 @@ public class EmptySpaceView {
         Canvas canvas = new Canvas(SpaceView.SPACE_WIDTH, SpaceView.SPACE_HEIGHT);
         GraphicsContext context = canvas.getGraphicsContext2D();
         try {
-            Image emptySpaceImage = new Image("elements/empty.png");
+            Image emptySpaceImage = new Image("elements/empty.png", 60, 60, true, true);
             context.drawImage(emptySpaceImage,0,0);
         } catch (Exception e) {
-            System.out.println("Image for checkpoint not found");
+            System.out.println("Image for empty space not found");
         }
         spaceView.getChildren().add(canvas);
     }

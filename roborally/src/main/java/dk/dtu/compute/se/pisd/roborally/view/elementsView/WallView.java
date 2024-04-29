@@ -14,7 +14,7 @@ public class WallView {
         Canvas canvas = new Canvas(SpaceView.SPACE_WIDTH, SpaceView.SPACE_HEIGHT);
         GraphicsContext context = canvas.getGraphicsContext2D();
         try {
-            Image wallImage = new Image("elements/wall.png");
+            Image wallImage = new Image("elements/wall.png", 60, 60, true, true);
             ImageView wallImageView = new ImageView(wallImage);
             SnapshotParameters parameters = new SnapshotParameters();
             for(Heading heading : spaceView.space.getWalls()) {
@@ -29,17 +29,17 @@ public class WallView {
                         wallImageView.setRotate(90);
                         parameters.setFill(Color.TRANSPARENT);
                         wallImage = wallImageView.snapshot(parameters, null);
-                        context.drawImage(wallImage, 0,0);
+                        context.drawImage(wallImage, 0,50);
                         break;
                     case NORTH:
-                        wallImageView.setRotate(90);
+                        wallImageView.setRotate(270);
                         parameters.setFill(Color.TRANSPARENT);
                         wallImage = wallImageView.snapshot(parameters, null);
-                        context.drawImage(wallImage, 0,50);
+                        context.drawImage(wallImage, 0,0);
                 }
             }
         } catch (Exception e) {
-            System.out.println("Image for checkpoint not found");
+            System.out.println("Image for wall not found");
         }
         spaceView.getChildren().add(canvas);
     }

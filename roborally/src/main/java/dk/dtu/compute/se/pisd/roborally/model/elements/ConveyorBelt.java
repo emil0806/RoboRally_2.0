@@ -62,14 +62,10 @@ public class ConveyorBelt extends FieldAction {
             Space target = gameController.board.getNeighbour(space.getPlayer().getSpace(), this.heading);
 
             gameController.moveToSpace(space.getPlayer(), target, this.heading);
+            return true;
         }
         catch(Exception e){
             return false;
         }
-
-        // TODO needs to be implemented
-
-        return false;
     }
-
 }

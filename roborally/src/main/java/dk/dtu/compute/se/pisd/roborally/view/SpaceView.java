@@ -28,10 +28,8 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.elements.Checkpoint;
 import dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt;
-import dk.dtu.compute.se.pisd.roborally.view.elementsView.CheckpointView;
-import dk.dtu.compute.se.pisd.roborally.view.elementsView.ConveyorBeltView;
-import dk.dtu.compute.se.pisd.roborally.view.elementsView.EmptySpaceView;
-import dk.dtu.compute.se.pisd.roborally.view.elementsView.WallView;
+import dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel;
+import dk.dtu.compute.se.pisd.roborally.view.elementsView.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
@@ -92,14 +90,16 @@ public class SpaceView extends StackPane implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == this.space) {
             EmptySpaceView.draw(this);
-            WallView.draw(this);
             for(FieldAction fieldAction : space.getActions()) {
                 if(fieldAction instanceof Checkpoint) {
                     CheckpointView.draw(this, fieldAction);
                 } else if (fieldAction instanceof ConveyorBelt) {
                     ConveyorBeltView.draw(this, fieldAction);
+                } else if (fieldAction instanceof PushPanel) {
+                    PushPanelView.draw(this, fieldAction);
                 }
             }
+            WallView.draw(this);
             updatePlayer();
         }
     }

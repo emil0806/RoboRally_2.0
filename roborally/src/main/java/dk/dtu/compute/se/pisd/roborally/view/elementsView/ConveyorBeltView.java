@@ -47,7 +47,7 @@ public class ConveyorBeltView {
                     context.drawImage(conveyorBeltImage, 0,0);
             }
         } catch (Exception e) {
-            System.out.println("Image for checkpoint not found");
+            System.out.println("Image for conveyorBelt not found");
         }
         spaceView.getChildren().add(canvas);
     }

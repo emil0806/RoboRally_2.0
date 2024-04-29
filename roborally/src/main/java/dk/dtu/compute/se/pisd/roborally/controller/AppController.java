@@ -87,12 +87,6 @@ public class AppController implements Observer {
                 player.setSpace(board.getSpace(i % board.width, i));
             }
 
-            //KUN TIL AT TESTE! SKAL FJERNES IGEN!!!
-            for(int i = 0; i < board.width; i++){
-                board.addWall(i, 3, Heading.NORTH);
-            }
-
-
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();
