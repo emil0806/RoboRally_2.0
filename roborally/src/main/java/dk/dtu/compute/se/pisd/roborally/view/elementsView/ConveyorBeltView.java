@@ -12,7 +12,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 public class ConveyorBeltView {
-
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param spaceView, the spaceview where image should be drawed
+     * @param fieldAction, the action of that space
+     */
     public static void draw(SpaceView spaceView, FieldAction fieldAction) {
         ConveyorBelt conveyorBelt = (ConveyorBelt) fieldAction;
         Heading heading = conveyorBelt.getHeading();

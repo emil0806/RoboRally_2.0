@@ -11,6 +11,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 public class PushPanelView {
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param spaceView, the spaceview where image should be drawed
+     * @param fieldAction, the action of that space
+     */
     public static void draw(SpaceView spaceView, FieldAction fieldAction) {
         PushPanel pushPanel = (PushPanel) fieldAction;
         Canvas canvas = new Canvas(SpaceView.SPACE_WIDTH, SpaceView.SPACE_HEIGHT);

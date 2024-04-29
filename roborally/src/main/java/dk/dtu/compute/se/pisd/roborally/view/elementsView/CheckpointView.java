@@ -11,6 +11,12 @@ import javafx.scene.image.Image;
 import java.awt.*;
 
 public class CheckpointView {
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param spaceView, the spaceview where image should be drawed
+     * @param fieldAction, the action of that space
+     */
     public static void draw(SpaceView spaceView, FieldAction fieldAction) {
         Checkpoint checkpoint = (Checkpoint) fieldAction;
         int checkpointNum = checkpoint.getCheckPointNum();

@@ -2,12 +2,15 @@ package dk.dtu.compute.se.pisd.roborally.model.elements;
 
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * ...
+ * @author Emil Lauritzen, s231331@dtu.dk
+ * PushPanel class
+ */
 public class PushPanel extends FieldAction {
 
     private Heading heading;
@@ -29,6 +32,13 @@ public class PushPanel extends FieldAction {
         this.activationRegisters = activationRegisters;
     }
 
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param gameController, the controller for the game
+     * @param space, the actual space
+     * @return depends on if action is possible
+     */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         int currentRegister = gameController.board.getStep() + 1;
