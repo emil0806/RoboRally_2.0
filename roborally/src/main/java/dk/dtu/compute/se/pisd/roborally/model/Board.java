@@ -188,25 +188,27 @@ public class Board extends Subject {
         int y = space.y;
         switch (heading) {
             case SOUTH:
-                y = (y + 1) % height;
+                y++;
                 break;
             case WEST:
-                x = (x + width - 1) % width;
+                x--;
                 break;
             case NORTH:
-                y = (y + height - 1) % height;
+                y++;
                 break;
             case EAST:
-                x = (x + 1) % width;
+                x--;
                 break;
         }
-        Heading reverse = Heading.values()[(heading.ordinal() + 2)% Heading.values().length];
-        Space result = getSpace(x, y);
-        if (result != null) {
-            if (result.getWalls().contains(reverse)) {
-                return null;
-            }
+        if(x < 0 || x >= width || y < 0 || y >= height){
+            return null;
         }
+
+        Space result = getSpace(x, y);
+        if (result != null && result.getWalls().contains(heading.opposite())) {
+            return null;
+        }
+
         return result;
     }
 
@@ -215,5 +217,12 @@ public class Board extends Subject {
         return "Phase: " + getPhase().name() +
                 ", Player = " + getCurrentPlayer().getName() +
                 ", Step: " + getStep();
+    }
+
+    public void addWall(int x, int y, Heading heading){
+        Space space = getSpace(x, y);
+        if(space != null){
+            space.addWall(heading);
+        }
     }
 }
