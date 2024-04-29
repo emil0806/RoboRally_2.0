@@ -23,7 +23,7 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel",
           "INSTANCE": {
             "heading": "WEST"
           }
@@ -51,7 +51,7 @@
       "walls": [],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel",
           "INSTANCE": {
             "heading": "NORTH"
           }
@@ -118,7 +118,7 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel",
           "INSTANCE": {
             "heading": "EAST"
           }

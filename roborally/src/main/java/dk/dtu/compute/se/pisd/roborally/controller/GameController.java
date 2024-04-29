@@ -89,7 +89,71 @@ public class GameController {
         player.setHeading(player.getHeading().prev());
     }
 
-    void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
+    public void fastThreeForward(@NotNull Player player) {
+        moveForward(player);
+        moveForward(player);
+        moveForward(player);
+    }
+
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
+    public void moveBackward(@NotNull Player player) {
+        if (player.board == board) {
+            Space space = player.getSpace();
+            Heading heading = player.getHeading().next().next();
+
+            Space target = board.getNeighbour(space, heading);
+            if (target != null) {
+                try {
+                    moveToSpace(player, target, heading);
+                } catch (ImpossibleMoveException e) {
+                    // we don't do anything here  for now; we just catch the
+                    // exception so that we do no pass it on to the caller
+                    // (which would be very bad style).
+                }
+            }
+        }
+    }
+
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
+    public void makeUTurn(@NotNull Player player) {
+        turnLeft(player);
+        turnLeft(player);
+    }
+
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param player player whose heading should turn left
+     */
+    public void repeatPrevProgramming(@NotNull Player player) {
+        if (board.getStep() != 0) {
+            int i = board.getStep();
+            int j = 0;
+            if(player.getProgramField(i - 1).getCard() != null) {
+                while (player.getProgramField(i).getCard().command == Command.AGAIN && board.getStep() != 0) {
+                    i--;
+                    j++;
+                }
+                executeCommand(player, player.getProgramField(board.getStep() - j).getCard().command);
+            }
+        }
+    }
+
+
+    public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
         Player other = space.getPlayer();
         if (other != null){
@@ -185,12 +249,24 @@ public class GameController {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
+                    if(command.isInteractive()) {
+                        board.setPhase(Phase.PLAYER_INTERACTION);
+                        return;
+                    }
                     executeCommand(currentPlayer, command);
+                    if(board.getPhase() == Phase.PLAYER_INTERACTION) {
+                        return;
+                    }
                 }
                 int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
                     board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
                 } else {
+                    for (int i = 0; i < board.getPlayersNumber(); i++) {
+                        for (FieldAction action : board.getPlayer(i).getSpace().getActions()) {
+                            action.doAction(this, board.getPlayer(i).getSpace());
+                        }
+                    }
                     step++;
                     if (step < Player.NO_REGISTERS) {
                         makeProgramFieldsVisible(step);
@@ -229,10 +305,48 @@ public class GameController {
                 case FAST_FORWARD:
                     this.fastForward(player);
                     break;
+                case FAST_THREE_FORWARD:
+                    this.fastThreeForward(player);
+                    break;
+                case BACKWARD:
+                    this.moveBackward(player);
+                    break;
+                case U_TURN:
+                    this.makeUTurn(player);
+                    break;
+                case AGAIN:
+                    this.repeatPrevProgramming(player);
+                    break;
                 default:
                     // DO NOTHING (for now)
             }
         }
+    }
+
+    public void executeCommandOption(@NotNull Command option) {
+        Player currentPlayer = board.getCurrentPlayer();
+        int step = board.getStep();
+        if(currentPlayer != null && option != null && board.getPhase() == Phase.PLAYER_INTERACTION) {
+            board.setPhase(Phase.ACTIVATION);
+            executeCommand(currentPlayer, option);
+            int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+            if (nextPlayerNumber < board.getPlayersNumber()) {
+                board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+            } else {
+                step++;
+                if (step < Player.NO_REGISTERS) {
+                    makeProgramFieldsVisible(step);
+                    board.setStep(step);
+                    board.setCurrentPlayer(board.getPlayer(0));
+                } else {
+                    startProgrammingPhase();
+                }
+            }
+            if(!board.isStepMode()) {
+                continuePrograms();
+            }
+        }
+
     }
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {

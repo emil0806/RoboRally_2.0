@@ -87,4 +87,17 @@ public class Space extends Subject {
         notifyChange();
     }
 
+    public void addWall(Heading heading){
+        if(!this.walls.contains(heading)){
+            this.walls.add(heading);
+            this.notifyChange();
+        }
+    }
+
+    public void removeWall(Heading heading){
+        if(this.walls.contains(heading)){
+            this.walls.remove(heading);
+            this.notifyChange();
+        }
+    }
 }

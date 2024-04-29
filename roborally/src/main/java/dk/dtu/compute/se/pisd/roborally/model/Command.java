@@ -39,6 +39,11 @@ public enum Command {
     RIGHT("Turn Right"),
     LEFT("Turn Left"),
     FAST_FORWARD("Fast Fwd"),
+    FAST_THREE_FORWARD("Fast 3 Fwd"),
+    U_TURN("Make a U-Turn"),
+
+    BACKWARD("Move back"),
+    AGAIN("Repeat programming of previous register"),
 
     OPTION_LEFT_RIGHT("Left OR Right", LEFT, RIGHT);
 

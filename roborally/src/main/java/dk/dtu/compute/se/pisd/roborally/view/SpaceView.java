@@ -22,9 +22,14 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.elements.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt;
+import dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel;
+import dk.dtu.compute.se.pisd.roborally.view.elementsView.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.StackPane;
@@ -59,22 +64,12 @@ public class SpaceView extends StackPane implements ViewObserver {
         this.setMinHeight(SPACE_HEIGHT);
         this.setMaxHeight(SPACE_HEIGHT);
 
-        if ((space.x + space.y) % 2 == 0) {
-            this.setStyle("-fx-background-color: white;");
-        } else {
-            this.setStyle("-fx-background-color: black;");
-        }
-
-        // updatePlayer();
-
         // This space view should listen to changes of the space
         space.attach(this);
         update(space);
     }
 
     private void updatePlayer() {
-        this.getChildren().clear();
-
         Player player = space.getPlayer();
         if (player != null) {
             Polygon arrow = new Polygon(0.0, 0.0,
@@ -94,6 +89,17 @@ public class SpaceView extends StackPane implements ViewObserver {
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {
+            EmptySpaceView.draw(this);
+            for(FieldAction fieldAction : space.getActions()) {
+                if(fieldAction instanceof Checkpoint) {
+                    CheckpointView.draw(this, fieldAction);
+                } else if (fieldAction instanceof ConveyorBelt) {
+                    ConveyorBeltView.draw(this, fieldAction);
+                } else if (fieldAction instanceof PushPanel) {
+                    PushPanelView.draw(this, fieldAction);
+                }
+            }
+            WallView.draw(this);
             updatePlayer();
         }
     }
