@@ -52,6 +52,7 @@ import java.util.Optional;
 public class AppController implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
+    final private List<String> SAVE_SLOT_OPTIONS = Arrays.asList("Slot1", "Slot2", "Slot3");
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRally roboRally;
@@ -109,16 +110,28 @@ public class AppController implements Observer {
     public void saveGame() {
         // XXX needs to be implemented eventually
         if(this.gameController != null) {
-            LoadBoard.saveBoard(this.gameController.board, "");
+            ChoiceDialog<String> dialog = new ChoiceDialog<>(SAVE_SLOT_OPTIONS.get(0), SAVE_SLOT_OPTIONS);
+            dialog.setTitle("Save game");
+            dialog.setHeaderText("Choose a saving slot");
+            Optional<String> result = dialog.showAndWait();
+            if(result.isPresent()) {
+                LoadBoard.saveBoard(this.gameController.board, result.get());
+            }
         }
     }
 
     public void loadGame() {
-        // XXX needs to be implemented eventually
-        // for now, we just create a new game
-        if (gameController == null) {
-            newGame();
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(SAVE_SLOT_OPTIONS.get(0), SAVE_SLOT_OPTIONS);
+        dialog.setTitle("Load game");
+        dialog.setHeaderText("Choose loading slot");
+        Optional<String> result = dialog.showAndWait();
+        if(result.isPresent()) {
+            Board board = LoadBoard.loadBoard(result.get());
+            gameController = new GameController(board);
+            gameController.startProgrammingPhase();
+            roboRally.createBoardView(gameController);
         }
+
     }
 
     /**
