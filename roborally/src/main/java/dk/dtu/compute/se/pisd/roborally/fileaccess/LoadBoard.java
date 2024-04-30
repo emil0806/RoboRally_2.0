@@ -26,13 +26,18 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.BoardTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.CommandCardFieldTemplate;
+import dk.dtu.compute.se.pisd.roborally.fileaccess.model.PlayerTemplate;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.model.SpaceTemplate;
 import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
+import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.elements.*;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ...
@@ -42,8 +47,14 @@ import java.io.*;
 public class LoadBoard {
 
     private static final String BOARDSFOLDER = "boards";
+    private static final String SAVEFOLDER = "saved";
     private static final String DEFAULTBOARD = "testBoard";
     private static final String JSON_EXT = "json";
+
+    private static final int DEFAULT_WIDTH = 8;
+
+    private static final int DEFAULT_HEIGHT = 8;
+
 
     public static Board loadBoard(String boardname) {
         if (boardname == null) {
@@ -53,8 +64,7 @@ public class LoadBoard {
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname + "." + JSON_EXT);
         if (inputStream == null) {
-            // TODO these constants should be defined somewhere
-            return new Board(8,8);
+            return new Board(DEFAULT_WIDTH,DEFAULT_HEIGHT);
         }
 
 		// In simple cases, we can create a Gson object with new Gson():
@@ -97,30 +107,16 @@ public class LoadBoard {
     }
 
     public static void saveBoard(Board board, String name) {
-        BoardTemplate template = new BoardTemplate();
-        template.width = board.width;
-        template.height = board.height;
+        List<PlayerTemplate> playerTemplates = createPlayerTemplates(board);
 
-        for (int i=0; i<board.width; i++) {
-            for (int j=0; j<board.height; j++) {
-                Space space = board.getSpace(i,j);
-                if (!space.getWalls().isEmpty() || !space.getActions().isEmpty()) {
-                    SpaceTemplate spaceTemplate = new SpaceTemplate();
-                    spaceTemplate.x = space.x;
-                    spaceTemplate.y = space.y;
-                    spaceTemplate.actions.addAll(space.getActions());
-                    spaceTemplate.walls.addAll(space.getWalls());
-                    template.spaces.add(spaceTemplate);
-                }
-            }
-        }
+        BoardTemplate template = createBoardTemplate(board, playerTemplates);
 
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
         // TODO: this is not very defensive, and will result in a NullPointerException
         //       when the folder "resources" does not exist! But, it does not need
         //       the file "simpleCards.json" to exist!
         String filename =
-                classLoader.getResource(BOARDSFOLDER).getPath() + "/" + name + "." + JSON_EXT;
+                classLoader.getResource(BOARDSFOLDER).getPath() + "/saved/" + "savedOne" + "." + JSON_EXT;
 
         // In simple cases, we can create a Gson object with new:
         //
@@ -129,6 +125,7 @@ public class LoadBoard {
         // But, if you need to configure it, it is better to create it from
         // a builder (here, we want to configure the JSON serialisation with
         // a pretty printer):
+
         GsonBuilder simpleBuilder = new GsonBuilder().
                 registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                 setPrettyPrinting();
@@ -156,4 +153,56 @@ public class LoadBoard {
         }
     }
 
+    public static BoardTemplate createBoardTemplate(Board board, List<PlayerTemplate> playerTemplates) {
+        BoardTemplate boardTemplate = new BoardTemplate();
+        boardTemplate.width = board.width;
+        boardTemplate.height = board.height;
+        boardTemplate.phase = board.getPhase();
+        boardTemplate.players = playerTemplates;
+
+        for (int i = 0; i < board.width; i++) {
+            for (int j = 0; j < board.height; j++) {
+                Space space = board.getSpace(i, j);
+                if (!space.getWalls().isEmpty() || !space.getActions().isEmpty()) {
+                    SpaceTemplate spaceTemplate = new SpaceTemplate();
+                    spaceTemplate.x = space.x;
+                    spaceTemplate.y = space.y;
+                    spaceTemplate.actions.addAll(space.getActions());
+                    spaceTemplate.walls.addAll(space.getWalls());
+                    boardTemplate.spaces.add(spaceTemplate);
+                }
+            }
+        }
+        return boardTemplate;
+    }
+
+    public static List<PlayerTemplate> createPlayerTemplates(Board board) {
+        List<PlayerTemplate> playerTemplates = new ArrayList<>();
+        for(int i = 0; i < board.getPlayersNumber(); i++) {
+            Player player = board.getPlayer(i);
+            PlayerTemplate playerTemplate = new PlayerTemplate();
+            playerTemplate.name = player.getName();
+            playerTemplate.color = player.getColor();
+            playerTemplate.space = new SpaceTemplate();
+            playerTemplate.space.walls = player.getSpace().getWalls();
+            playerTemplate.space.actions = player.getSpace().getActions();
+            playerTemplate.space.x = player.getSpace().x;
+            playerTemplate.space.y = player.getSpace().y;
+            playerTemplate.heading = player.getHeading();
+            playerTemplate.program = new CommandCardFieldTemplate[5];
+            for(int k = 0; k < playerTemplate.program.length; k++) {
+                playerTemplate.program[k] = new CommandCardFieldTemplate();
+                playerTemplate.program[k].card = player.getProgramField(k).getCard();
+                playerTemplate.program[k].visible = player.getProgramField(k).isVisible();
+            }
+            playerTemplate.cards = new CommandCardFieldTemplate[8];
+            for(int j = 0; j < playerTemplate.cards.length; j++) {
+                playerTemplate.cards[j] = new CommandCardFieldTemplate();
+                playerTemplate.cards[j].card = player.getCardField(j).getCard();
+                playerTemplate.cards[j].visible = player.getCardField(j).isVisible();
+            }
+            playerTemplates.add(playerTemplate);
+        }
+    return playerTemplates;
+    }
 }

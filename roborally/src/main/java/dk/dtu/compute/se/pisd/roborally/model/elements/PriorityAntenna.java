@@ -7,14 +7,14 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * ...
- * @author Emil Lauritzen, s231331@dtu.dk
- * @param gameController, controller of the game
- * @param space, the actual space
- */
-public class PriorityAntenna extends FieldAction {
 
+public class PriorityAntenna extends FieldAction {
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param gameController, controller of the game
+     * @param space, the actual space
+     */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         determinePlayerOrder(gameController.board, space.x, space.y);
@@ -26,14 +26,12 @@ public class PriorityAntenna extends FieldAction {
         for(int i = 0; i < board.getPlayersNumber(); i++) {
             Space tempSpace = board.getPlayer(i).getSpace();
             board.getPlayer(i).setDistanceToPriorityAntenna(Math.abs(tempSpace.x - x) + Math.abs(tempSpace.y - y));
-            System.out.println(board.getPlayer(i).getName() + ": " + board.getPlayer(i).getDistanceToPriorityAntenna());
         }
 
         // Sort the players list
         Player tempPlayer;
         boolean isSorted = false;
         while(!isSorted) {
-            System.out.println("check");
             isSorted = true;
             for(int i = 0; i < board.getPlayersNumber() - 1; i++) {
                 if(board.getPlayers().get(i).getDistanceToPriorityAntenna() > board.getPlayers().get(i + 1).getDistanceToPriorityAntenna()) {
@@ -43,9 +41,6 @@ public class PriorityAntenna extends FieldAction {
                     isSorted =  false;
                 }
             }
-        }
-        for(int k = 0; k < board.getPlayersNumber(); k++) {
-            System.out.println(board.getPlayer(k).getName());
         }
     }
 }
