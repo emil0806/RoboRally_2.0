@@ -25,7 +25,8 @@
         {
           "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel",
           "INSTANCE": {
-            "heading": "WEST"
+            "heading": "WEST",
+            "activationRegisters": ["2", "4"]
           }
         }
       ],
@@ -53,7 +54,8 @@
         {
           "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel",
           "INSTANCE": {
-            "heading": "NORTH"
+            "heading": "NORTH",
+            "activationRegisters": ["1", "3", "5"]
           }
         }
       ],
@@ -132,7 +134,7 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
           "INSTANCE": {
             "heading": "EAST"
           }
@@ -147,9 +149,8 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.StartSpace",
           "INSTANCE": {
-            "heading": "SOUTH"
           }
         }
       ],
@@ -192,9 +193,9 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Checkpoint",
           "INSTANCE": {
-            "heading": "EAST"
+            "checkpointNum": 1
           }
         }
       ],
@@ -207,9 +208,8 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna",
           "INSTANCE": {
-            "heading": "SOUTH"
           }
         }
       ],

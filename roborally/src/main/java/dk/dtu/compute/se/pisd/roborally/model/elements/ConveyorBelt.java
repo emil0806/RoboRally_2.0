@@ -33,9 +33,8 @@ import java.util.List;
 
 /**
  * ...
- *
- * @author Ekkart Kindler, ekki@dtu.dk
- *
+ * @author Emil Lauritzen, s231331@dtu.dk
+ * ConveyorBelt class
  */
 public class ConveyorBelt extends FieldAction {
 
@@ -56,6 +55,12 @@ public class ConveyorBelt extends FieldAction {
     public void setArrows(int arrows) {
         this.arrows = arrows;
     }
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param gameController, space
+     * @return depends on if action is possible
+     */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         try {

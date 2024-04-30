@@ -31,6 +31,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
+import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -80,6 +81,16 @@ public class AppController implements Observer {
             //     here we just create an empty board with the required number of players.
             Board board = LoadBoard.loadBoard(null);
             gameController = new GameController(board);
+
+            for(int i = 0; i < board.width; i++) {
+                for(int j = 0; j < board.height; j++) {
+                    for(FieldAction fieldAction : board.getSpace(i, j).getActions()) {
+                        if(fieldAction instanceof PriorityAntenna) {
+                            board.setPriorityAntenna(board.getSpace(i, j));
+                        }
+                    }
+                }
+            }
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
@@ -97,6 +108,9 @@ public class AppController implements Observer {
 
     public void saveGame() {
         // XXX needs to be implemented eventually
+        if(this.gameController != null) {
+            LoadBoard.saveBoard(this.gameController.board, "");
+        }
     }
 
     public void loadGame() {
@@ -157,5 +171,4 @@ public class AppController implements Observer {
     public void update(Subject subject) {
         // XXX do nothing for now
     }
-
 }

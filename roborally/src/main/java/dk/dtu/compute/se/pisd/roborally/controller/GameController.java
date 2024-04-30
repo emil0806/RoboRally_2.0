@@ -22,6 +22,7 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -364,6 +365,7 @@ public class GameController {
 
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
+        board.getPriorityAntenna().getActions().get(0).doAction(this, board.getPriorityAntenna());
         board.setCurrentPlayer(board.getPlayer(0));
         board.setStep(0);
 
