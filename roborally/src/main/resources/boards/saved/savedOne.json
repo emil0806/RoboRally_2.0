@@ -1,0 +1,417 @@
+{
+  "width": 8,
+  "height": 8,
+  "spaces": [
+    {
+      "walls": [
+        "SOUTH"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "WEST"
+          }
+        }
+      ],
+      "x": 0,
+      "y": 0
+    },
+    {
+      "walls": [
+        "NORTH"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel",
+          "INSTANCE": {
+            "heading": "WEST",
+            "activationRegisters": [
+              2,
+              4
+            ]
+          }
+        }
+      ],
+      "x": 1,
+      "y": 0
+    },
+    {
+      "walls": [
+        "WEST"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "NORTH"
+          }
+        }
+      ],
+      "x": 1,
+      "y": 1
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel",
+          "INSTANCE": {
+            "heading": "NORTH",
+            "activationRegisters": [
+              1,
+              3,
+              5
+            ]
+          }
+        }
+      ],
+      "x": 1,
+      "y": 2
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "NORTH"
+          }
+        }
+      ],
+      "x": 1,
+      "y": 3
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "NORTH"
+          }
+        }
+      ],
+      "x": 1,
+      "y": 4
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "NORTH"
+          }
+        }
+      ],
+      "x": 1,
+      "y": 5
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "NORTH"
+          }
+        }
+      ],
+      "x": 1,
+      "y": 6
+    },
+    {
+      "walls": [
+        "NORTH"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "EAST"
+          }
+        }
+      ],
+      "x": 2,
+      "y": 2
+    },
+    {
+      "walls": [
+        "EAST"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.StartSpace",
+          "INSTANCE": {}
+        }
+      ],
+      "x": 3,
+      "y": 3
+    },
+    {
+      "walls": [
+        "SOUTH"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "WEST"
+          }
+        }
+      ],
+      "x": 4,
+      "y": 4
+    },
+    {
+      "walls": [
+        "WEST"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "arrows": 0,
+            "heading": "NORTH"
+          }
+        }
+      ],
+      "x": 5,
+      "y": 5
+    },
+    {
+      "walls": [
+        "NORTH"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Checkpoint",
+          "INSTANCE": {
+            "checkpointNum": 1
+          }
+        }
+      ],
+      "x": 6,
+      "y": 6
+    },
+    {
+      "walls": [
+        "EAST"
+      ],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna",
+          "INSTANCE": {}
+        }
+      ],
+      "x": 7,
+      "y": 7
+    }
+  ],
+  "players": [
+    {
+      "name": "Player 2",
+      "color": "green",
+      "space": {
+        "walls": [
+          "WEST"
+        ],
+        "actions": [
+          {
+            "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+            "INSTANCE": {
+              "arrows": 0,
+              "heading": "NORTH"
+            }
+          }
+        ],
+        "x": 1,
+        "y": 1
+      },
+      "heading": "SOUTH",
+      "program": [
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        }
+      ],
+      "cards": [
+        {
+          "card": {
+            "command": "OPTION_LEFT_RIGHT",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "FAST_THREE_FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "BACKWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "FAST_FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "LEFT",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "RIGHT",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "LEFT",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "FAST_THREE_FORWARD",
+            "observers": []
+          },
+          "visible": true
+        }
+      ],
+      "checkpoints": 0
+    },
+    {
+      "name": "Player 1",
+      "color": "red",
+      "space": {
+        "walls": [
+          "SOUTH"
+        ],
+        "actions": [
+          {
+            "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+            "INSTANCE": {
+              "arrows": 0,
+              "heading": "WEST"
+            }
+          }
+        ],
+        "x": 0,
+        "y": 0
+      },
+      "heading": "SOUTH",
+      "program": [
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        }
+      ],
+      "cards": [
+        {
+          "card": {
+            "command": "FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "AGAIN",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "LEFT",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "RIGHT",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "AGAIN",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "BACKWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "FAST_THREE_FORWARD",
+            "observers": []
+          },
+          "visible": true
+        }
+      ],
+      "checkpoints": 0
+    }
+  ],
+  "phase": "PROGRAMMING"
+}
