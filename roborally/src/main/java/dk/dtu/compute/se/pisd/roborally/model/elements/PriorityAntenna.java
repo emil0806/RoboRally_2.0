@@ -7,8 +7,12 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
+/**
+ * ...
+ * @author Emil Lauritzen, s231331@dtu.dk
+ * @param gameController, controller of the game
+ * @param space, the actual space
+ */
 public class PriorityAntenna extends FieldAction {
 
     @Override

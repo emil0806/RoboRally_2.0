@@ -6,6 +6,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class PriorityAntennaView {
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param spaceView, the spaceview where image should be drawed
+     */
     public static void draw(SpaceView spaceView) {
         Canvas canvas = new Canvas(SpaceView.SPACE_WIDTH, SpaceView.SPACE_HEIGHT);
         GraphicsContext context = canvas.getGraphicsContext2D();

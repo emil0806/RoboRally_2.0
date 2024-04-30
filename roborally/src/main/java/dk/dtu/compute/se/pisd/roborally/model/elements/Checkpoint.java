@@ -24,7 +24,8 @@ public class Checkpoint extends FieldAction {
     /**
      * ...
      * @author Emil Lauritzen, s231331@dtu.dk
-     * @param gameController, space
+     * @param gameController, controller of the game
+     * @param space, the actual space
      * @return depends on if action is possible
      */
     @Override
