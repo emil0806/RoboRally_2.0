@@ -37,6 +37,17 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
+import javafx.scene.control.Dialog;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import java.util.Arrays;
+import java.util.List;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -75,23 +86,27 @@ public class AppController implements Observer {
                     return;
                 }
             }
+            List<String> boardNames = Arrays.asList("defaultboard", "testBoard");
+            ChoiceDialog<String> dialogS = new ChoiceDialog<>(boardNames.get(0), boardNames);
+            dialog.setTitle("Choose Board");
+            dialog.setHeaderText("Select a board to play:");
+            dialog.setContentText("Available boards:");
 
-            // XXX the board should eventually be created programmatically or loaded from a file
-            //     here we just create an empty board with the required number of players.
-            Board board = LoadBoard.loadBoard(null);
-            gameController = new GameController(board);
-            int no = result.get();
-            for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                board.addPlayer(player);
-                player.setSpace(board.getSpace(i % board.width, i));
-            }
+            Optional<String> resultS = dialogS.showAndWait();
+            resultS.ifPresent(boardName -> {
+                Board board = LoadBoard.loadBoard(boardName);
+                gameController = new GameController(board);
 
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase();
+                int no = result.get();
+                for (int i = 0; i < no; i++) {
+                    Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                    board.addPlayer(player);
+                    player.setSpace(board.getSpace(i % board.width, i));
+                }
+                gameController.startProgrammingPhase();
 
-            roboRally.createBoardView(gameController);
+                roboRally.createBoardView(gameController);
+            });
         }
     }
 
@@ -157,5 +172,10 @@ public class AppController implements Observer {
     public void update(Subject subject) {
         // XXX do nothing for now
     }
+    private void chooseBoard() {
+
+    }
+
+
 
 }
