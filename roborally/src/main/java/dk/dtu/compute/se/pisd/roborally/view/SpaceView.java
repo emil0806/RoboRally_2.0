@@ -100,6 +100,8 @@ public class SpaceView extends StackPane implements ViewObserver {
                     StartSpaceView.draw(this);
                 } else if (fieldAction instanceof PriorityAntenna) {
                     PriorityAntennaView.draw(this);
+                } else if (fieldAction instanceof Gears) {
+                    GearsView.draw(this, fieldAction);
                 }
             }
             WallView.draw(this);
