@@ -28,6 +28,10 @@ import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.elements.*;
+import dk.dtu.compute.se.pisd.roborally.model.elements.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt;
+import dk.dtu.compute.se.pisd.roborally.model.elements.Pits;
+import dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel;
 import dk.dtu.compute.se.pisd.roborally.view.elementsView.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -96,6 +100,8 @@ public class SpaceView extends StackPane implements ViewObserver {
                     ConveyorBeltView.draw(this, fieldAction);
                 } else if (fieldAction instanceof PushPanel) {
                     PushPanelView.draw(this, fieldAction);
+                } else if (fieldAction instanceof Pits) {
+                    PitView.draw(this, fieldAction);
                 } else if (fieldAction instanceof StartSpace) {
                     StartSpaceView.draw(this);
                 } else if (fieldAction instanceof PriorityAntenna) {
