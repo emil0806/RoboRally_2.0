@@ -120,9 +120,9 @@
       ],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Gears",
           "INSTANCE": {
-            "heading": "EAST"
+            "direction": "left"
           }
         }
       ],

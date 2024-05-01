@@ -222,20 +222,97 @@
       "name": "Player 2",
       "color": "green",
       "space": {
-        "walls": [
-          "WEST"
-        ],
-        "actions": [
-          {
-            "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
-            "INSTANCE": {
-              "arrows": 0,
-              "heading": "NORTH"
-            }
-          }
-        ],
-        "x": 1,
+        "walls": [],
+        "actions": [],
+        "x": 5,
         "y": 1
+      },
+      "heading": "SOUTH",
+      "program": [
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        },
+        {
+          "visible": true
+        }
+      ],
+      "cards": [
+        {
+          "card": {
+            "command": "FAST_THREE_FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "FAST_THREE_FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "BACKWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "BACKWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "AGAIN",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "AGAIN",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "OPTION_LEFT_RIGHT",
+            "observers": []
+          },
+          "visible": true
+        }
+      ],
+      "checkpoints": 0
+    },
+    {
+      "name": "Player 1",
+      "color": "red",
+      "space": {
+        "walls": [],
+        "actions": [],
+        "x": 2,
+        "y": 5
       },
       "heading": "SOUTH",
       "program": [
@@ -265,97 +342,7 @@
         },
         {
           "card": {
-            "command": "FAST_THREE_FORWARD",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "BACKWARD",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "FAST_FORWARD",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "LEFT",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "RIGHT",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "LEFT",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "FAST_THREE_FORWARD",
-            "observers": []
-          },
-          "visible": true
-        }
-      ],
-      "checkpoints": 0
-    },
-    {
-      "name": "Player 1",
-      "color": "red",
-      "space": {
-        "walls": [
-          "SOUTH"
-        ],
-        "actions": [
-          {
-            "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
-            "INSTANCE": {
-              "arrows": 0,
-              "heading": "WEST"
-            }
-          }
-        ],
-        "x": 0,
-        "y": 0
-      },
-      "heading": "SOUTH",
-      "program": [
-        {
-          "visible": true
-        },
-        {
-          "visible": true
-        },
-        {
-          "visible": true
-        },
-        {
-          "visible": true
-        },
-        {
-          "visible": true
-        }
-      ],
-      "cards": [
-        {
-          "card": {
-            "command": "FORWARD",
+            "command": "AGAIN",
             "observers": []
           },
           "visible": true
@@ -369,35 +356,7 @@
         },
         {
           "card": {
-            "command": "FORWARD",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "LEFT",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "RIGHT",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "AGAIN",
-            "observers": []
-          },
-          "visible": true
-        },
-        {
-          "card": {
-            "command": "BACKWARD",
+            "command": "FAST_THREE_FORWARD",
             "observers": []
           },
           "visible": true
@@ -405,6 +364,27 @@
         {
           "card": {
             "command": "FAST_THREE_FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "OPTION_LEFT_RIGHT",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "FAST_THREE_FORWARD",
+            "observers": []
+          },
+          "visible": true
+        },
+        {
+          "card": {
+            "command": "AGAIN",
             "observers": []
           },
           "visible": true
@@ -413,5 +393,19 @@
       "checkpoints": 0
     }
   ],
-  "phase": "PROGRAMMING"
+  "current": 0,
+  "phase": "PROGRAMMING",
+  "priorityAntenna": {
+    "walls": [
+      "EAST"
+    ],
+    "actions": [
+      {
+        "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna",
+        "INSTANCE": {}
+      }
+    ],
+    "x": 7,
+    "y": 7
+  }
 }

@@ -31,6 +31,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
+import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -51,6 +52,7 @@ import java.util.Optional;
 public class AppController implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
+    final private List<String> SAVE_SLOT_OPTIONS = Arrays.asList("Slot1", "Slot2", "Slot3");
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
 
     final private RoboRally roboRally;
@@ -105,18 +107,6 @@ public class AppController implements Observer {
             // XXX: V2
             // board.setCurrentPlayer(board.getPlayer(0));
             gameController.startProgrammingPhase();
-            Optional<String> resultS = dialogS.showAndWait();
-            resultS.ifPresent(boardName -> {
-                Board board = LoadBoard.loadBoard(boardName);
-                gameController = new GameController(board);
-
-                int no = result.get();
-                for (int i = 0; i < no; i++) {
-                    Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                    board.addPlayer(player);
-                    player.setSpace(board.getSpace(i % board.width, i));
-                }
-                gameController.startProgrammingPhase();
 
             roboRally.createBoardView(gameController);
         }
@@ -124,13 +114,27 @@ public class AppController implements Observer {
 
     public void saveGame() {
         // XXX needs to be implemented eventually
+        if(this.gameController != null) {
+            ChoiceDialog<String> dialog = new ChoiceDialog<>(SAVE_SLOT_OPTIONS.get(0), SAVE_SLOT_OPTIONS);
+            dialog.setTitle("Save game");
+            dialog.setHeaderText("Choose a saving slot");
+            Optional<String> result = dialog.showAndWait();
+            if(result.isPresent()) {
+                LoadBoard.saveBoard(this.gameController.board, result.get());
+            }
+        }
     }
 
     public void loadGame() {
-        // XXX needs to be implemented eventually
-        // for now, we just create a new game
-        if (gameController == null) {
-            newGame();
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(SAVE_SLOT_OPTIONS.get(0), SAVE_SLOT_OPTIONS);
+        dialog.setTitle("Load game");
+        dialog.setHeaderText("Choose loading slot");
+        Optional<String> result = dialog.showAndWait();
+        if(result.isPresent()) {
+            Board board = LoadBoard.loadBoard(result.get());
+            gameController = new GameController(board);
+            gameController.startProgrammingPhase();
+            roboRally.createBoardView(gameController);
         }
     }
 
@@ -184,5 +188,4 @@ public class AppController implements Observer {
     public void update(Subject subject) {
         // XXX do nothing for now
     }
-
 }

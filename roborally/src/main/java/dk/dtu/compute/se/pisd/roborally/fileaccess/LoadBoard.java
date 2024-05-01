@@ -47,7 +47,6 @@ import java.util.List;
 public class LoadBoard {
 
     private static final String BOARDSFOLDER = "boards";
-    private static final String SAVEFOLDER = "saved";
     private static final String DEFAULTBOARD = "testBoard";
     private static final String JSON_EXT = "json";
 
@@ -64,10 +63,10 @@ public class LoadBoard {
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname + "." + JSON_EXT);
         if (inputStream == null) {
-            return new Board(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+            return new Board(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         }
 
-		// In simple cases, we can create a Gson object with new Gson():
+        // In simple cases, we can create a Gson object with new Gson():
         GsonBuilder simpleBuilder = new GsonBuilder().
                 registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>());
         Gson gson = simpleBuilder.create();
@@ -79,13 +78,34 @@ public class LoadBoard {
 			// fileReader = new FileReader(filename);
 			reader = gson.newJsonReader(new InputStreamReader(inputStream));
 			BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
-
 			result = new Board(template.width, template.height);
 			for (SpaceTemplate spaceTemplate: template.spaces) {
 			    Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
 			    if (space != null) {
                     space.getActions().addAll(spaceTemplate.actions);
                     space.getWalls().addAll(spaceTemplate.walls);
+                }
+            }
+            if(boardname.equals("Slot1") || boardname.equals("Slot2") || boardname.equals("Slot3")) {
+                result.setPriorityAntenna(result.getSpace(template.priorityAntenna.x, template.priorityAntenna.y));
+                for (int i = 0; i < template.players.size(); i++) {
+                    PlayerTemplate playerTemplate = template.players.get(i);
+                    Player player = new Player(result, playerTemplate.color, playerTemplate.name);
+                    if(i == template.current) {
+                        result.setCurrentPlayer(player);
+                    }
+                    player.setSpace(result.getSpace(playerTemplate.space.x, playerTemplate.space.y));
+                    player.setHeading(playerTemplate.heading);
+                    for(int j = 0; j < Player.NO_REGISTERS; j++) {
+                        player.getProgramField(j).setCard(playerTemplate.program[j].card);
+                        player.getProgramField(j).setVisible(playerTemplate.program[j].visible);
+                    }
+                    for(int l = 0; l < Player.NO_CARDS; l++) {
+                        player.getCardField(l).setCard(playerTemplate.cards[l].card);
+                        player.getCardField(l).setVisible(playerTemplate.cards[l].visible);
+                    }
+                    player.setCheckpoints(playerTemplate.checkpoints);
+                    result.addPlayer(player);
                 }
             }
 			reader.close();
@@ -110,14 +130,11 @@ public class LoadBoard {
         List<PlayerTemplate> playerTemplates = createPlayerTemplates(board);
 
         BoardTemplate template = createBoardTemplate(board, playerTemplates);
-
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
         // TODO: this is not very defensive, and will result in a NullPointerException
         //       when the folder "resources" does not exist! But, it does not need
         //       the file "simpleCards.json" to exist!
-        String filename =
-                "/Users/lauritzen/Desktop/roborally-1.4.0a-java17/roborally/src/main/resources/boards/saved/savedOne.json";
-
+        String filename = classLoader.getResource(BOARDSFOLDER).getPath() + "/" + name + "." + JSON_EXT;
         // In simple cases, we can create a Gson object with new:
         //
         //   Gson gson = new Gson();
@@ -130,7 +147,6 @@ public class LoadBoard {
                 registerTypeAdapter(FieldAction.class, new Adapter<FieldAction>()).
                 setPrettyPrinting();
         Gson gson = simpleBuilder.create();
-
         FileWriter fileWriter = null;
         JsonWriter writer = null;
         try {
@@ -159,6 +175,12 @@ public class LoadBoard {
         boardTemplate.height = board.height;
         boardTemplate.phase = board.getPhase();
         boardTemplate.players = playerTemplates;
+        boardTemplate.current = board.getPlayerNumber(board.getCurrentPlayer());
+        boardTemplate.priorityAntenna = new SpaceTemplate();
+        boardTemplate.priorityAntenna.x = board.getPriorityAntenna().x;
+        boardTemplate.priorityAntenna.y = board.getPriorityAntenna().y;
+        boardTemplate.priorityAntenna.actions = board.getPriorityAntenna().getActions();
+        boardTemplate.priorityAntenna.walls = board.getPriorityAntenna().getWalls();
 
         for (int i = 0; i < board.width; i++) {
             for (int j = 0; j < board.height; j++) {
