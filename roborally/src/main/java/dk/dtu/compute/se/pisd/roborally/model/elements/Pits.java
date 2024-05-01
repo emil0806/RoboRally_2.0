@@ -33,5 +33,3 @@ public class Pits extends FieldAction {
 
     }
 }
-//Space tyr = new Space(gameController.board, 0, 0);
-//                gameController.moveToSpace(space.getPlayer(),tyr, this.heading);

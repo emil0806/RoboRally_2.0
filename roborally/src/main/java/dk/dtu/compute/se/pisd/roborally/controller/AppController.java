@@ -39,6 +39,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,7 @@ public class AppController implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
+    private List<Double> Start_Place = new ArrayList<>(Arrays.asList(1.1, 2.0, 3.1, 4.1, 5.0, 7.1));
 
     final private RoboRally roboRally;
 
@@ -94,8 +96,16 @@ public class AppController implements Observer {
             int no = result.get();
             for (int i = 0; i < no; i++) {
                 Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                ChoiceDialog<Double> choose = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
+                choose.setTitle("Choose place to start ");
+                choose.setHeaderText(" Player number " + (i + 1)  + " \n Select place to start: ");
+                Optional<Double> startPlace = choose.showAndWait();
                 board.addPlayer(player);
-                player.setSpace(board.getSpace(i % board.width, i));
+                Double sec = startPlace.get();
+                int x = sec.intValue();
+                int y = (int) Math.round((sec -x) * 10); // Convert decimal part to y
+                player.setSpace(board.getSpace(x, y));
+                Start_Place.remove(sec);
             }
 
             // XXX: V2

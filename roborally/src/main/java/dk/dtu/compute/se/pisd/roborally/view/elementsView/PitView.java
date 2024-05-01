@@ -12,6 +12,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 public class PitView {
+    /**
+     * ...
+     * @author Mikkel Lau, s235082@dtu.dk
+     * @param spaceView, the spaceview where image should be drawed
+     * @param fieldAction, the action of that space
+     */
     public static void draw(SpaceView spaceView, FieldAction fieldAction) {
         Pits pits = (Pits) fieldAction;
         Heading heading = pits.getHeading();
