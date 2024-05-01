@@ -51,9 +51,8 @@
       "walls": [],
       "actions": [
         {
-          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna",
           "INSTANCE": {
-            "heading": "NORTH"
           }
         }
       ],

@@ -47,7 +47,7 @@ import java.util.List;
 public class LoadBoard {
 
     private static final String BOARDSFOLDER = "boards";
-    private static final String DEFAULTBOARD = "testBoard";
+    private static final String DEFAULTBOARD = "defaultboard";
     private static final String JSON_EXT = "json";
 
     private static final int DEFAULT_WIDTH = 8;

@@ -54,6 +54,7 @@ public class AppController implements Observer {
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> SAVE_SLOT_OPTIONS = Arrays.asList("Slot1", "Slot2", "Slot3");
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
+    final private List<String> boardNames = Arrays.asList("defaultboard", "testBoard");
 
     final private RoboRally roboRally;
 
@@ -77,38 +78,36 @@ public class AppController implements Observer {
                     return;
                 }
             }
-            List<String> boardNames = Arrays.asList("defaultboard", "testBoard");
             ChoiceDialog<String> dialogS = new ChoiceDialog<>(boardNames.get(0), boardNames);
-            dialog.setTitle("Choose Board");
-            dialog.setHeaderText("Select a board to play:");
-            dialog.setContentText("Available boards:");
+            dialogS.setTitle("Choose Board");
+            dialogS.setHeaderText("Select a board to play:");
+            dialogS.setContentText("Available boards:");
 
-            // XXX the board should eventually be created programmatically or loaded from a file
-            //     here we just create an empty board with the required number of players.
-            Board board = LoadBoard.loadBoard(null);
-            gameController = new GameController(board);
 
-            for(int i = 0; i < board.width; i++) {
-                for(int j = 0; j < board.height; j++) {
-                    for(FieldAction fieldAction : board.getSpace(i, j).getActions()) {
-                        if(fieldAction instanceof PriorityAntenna) {
-                            board.setPriorityAntenna(board.getSpace(i, j));
+            Optional<String> resultS = dialogS.showAndWait();
+            resultS.ifPresent(boardName -> {
+                Board board = LoadBoard.loadBoard(boardName);
+                gameController = new GameController(board);
+
+                for(int i = 0; i < board.width; i++) {
+                    for(int j = 0; j < board.height; j++) {
+                        for(FieldAction fieldAction : board.getSpace(i, j).getActions()) {
+                            if(fieldAction instanceof PriorityAntenna) {
+                                board.setPriorityAntenna(board.getSpace(i, j));
+                            }
                         }
                     }
                 }
-            }
-            int no = result.get();
-            for (int i = 0; i < no; i++) {
-                Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                board.addPlayer(player);
-                player.setSpace(board.getSpace(i % board.width, i));
-            }
+                int no = result.get();
+                for (int i = 0; i < no; i++) {
+                    Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                    board.addPlayer(player);
+                    player.setSpace(board.getSpace(i % board.width, i));
+                }
+                gameController.startProgrammingPhase();
 
-            // XXX: V2
-            // board.setCurrentPlayer(board.getPlayer(0));
-            gameController.startProgrammingPhase();
-
-            roboRally.createBoardView(gameController);
+                roboRally.createBoardView(gameController);
+            });
         }
     }
 
