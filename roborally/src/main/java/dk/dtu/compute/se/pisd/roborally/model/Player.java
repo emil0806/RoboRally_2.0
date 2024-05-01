@@ -49,6 +49,7 @@ public class Player extends Subject {
     private CommandCardField[] cards;
 
     private int checkpoints;
+    private int distanceToPriorityAntenna;
 
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
@@ -141,5 +142,13 @@ public class Player extends Subject {
 
     public void setCheckpoints(int checkpoints) {
         this.checkpoints = checkpoints;
+    }
+
+    public int getDistanceToPriorityAntenna() {
+        return this.distanceToPriorityAntenna;
+    }
+
+    public void setDistanceToPriorityAntenna(int distanceToPriorityAntenna) {
+        this.distanceToPriorityAntenna = distanceToPriorityAntenna;
     }
 }
