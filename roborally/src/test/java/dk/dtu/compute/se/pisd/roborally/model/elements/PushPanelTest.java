@@ -12,26 +12,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Emil Lauritzen, s231331@dtu.dk
  *
  */
-public class GearsTest {
-
+public class PushPanelTest {
     Board board = new Board(8, 8);
     GameController gameController = new GameController(board);
 
     @Test
-    void gearsTest() {
+    void pushPanelTest() {
         Player player = new Player(board, null,"Player");
-        player.setHeading(Heading.SOUTH);
-        player.setSpace(gameController.board.getSpace(2,2));
+        player.setHeading(Heading.NORTH);
+        player.setSpace(gameController.board.getSpace(3,3));
 
-        Gears gears = new Gears();
-        gears.setDirection("right");
-        gears.doAction(gameController, gameController.board.getSpace(2,2));
+        PushPanel pushPanel = new PushPanel();
+        pushPanel.setHeading(Heading.NORTH);
+        pushPanel.setActivationRegisters(new int[] {1, 3, 5});
+        pushPanel.doAction(gameController, gameController.board.getSpace(3,3));
 
-        assertEquals(player.getHeading(), Heading.WEST);
-
-        gears.setDirection("left");
-        gears.doAction(gameController, gameController.board.getSpace(2,2));
-
-        assertEquals(player.getHeading(), Heading.SOUTH);
+        assertEquals(player.getSpace(), board.getSpace(3,2));
     }
 }
