@@ -7,31 +7,29 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * ...
  * @author Emil Lauritzen, s231331@dtu.dk
  *
  */
-public class GearsTest {
+public class CheckpointTest {
 
     Board board = new Board(8, 8);
     GameController gameController = new GameController(board);
 
     @Test
-    void gearsTest() {
+    void checkpointTest() {
         Player player = new Player(board, null,"Player");
-        player.setHeading(Heading.SOUTH);
-        player.setSpace(gameController.board.getSpace(2,2));
+        player.setHeading(Heading.NORTH);
+        player.setSpace(gameController.board.getSpace(1,1));
 
-        Gears gears = new Gears();
-        gears.setDirection("right");
-        gears.doAction(gameController, gameController.board.getSpace(2,2));
+        assertEquals(player.getCheckpoints(), 0);
 
-        assertEquals(player.getHeading(), Heading.WEST);
+        Checkpoint checkpoint = new Checkpoint();
+        checkpoint.setCheckPointNum(1);
+        checkpoint.doAction(gameController, gameController.board.getSpace(1,1));
 
-        gears.setDirection("left");
-        gears.doAction(gameController, gameController.board.getSpace(2,2));
-
-        assertEquals(player.getHeading(), Heading.SOUTH);
+        assertEquals(player.getCheckpoints(), 1);
     }
 }
