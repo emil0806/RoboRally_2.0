@@ -112,6 +112,7 @@ public class AppController implements Observer {
                     int x = sec.intValue();
                     int y = (int) Math.round((sec -x) * 10); // Convert decimal part to y
                     player.setSpace(board.getSpace(x, y));
+                    player.setStartSpace(board.getSpace(x, y));
                     Start_Place.remove(sec);
                 }
                 gameController.startProgrammingPhase();

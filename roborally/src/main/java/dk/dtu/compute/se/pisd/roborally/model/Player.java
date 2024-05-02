@@ -51,6 +51,8 @@ public class Player extends Subject {
     private int checkpoints;
     private int distanceToPriorityAntenna;
 
+    private Space startSpace;
+
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
         this.name = name;
@@ -150,5 +152,13 @@ public class Player extends Subject {
 
     public void setDistanceToPriorityAntenna(int distanceToPriorityAntenna) {
         this.distanceToPriorityAntenna = distanceToPriorityAntenna;
+    }
+
+    public Space getStartSpace() {
+        return this.startSpace;
+    }
+
+    public void setStartSpace(Space startSpace) {
+        this.startSpace = startSpace;
     }
 }
