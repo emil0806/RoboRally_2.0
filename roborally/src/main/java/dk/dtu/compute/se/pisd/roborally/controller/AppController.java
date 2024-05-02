@@ -56,7 +56,7 @@ public class AppController implements Observer {
     final private List<String> SAVE_SLOT_OPTIONS = Arrays.asList("Slot1", "Slot2", "Slot3");
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
     final private List<String> boardNames = Arrays.asList("defaultboard", "testBoard");
-    private List<Double> Start_Place = new ArrayList<>(Arrays.asList(1.1, 2.0, 3.1, 4.1, 5.0, 7.1));
+    private List<Double> Start_Place = new ArrayList<>(Arrays.asList(1.1, 3.0, 4.1, 5.1, 6.0, 9.1));
 
     final private RoboRally roboRally;
 
