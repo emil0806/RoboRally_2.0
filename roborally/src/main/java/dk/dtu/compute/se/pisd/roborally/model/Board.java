@@ -178,7 +178,7 @@ public class Board extends Subject {
      * The neighbour is returned only, if it can be reached from the given space
      * (no walls or obstacles in either of the involved spaces); otherwise,
      * null will be returned.
-     *
+     * @author David Wellejus s220218
      * @param space the space for which the neighbour should be computed
      * @param heading the heading of the neighbour
      * @return the space in the given direction; null if there is no (reachable) neighbour

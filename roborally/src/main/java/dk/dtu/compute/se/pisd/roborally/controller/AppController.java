@@ -66,6 +66,11 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
 
+
+    /*
+    * @author David Wellejus s220218
+    *
+    */
     public void newGame() {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
         dialog.setTitle("Player number");
