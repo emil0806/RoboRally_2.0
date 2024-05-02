@@ -9,20 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class Pits extends FieldAction {
 
-    private Heading heading;
-
-    public Heading getHeading() {
-        return this.heading;
-    }
-
-    public void setHeading(Heading heading) {
-        this.heading = heading;
-    }
-
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
             try {
-                gameController.moveToSpace(space.getPlayer(),space.getPlayer().getStartSpace(), this.heading);
+                space.getPlayer().setSpace(space.getPlayer().getStartSpace());
                 return true;
             }
             catch(Exception e){

@@ -19,8 +19,6 @@ public class PitView {
      * @param fieldAction, the action of that space
      */
     public static void draw(SpaceView spaceView, FieldAction fieldAction) {
-        Pits pits = (Pits) fieldAction;
-        Heading heading = pits.getHeading();
         Canvas canvas = new Canvas(SpaceView.SPACE_WIDTH, SpaceView.SPACE_HEIGHT);
         GraphicsContext context = canvas.getGraphicsContext2D();
 
