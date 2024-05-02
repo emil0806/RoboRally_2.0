@@ -33,8 +33,11 @@ import dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt;
 import dk.dtu.compute.se.pisd.roborally.model.elements.Pits;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PushPanel;
 import dk.dtu.compute.se.pisd.roborally.view.elementsView.*;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -74,18 +77,45 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     private void updatePlayer() {
         Player player = space.getPlayer();
+        Canvas canvas = new Canvas(SpaceView.SPACE_WIDTH, SpaceView.SPACE_HEIGHT);
+        GraphicsContext context = canvas.getGraphicsContext2D();
+        SnapshotParameters parameters = new SnapshotParameters();
+        String robot;
         if (player != null) {
-            Polygon arrow = new Polygon(0.0, 0.0,
-                    10.0, 20.0,
-                    20.0, 0.0 );
-            try {
-                arrow.setFill(Color.valueOf(player.getColor()));
-            } catch (Exception e) {
-                arrow.setFill(Color.MEDIUMPURPLE);
+            if(player.getColor().equals("red")) {
+                robot = "r1";
+            } else if (player.getColor().equals("green")) {
+                robot = "r2";
+            } else if (player.getColor().equals("blue")) {
+                robot = "r3";
+            } else if (player.getColor().equals("orange")) {
+                robot = "r4";
+            } else if (player.getColor().equals("grey")) {
+                robot = "r5";
+            } else {
+                robot = "r6";
             }
-
-            arrow.setRotate((90*player.getHeading().ordinal())%360);
-            this.getChildren().add(arrow);
+            try {
+                Image robotImage = new Image("elements/" + robot + ".png", 50, 50, true, true);
+                ImageView robotImageView = new ImageView(robotImage);
+                if(player.getHeading() == Heading.EAST) {
+                    robotImageView.setRotate(270);
+                    parameters.setFill(Color.TRANSPARENT);
+                    robotImage = robotImageView.snapshot(parameters, null);
+                } else if(player.getHeading() ==  Heading.WEST) {
+                    robotImageView.setRotate(90);
+                    parameters.setFill(Color.TRANSPARENT);
+                    robotImage = robotImageView.snapshot(parameters, null);
+                } else if (player.getHeading() == Heading.NORTH) {
+                    robotImageView.setRotate(180);
+                    parameters.setFill(Color.TRANSPARENT);
+                    robotImage = robotImageView.snapshot(parameters, null);
+                }
+                context.drawImage(robotImage,6,6);
+            } catch (Exception e) {
+                System.out.println("Image for checkpoint not found");
+            }
+            this.getChildren().add(canvas);
         }
     }
 
