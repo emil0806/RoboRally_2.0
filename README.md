@@ -1,5 +1,7 @@
 RoboRally.
 
+RoboRally is a strategical boardgame, where players uses their Robots to navigate through a bord filled with dangers and obstacles in a specific order. This game implements a graphic version of Roborally where code and graphical user interface are developed in java and javafx. This game was developed by a group to challenge skills in software development.
+
 This game is developed using intellij idea. 
 The code is written in java and javafx language and it uses maven to deal with dependencies.
 Here is a what-to-do-list in order to preprare a computer to run the game:
@@ -37,5 +39,6 @@ If the previous steps are performed the user is now ready to run the game.
 
 Click on the play button close to the upper right corner and a window will popup.
 Choose "File" -> "New game" and select the amount of players that are going to participate in the game and select "defaultboard". The "defaultboard" is made with 8 rows and 8 columns of squares. Then choose a position where each player want to start.
+
 
 
