@@ -86,18 +86,4 @@ public class Space extends Subject {
         // notify the space of these changes by calling this method.
         notifyChange();
     }
-
-    public void addWall(Heading heading){
-        if(!this.walls.contains(heading)){
-            this.walls.add(heading);
-            this.notifyChange();
-        }
-    }
-
-    public void removeWall(Heading heading){
-        if(this.walls.contains(heading)){
-            this.walls.remove(heading);
-            this.notifyChange();
-        }
-    }
 }

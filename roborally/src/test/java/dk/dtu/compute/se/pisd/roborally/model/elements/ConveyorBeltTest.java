@@ -12,26 +12,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Emil Lauritzen, s231331@dtu.dk
  *
  */
-public class GearsTest {
-
+public class ConveyorBeltTest {
     Board board = new Board(8, 8);
     GameController gameController = new GameController(board);
 
     @Test
-    void gearsTest() {
+    void conveyorBeltTest() {
         Player player = new Player(board, null,"Player");
         player.setHeading(Heading.SOUTH);
-        player.setSpace(gameController.board.getSpace(2,2));
+        player.setSpace(gameController.board.getSpace(4,4));
 
-        Gears gears = new Gears();
-        gears.setDirection("right");
-        gears.doAction(gameController, gameController.board.getSpace(2,2));
+        ConveyorBelt conveyorBelt = new ConveyorBelt();
+        conveyorBelt.setHeading(Heading.SOUTH);
+        conveyorBelt.doAction(gameController, gameController.board.getSpace(4,4));
 
-        assertEquals(player.getHeading(), Heading.WEST);
-
-        gears.setDirection("left");
-        gears.doAction(gameController, gameController.board.getSpace(2,2));
-
-        assertEquals(player.getHeading(), Heading.SOUTH);
+        assertEquals(player.getSpace(), board.getSpace(4,5));
     }
 }
