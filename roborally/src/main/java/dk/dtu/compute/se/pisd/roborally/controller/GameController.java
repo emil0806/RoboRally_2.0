@@ -93,7 +93,7 @@ public class GameController {
     /**
      * ...
      * @author Emil Lauritzen, s231331@dtu.dk
-     * @param player player whose heading should turn left
+     * @param player player who should move three forward
      */
     public void fastThreeForward(@NotNull Player player) {
         moveForward(player);
@@ -104,7 +104,7 @@ public class GameController {
     /**
      * ...
      * @author Emil Lauritzen, s231331@dtu.dk
-     * @param player player whose heading should turn left
+     * @param player player who should move back
      */
     public void moveBackward(@NotNull Player player) {
         if (player.board == board) {
@@ -127,7 +127,7 @@ public class GameController {
     /**
      * ...
      * @author Emil Lauritzen, s231331@dtu.dk
-     * @param player player whose heading should turn left
+     * @param player player who should make U-Turn
      */
     public void makeUTurn(@NotNull Player player) {
         turnLeft(player);
@@ -137,13 +137,16 @@ public class GameController {
     /**
      * ...
      * @author Emil Lauritzen, s231331@dtu.dk
-     * @param player player whose heading should turn left
+     * @param player
      */
     public void repeatPrevProgramming(@NotNull Player player) {
         if (board.getStep() != 0) {
             int i = board.getStep();
             int j = 0;
             if(player.getProgramField(i - 1).getCard() != null) {
+                if(player.getProgramField(i - 1).getCard().command == Command.OPTION_LEFT_RIGHT) {
+                    board.setPhase(Phase.PLAYER_INTERACTION);
+                }
                 while (player.getProgramField(i).getCard().command == Command.AGAIN && board.getStep() != 0) {
                     i--;
                     j++;
