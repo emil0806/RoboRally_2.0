@@ -8,7 +8,12 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.jetbrains.annotations.NotNull;
 
 public class Pits extends FieldAction {
-
+    /**
+     * ...
+     * @author Mikkel Lau, s235082@dtu.dk
+     * @param space, the space where action should be applied
+     * @param gameController, controller of the game
+     */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
             try {
