@@ -58,9 +58,14 @@ public class Board extends Subject {
 
     private Space priorityAntenna;
 
-    public Board(int width, int height) {
+    private int numOfCheckpoints;
+
+    private Player winner;
+
+    public Board(int width, int height, int numOfCheckpoints) {
         this.width = width;
         this.height = height;
+        this.numOfCheckpoints = numOfCheckpoints;
         spaces = new Space[width][height];
         for (int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
@@ -239,7 +244,8 @@ public class Board extends Subject {
     public String getStatusMessage() {
 
         return "Phase: " + getPhase().name() +
-                ", Player = " + getCurrentPlayer().getName() +
+                ", Player = " + getCurrentPlayer().getName() + ", Heading: " + getCurrentPlayer().getHeading() +
+                ", Checkpoints: " + getCurrentPlayer().getCheckpoints() +
                 ", Step: " + getStep();
     }
 
@@ -249,5 +255,21 @@ public class Board extends Subject {
 
     public void setPriorityAntenna(Space priorityAntenna) {
         this.priorityAntenna = priorityAntenna;
+    }
+
+    public int getNumOfCheckpoints() {
+        return this.numOfCheckpoints;
+    }
+
+    public void setNumOfCheckpoints(int numOfCheckpoints) {
+        this.numOfCheckpoints = numOfCheckpoints;
+    }
+
+    public Player getWinner() {
+        return this.winner;
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
     }
 }

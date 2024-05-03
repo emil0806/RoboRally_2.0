@@ -22,15 +22,16 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 /**
  * ...
@@ -191,7 +192,7 @@ public class PlayerView extends Tab implements ViewObserver {
                 }
 
 
-            } else {
+            } else if (player.board.getPhase() == Phase.PLAYER_INTERACTION) {
                 if (!programPane.getChildren().contains(playerInteractionPanel)) {
                     programPane.getChildren().remove(buttonPanel);
                     programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
