@@ -69,7 +69,7 @@ public class AppController implements Observer {
 
     /*
     * @author David Wellejus s220218
-    *
+    * @author Emil Lauritzen, s231331@dtu.dk
     */
     public void newGame() {
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
@@ -196,6 +196,16 @@ public class AppController implements Observer {
 
     public boolean isGameRunning() {
         return gameController != null;
+    }
+
+    static void showWinner(String name) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("WINNER");
+        alert.setContentText("Congratulations!\n" + name + " have won the game!");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (!result.isPresent() || result.get() != ButtonType.OK) {
+            return;
+        }
     }
 
 

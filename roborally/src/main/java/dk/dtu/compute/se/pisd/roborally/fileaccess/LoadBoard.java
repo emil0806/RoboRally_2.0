@@ -43,6 +43,7 @@ import java.util.List;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
+ * @author Emil Lauritzen, s231331@dtu.dk
  */
 public class LoadBoard {
 
@@ -54,7 +55,11 @@ public class LoadBoard {
 
     private static final int DEFAULT_HEIGHT = 8;
 
-
+    /**
+     * ...
+     *
+     * @author Emil Lauritzen, s231331@dtu.dk
+     */
     public static Board loadBoard(String boardname) {
         if (boardname == null) {
             boardname = DEFAULTBOARD;
@@ -63,7 +68,7 @@ public class LoadBoard {
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(BOARDSFOLDER + "/" + boardname + "." + JSON_EXT);
         if (inputStream == null) {
-            return new Board(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+            return new Board(DEFAULT_WIDTH, DEFAULT_HEIGHT, 0);
         }
 
         // In simple cases, we can create a Gson object with new Gson():
@@ -78,7 +83,7 @@ public class LoadBoard {
 			// fileReader = new FileReader(filename);
 			reader = gson.newJsonReader(new InputStreamReader(inputStream));
 			BoardTemplate template = gson.fromJson(reader, BoardTemplate.class);
-			result = new Board(template.width, template.height);
+			result = new Board(template.width, template.height, template.numOfCheckpoints);
 			for (SpaceTemplate spaceTemplate: template.spaces) {
 			    Space space = result.getSpace(spaceTemplate.x, spaceTemplate.y);
 			    if (space != null) {
@@ -125,7 +130,12 @@ public class LoadBoard {
 		}
 		return null;
     }
-
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param board the playing board
+     * @param name, name of board
+     */
     public static void saveBoard(Board board, String name) {
         List<PlayerTemplate> playerTemplates = createPlayerTemplates(board);
 
@@ -168,7 +178,13 @@ public class LoadBoard {
             }
         }
     }
-
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param board the playing board
+     * @param playerTemplates list of players
+     * @return boardTemplate
+     */
     public static BoardTemplate createBoardTemplate(Board board, List<PlayerTemplate> playerTemplates) {
         BoardTemplate boardTemplate = new BoardTemplate();
         boardTemplate.width = board.width;
@@ -181,6 +197,7 @@ public class LoadBoard {
         boardTemplate.priorityAntenna.y = board.getPriorityAntenna().y;
         boardTemplate.priorityAntenna.actions = board.getPriorityAntenna().getActions();
         boardTemplate.priorityAntenna.walls = board.getPriorityAntenna().getWalls();
+        boardTemplate.numOfCheckpoints = board.getNumOfCheckpoints();
 
         for (int i = 0; i < board.width; i++) {
             for (int j = 0; j < board.height; j++) {
@@ -197,7 +214,12 @@ public class LoadBoard {
         }
         return boardTemplate;
     }
-
+    /**
+     * ...
+     * @author Emil Lauritzen, s231331@dtu.dk
+     * @param board the playing board
+     * @return list of player templates
+     */
     public static List<PlayerTemplate> createPlayerTemplates(Board board) {
         List<PlayerTemplate> playerTemplates = new ArrayList<>();
         for(int i = 0; i < board.getPlayersNumber(); i++) {

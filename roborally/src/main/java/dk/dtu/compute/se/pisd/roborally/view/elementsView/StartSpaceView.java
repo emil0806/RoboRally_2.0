@@ -10,7 +10,7 @@ import javafx.scene.image.Image;
 public class StartSpaceView {
     /**
      * ...
-     * @author Emil Lauritzen, s231331@dtu.dk
+     * @author Mikkel Lau, s235082@dtu.dk
      * @param spaceView, the spaceview where image should be drawed
      */
     public static void draw(SpaceView spaceView) {

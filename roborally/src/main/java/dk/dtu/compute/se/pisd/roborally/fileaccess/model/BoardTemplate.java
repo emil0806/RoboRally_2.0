@@ -47,4 +47,6 @@ public class BoardTemplate {
     public Phase phase;
 
     public SpaceTemplate priorityAntenna;
+
+    public int numOfCheckpoints;
 }

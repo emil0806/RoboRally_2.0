@@ -64,7 +64,6 @@ public class GameController {
      * @author Emil Lauritzen, s231331@dtu.dk
      * @param player player who should be moved
      */
-    // TODO Assignment A3
     public void fastForward(@NotNull Player player) {
         moveForward(player);
         moveForward(player);
@@ -75,7 +74,6 @@ public class GameController {
      * @author Emil Lauritzen, s231331@dtu.dk
      * @param player player whose heading should turn right
      */
-    // TODO Assignment A3
     public void turnRight(@NotNull Player player) {
         player.setHeading(player.getHeading().next());
     }
@@ -85,7 +83,6 @@ public class GameController {
      * @author Emil Lauritzen, s231331@dtu.dk
      * @param player player whose heading should turn left
      */
-    // TODO Assignment A3
     public void turnLeft(@NotNull Player player) {
         player.setHeading(player.getHeading().prev());
     }
@@ -137,7 +134,7 @@ public class GameController {
     /**
      * ...
      * @author Emil Lauritzen, s231331@dtu.dk
-     * @param player
+     * @param player player whose programming should be repeated
      */
     public void repeatPrevProgramming(@NotNull Player player) {
         if (board.getStep() != 0) {
@@ -270,6 +267,9 @@ public class GameController {
                         for (FieldAction action : board.getPlayer(i).getSpace().getActions()) {
                             action.doAction(this, board.getPlayer(i).getSpace());
                         }
+                    }
+                    if(checkForWinner()) {
+                        return;
                     }
                     step++;
                     if (step < Player.NO_REGISTERS) {
@@ -417,6 +417,18 @@ public class GameController {
             this.space = space;
             this.heading = heading;
         }
+    }
+
+    public boolean checkForWinner() {
+        for(Player player : board.getPlayers()) {
+            if(player.getCheckpoints() == board.getNumOfCheckpoints()) {
+                board.setPhase(Phase.FINISHED);
+                board.setWinner(player);
+                AppController.showWinner(player.getName());
+                return true;
+            }
+        }
+        return false;
     }
 
 }
