@@ -5,19 +5,18 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.SQLOutput;
+import java.util.List;
 
 public class Client {
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
     private String server = "http://localhost:8080";
-    private String gameID = "1";
 
-
-    public void uploadGame(String gameJson){
+    public void uploadGame(String gameString){
         try{
             HttpRequest request = HttpRequest.newBuilder()
-                    .POST(HttpRequest.BodyPublishers.ofString(gameJson))
-                    .uri(URI.create(server + "/lobby/" + gameID))
+                    .POST(HttpRequest.BodyPublishers.ofString(gameString))
+                    .uri(URI.create(server + "/lobby"))
                     .setHeader("Content-Type", "application/json")
                     .build();
 
@@ -27,7 +26,6 @@ public class Client {
         catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
     public void getGame(String gameID) {
@@ -44,5 +42,28 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getGames() {
+        String listOfGames = "";
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(server + "/lobby"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP Response Code: " + response.statusCode());
+            System.out.println("HTTP Response Body: " + response.body());
+            try {
+                listOfGames = response.headers().toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return listOfGames;
     }
 }

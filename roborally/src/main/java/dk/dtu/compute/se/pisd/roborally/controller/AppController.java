@@ -123,12 +123,15 @@ public class AppController implements Observer {
                     player.setStartSpace(board.getSpace(x, y));
                     Start_Place.remove(sec);
                 }
-                gameController.startProgrammingPhase();
-                client.uploadGame(SerializeGame.serializeGame(board));
-
-                roboRally.createBoardView(gameController);
+                String gameString = boardName + "," + 1 + "," + board.getPlayersNumber();
+                client.uploadGame(gameString);
+                //gameController.startProgrammingPhase();
+                //roboRally.createBoardView(gameController);
             });
         }
+    }
+    public void printGames() {
+        System.out.println(client.getGames());
     }
 
     public void saveGame() {

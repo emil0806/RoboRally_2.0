@@ -78,6 +78,10 @@ public class RoboRally extends Application {
         stage.show();
     }
 
+    public void updateLobbyView(GameController gameController) {
+
+    }
+
     public void createBoardView(GameController gameController) {
         // if present, remove old BoardView
         boardRoot.getChildren().clear();

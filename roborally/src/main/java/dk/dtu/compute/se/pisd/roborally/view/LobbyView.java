@@ -33,6 +33,7 @@ public class LobbyView extends VBox implements ViewObserver {
         createGameButton.setOnAction(e -> this.appController.newGame());
 
         Button refreshLobbyButton = new Button("Refresh");
+        refreshLobbyButton.setOnAction(e -> this.appController.printGames());
         lobbyButtonPanel.getChildren().addAll(createGameButton, refreshLobbyButton);
 
         mainLobbyPane.add(lobbyGamePanel,0,0);
