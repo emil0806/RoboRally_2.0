@@ -25,8 +25,10 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
+import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 
+import dk.dtu.compute.se.pisd.roborally.fileaccess.SerializeGame;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -61,6 +63,7 @@ public class AppController implements Observer {
     final private RoboRally roboRally;
 
     private GameController gameController;
+    private final Client client = new Client();
 
     public AppController(@NotNull RoboRally roboRally) {
         this.roboRally = roboRally;
@@ -121,6 +124,7 @@ public class AppController implements Observer {
                     Start_Place.remove(sec);
                 }
                 gameController.startProgrammingPhase();
+                client.uploadGame(SerializeGame.serializeGame(board));
 
                 roboRally.createBoardView(gameController);
             });
