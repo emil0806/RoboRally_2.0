@@ -9,7 +9,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Heading;
 public class PlayerTemplate {
     public String name;
     public String color;
-
+    public int playerID;
     public SpaceTemplate space;
 
     public Heading heading;

@@ -110,7 +110,7 @@ public class AppController implements Observer {
                 }
                 int no = result.get();
                 for (int i = 0; i < no; i++) {
-                    Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
+                    Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1), i + 1);
                     ChoiceDialog<Double> choose = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
                     choose.setTitle("Choose place to start ");
                     choose.setHeaderText(" Player number " + (i + 1)  + " \n Select place to start: ");

@@ -24,6 +24,13 @@ package dk.dtu.compute.se.pisd.roborally.model;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
+
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
 /**
@@ -41,7 +48,7 @@ public class Player extends Subject {
 
     private String name;
     private String color;
-
+    private int playerID;
     private Space space;
     private Heading heading = SOUTH;
 
@@ -52,12 +59,13 @@ public class Player extends Subject {
     private int distanceToPriorityAntenna;
 
     private Space startSpace;
+    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
 
-    public Player(@NotNull Board board, String color, @NotNull String name) {
+    public Player(@NotNull Board board, String color, @NotNull String name, int playerID) {
         this.board = board;
         this.name = name;
         this.color = color;
-
+        this.playerID = playerID;
         this.space = null;
 
         program = new CommandCardField[NO_REGISTERS];
@@ -89,6 +97,9 @@ public class Player extends Subject {
         return color;
     }
 
+    public int getPlayerID(){
+        return this.playerID;
+    }
     public void setColor(String color) {
         this.color = color;
         notifyChange();
@@ -160,5 +171,30 @@ public class Player extends Subject {
 
     public void setStartSpace(Space startSpace) {
         this.startSpace = startSpace;
+    }
+
+    public String getChosenMoves() {
+        List<String> chosenMoves = new ArrayList<>();
+        for (CommandCardField field : program) {
+            if (field != null && field.getCard() != null) {
+                chosenMoves.add(field.getCard().getName());
+            }
+        }
+        return String.join(",", chosenMoves);
+    }
+    public void uploadMoves(String chosenMoves){
+        try{
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString("{\"playerID\": " + getPlayerID() + ", \"chosenMoves\": \"" + String.join(",", chosenMoves) + "\"}"))
+                    .uri(URI.create("http://localhost:8080/moves"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP Response Body: " + response.body());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
