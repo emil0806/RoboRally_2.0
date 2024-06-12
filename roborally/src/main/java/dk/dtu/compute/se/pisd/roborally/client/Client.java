@@ -6,6 +6,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.SQLOutput;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class Client {
 
@@ -21,7 +22,6 @@ public class Client {
                     .build();
 
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
         }
         catch(Exception e){
             e.printStackTrace();
@@ -37,8 +37,6 @@ public class Client {
                     .build();
 
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP Response Code: " + response.statusCode());
-            System.out.println("HTTP Response Body: " + response.body());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,18 +50,31 @@ public class Client {
                     .uri(URI.create(server + "/lobby"))
                     .setHeader("Content-Type", "application/json")
                     .build();
-
-            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP Response Code: " + response.statusCode());
-            System.out.println("HTTP Response Body: " + response.body());
+            CompletableFuture<HttpResponse<String>> response =
+                    HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
             try {
-                listOfGames = response.headers().toString();
+                listOfGames = response.thenApply(HttpResponse::body).get();
             } catch (Exception e) {
-                e.printStackTrace();
+                return "server timeout";
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return listOfGames;
+    }
+
+    public void joinGame(String nameAndAge) {
+        try{
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(nameAndAge))
+                    .uri(URI.create(server + "/lobby"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }

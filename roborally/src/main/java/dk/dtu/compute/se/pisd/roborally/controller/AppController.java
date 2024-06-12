@@ -35,16 +35,16 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * ...
@@ -81,13 +81,13 @@ public class AppController implements Observer {
         Optional<Integer> result = dialog.showAndWait();
 
         if (result.isPresent()) {
-            if (gameController != null) {
+            /*if (gameController != null) {
                 // The UI should not allow this, but in case this happens anyway.
                 // give the user the option to save the game or abort this operation!
                 if (!stopGame()) {
                     return;
                 }
-            }
+            }*/
             ChoiceDialog<String> dialogS = new ChoiceDialog<>(boardNames.get(0), boardNames);
             dialogS.setTitle("Choose Board");
             dialogS.setHeaderText("Select a board to play:");
@@ -125,13 +125,31 @@ public class AppController implements Observer {
                 }
                 String gameString = boardName + "," + 1 + "," + board.getPlayersNumber();
                 client.uploadGame(gameString);
+                showAvailableGames();
                 //gameController.startProgrammingPhase();
                 //roboRally.createBoardView(gameController);
             });
         }
     }
-    public void printGames() {
-        System.out.println(client.getGames());
+    public void showAvailableGames() {
+        String listOfGames = client.getGames();
+        roboRally.updateLobbyView(listOfGames);
+    }
+
+    public void joinGame() {
+        TextInputDialog dialogName = new TextInputDialog();
+        dialogName.setTitle("Player Information");
+        dialogName.setHeaderText("Enter your name");
+        Optional<String> resultName = dialogName.showAndWait();
+        List<Integer> ages = IntStream.rangeClosed(1, 100).boxed().toList();
+        ChoiceDialog<Integer> dialogAge = new ChoiceDialog<>(ages.get(0), ages);
+        dialogAge.setTitle("Player Information");
+        dialogAge.setHeaderText("Enter your age");
+        Optional<Integer> resultAge = dialogAge.showAndWait();
+        if(resultName.isPresent() && resultAge.isPresent()) {
+            String nameAndAgeResult = resultName.get() + resultAge.get();
+            client.joinGame(nameAndAgeResult);
+        }
     }
 
     public void saveGame() {

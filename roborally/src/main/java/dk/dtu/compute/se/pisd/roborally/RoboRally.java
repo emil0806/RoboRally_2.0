@@ -44,6 +44,7 @@ public class RoboRally extends Application {
 
     private Stage stage;
     private BorderPane boardRoot;
+    private LobbyView lobbyView;
 
     @Override
     public void init() throws Exception {
@@ -61,7 +62,7 @@ public class RoboRally extends Application {
         // when the user creates a new game or loads a game
         RoboRallyMenuBar menuBar = new RoboRallyMenuBar(appController);
         boardRoot = new BorderPane();
-        LobbyView lobbyView = new LobbyView(appController);
+        lobbyView = new LobbyView(appController);
         boardRoot.setCenter(lobbyView);
         VBox vbox = new VBox(menuBar, boardRoot);
         vbox.setMinWidth(MIN_APP_WIDTH);
@@ -78,8 +79,8 @@ public class RoboRally extends Application {
         stage.show();
     }
 
-    public void updateLobbyView(GameController gameController) {
-
+    public void updateLobbyView(String listOfGames) {
+        lobbyView.updateGamesList(listOfGames);
     }
 
     public void createBoardView(GameController gameController) {
