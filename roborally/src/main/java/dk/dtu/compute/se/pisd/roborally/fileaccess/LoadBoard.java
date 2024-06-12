@@ -48,7 +48,10 @@ import java.util.List;
 public class LoadBoard {
 
     private static final String BOARDSFOLDER = "boards";
-    private static final String DEFAULTBOARD = "defaultboard";
+    private static final String DEFAULTBOARD = "Rotating Maze";
+    private static final String HIGHOCTANE = "High Octane";
+    private static final String FRACTIONATION = "Fractionation";
+    private static final String DEATHTRAP = "Death Trap";
     private static final String JSON_EXT = "json";
 
     private static final int DEFAULT_WIDTH = 8;
@@ -61,8 +64,11 @@ public class LoadBoard {
      * @author Emil Lauritzen, s231331@dtu.dk
      */
     public static Board loadBoard(String boardname) {
-        if (boardname == null) {
-            boardname = DEFAULTBOARD;
+        switch (boardname) {
+            case DEFAULTBOARD -> boardname = DEFAULTBOARD;
+            case HIGHOCTANE -> boardname = HIGHOCTANE;
+            case DEATHTRAP -> boardname = DEATHTRAP;
+            case FRACTIONATION -> boardname = FRACTIONATION;
         }
 
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
