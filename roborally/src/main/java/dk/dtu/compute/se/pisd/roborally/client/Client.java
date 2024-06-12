@@ -1,5 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.client;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -10,6 +13,7 @@ public class Client {
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
     private String server = "http://localhost:8080";
+
 
     public void uploadGame(String gameString){
         try{
@@ -64,5 +68,57 @@ public class Client {
             e.printStackTrace();
         }
         return listOfGames;
+    }
+
+    public void uploadMoves(String chosenMoves, int playerID, int gameID) {
+        try {
+            Gson gson = new Gson();
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("playerID", playerID);
+            jsonObject.addProperty("chosenMoves", chosenMoves);
+            String json = gson.toJson(jsonObject);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .uri(URI.create(server + "/lobby/" + gameID + "/moves"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP Response Body: " + response.body());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getAllGameMoves(Long gameID) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/moves"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP Response Code: " + response.statusCode());
+            System.out.println("HTTP Response Body: " + response.body());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void getMovesByPlayerID(Long gameID, int playerID) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/moves/" + playerID))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP Response Code: " + response.statusCode());
+            System.out.println("HTTP Response Body: " + response.body());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

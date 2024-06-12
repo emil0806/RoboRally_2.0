@@ -229,7 +229,7 @@ public class GameController {
 
         for(int i = 0; i < board.getPlayersNumber(); i++){
             Player player = board.getPlayer(i);
-            player.uploadMoves(player.getChosenMoves());
+            client.uploadMoves(player.getChosenMoves(), player.getPlayerID(), board.getGameId());
         }
     }
 

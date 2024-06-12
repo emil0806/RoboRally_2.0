@@ -97,6 +97,7 @@ public class AppController implements Observer {
             Optional<String> resultS = dialogS.showAndWait();
             resultS.ifPresent(boardName -> {
                 Board board = LoadBoard.loadBoard(boardName);
+                board.setGameId(1);
                 gameController = new GameController(board);
 
                 for(int i = 0; i < board.width; i++) {
@@ -125,8 +126,8 @@ public class AppController implements Observer {
                 }
                 String gameString = boardName + "," + 1 + "," + board.getPlayersNumber();
                 client.uploadGame(gameString);
-                //gameController.startProgrammingPhase();
-                //roboRally.createBoardView(gameController);
+                gameController.startProgrammingPhase();
+                roboRally.createBoardView(gameController);
             });
         }
     }

@@ -59,7 +59,6 @@ public class Player extends Subject {
     private int distanceToPriorityAntenna;
 
     private Space startSpace;
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
 
     public Player(@NotNull Board board, String color, @NotNull String name, int playerID) {
         this.board = board;
@@ -182,19 +181,5 @@ public class Player extends Subject {
         }
         return String.join(",", chosenMoves);
     }
-    public void uploadMoves(String chosenMoves){
-        try{
-            HttpRequest request = HttpRequest.newBuilder()
-                    .POST(HttpRequest.BodyPublishers.ofString("{\"playerID\": " + getPlayerID() + ", \"chosenMoves\": \"" + String.join(",", chosenMoves) + "\"}"))
-                    .uri(URI.create("http://localhost:8080/moves"))
-                    .setHeader("Content-Type", "application/json")
-                    .build();
 
-            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP Response Body: " + response.body());
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-    }
 }
