@@ -85,6 +85,7 @@ public class Client {
                     .build();
 
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("HTTP Response Code: " + response.statusCode());
             System.out.println("HTTP Response Body: " + response.body());
         } catch (Exception e) {
             e.printStackTrace();
