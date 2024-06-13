@@ -124,7 +124,7 @@ public class Client {
             return new ArrayList<>();
         }
     }
-    public void getMovesByPlayerID(int gameID, int playerID) {
+    public String getMovesByPlayerID(int gameID, int playerID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -132,11 +132,20 @@ public class Client {
                     .setHeader("Content-Type", "application/json")
                     .build();
 
-            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP Response Code: " + response.statusCode());
-            System.out.println("HTTP Response Body: " + response.body());
+            CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
+
+            // Use ObjectMapper to parse the JSON string and extract chosenMoves
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+            // Assuming the response is a single object, not an array
+            String chosenMoves = rootNode.get("chosenMoves").asText();
+
+            return chosenMoves;
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 }
