@@ -1,5 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -7,7 +10,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
 
@@ -72,23 +78,26 @@ public class Client {
 
     public void uploadMoves(String chosenMoves, int playerID, int gameID) {
         try {
-            String moves = playerID + ":" + gameID + ":" + chosenMoves;
+            Gson gson = new Gson();
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("playerID", playerID);
+            jsonObject.addProperty("chosenMoves", chosenMoves);
+            String json = gson.toJson(jsonObject);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .POST(HttpRequest.BodyPublishers.ofString(moves))
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
                     .uri(URI.create(server + "/lobby/" + gameID + "/moves"))
                     .setHeader("Content-Type", "application/json")
                     .build();
 
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP Response Code: " + response.statusCode());
             System.out.println("HTTP Response Body: " + response.body());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void getAllGameMoves(int gameID) {
+    public ArrayList<String> getAllGameMoves(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -96,11 +105,23 @@ public class Client {
                     .setHeader("Content-Type", "application/json")
                     .build();
 
-            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP Response Code1: " + response.statusCode());
-            System.out.println("HTTP Response Body1: " + response.body());
+            CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
+
+            // Use ObjectMapper to parse the JSON string and extract chosenMoves
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            ArrayList<String> result = new ArrayList<>();
+
+            for (JsonNode node : rootNode) {
+                String chosenMoves = node.get("chosenMoves").asText();
+                result.add(chosenMoves);
+            }
+
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
+            return new ArrayList<>();
         }
     }
     public void getMovesByPlayerID(int gameID, int playerID) {

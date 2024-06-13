@@ -44,12 +44,11 @@ public class PlayersView extends TabPane implements ViewObserver {
 
         this.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
-        //Husk at ændre hvilken spiller som bliver vist baseret på spillerens ID,
-        // og husk at ændre uploadMoves til kun at uploade for sig selv!!
         playerViews = new PlayerView[board.getPlayersNumber()];
-        playerViews[0] = new PlayerView(gameController, board.getPlayer(1));
-        this.getTabs().add(playerViews[0]);
-
+        for (int i = 0; i < board.getPlayersNumber();  i++) {
+            playerViews[i] = new PlayerView(gameController, board.getPlayer(i));
+            this.getTabs().add(playerViews[i]);
+        }
         board.attach(this);
         update(board);
     }

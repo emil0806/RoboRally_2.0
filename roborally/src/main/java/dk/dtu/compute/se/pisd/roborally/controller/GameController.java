@@ -231,6 +231,7 @@ public class GameController {
             Player player = board.getPlayer(i);
             String chosenMoves = player.getChosenMoves();
             client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
+            client.getAllGameMoves(1);
         }
     }
 
