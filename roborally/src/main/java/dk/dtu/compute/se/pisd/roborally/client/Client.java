@@ -72,14 +72,10 @@ public class Client {
 
     public void uploadMoves(String chosenMoves, int playerID, int gameID) {
         try {
-            Gson gson = new Gson();
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("playerID", playerID);
-            jsonObject.addProperty("chosenMoves", chosenMoves);
-            String json = gson.toJson(jsonObject);
+            String moves = playerID + ":" + gameID + ":" + chosenMoves;
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .POST(HttpRequest.BodyPublishers.ofString(moves))
                     .uri(URI.create(server + "/lobby/" + gameID + "/moves"))
                     .setHeader("Content-Type", "application/json")
                     .build();
@@ -92,7 +88,7 @@ public class Client {
         }
     }
 
-    public void getAllGameMoves(Long gameID) {
+    public void getAllGameMoves(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -101,8 +97,8 @@ public class Client {
                     .build();
 
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP Response Code: " + response.statusCode());
-            System.out.println("HTTP Response Body: " + response.body());
+            System.out.println("HTTP Response Code1: " + response.statusCode());
+            System.out.println("HTTP Response Body1: " + response.body());
         } catch (Exception e) {
             e.printStackTrace();
         }
