@@ -103,7 +103,7 @@ public class Client {
             e.printStackTrace();
         }
     }
-    public void getMovesByPlayerID(Long gameID, int playerID) {
+    public void getMovesByPlayerID(int gameID, int playerID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
