@@ -94,6 +94,8 @@ public class AppController implements Observer {
             dialogS.setTitle("Choose Board");
             dialogS.setHeaderText("Select a board to play:");
             dialogS.setContentText("Available boards:");
+
+
             Optional<String> resultS = dialogS.showAndWait();
             if(resultS.isPresent()) {
                 client.uploadGame(resultS.get(), 0, result.get(),0);
@@ -213,6 +215,9 @@ public class AppController implements Observer {
             ex.printStackTrace();
             return null;
         });
+    }
+    public void printGames() {
+        System.out.println(client.getGames());
     }
 
     public void saveGame() {

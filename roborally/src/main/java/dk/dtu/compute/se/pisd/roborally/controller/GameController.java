@@ -21,6 +21,7 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 public class GameController {
 
     final public Board board;
+    private final Client client = new Client();
 
     public GameController(Board board) {
         this.board = board;
@@ -224,6 +226,12 @@ public class GameController {
         board.setPhase(Phase.ACTIVATION);
         board.setCurrentPlayer(board.getPlayer(0));
         board.setStep(0);
+
+        for(int i = 0; i < board.getPlayersNumber(); i++){
+            Player player = board.getPlayer(i);
+            String chosenMoves = player.getChosenMoves();
+            client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
+        }
     }
 
     public void executePrograms() {
