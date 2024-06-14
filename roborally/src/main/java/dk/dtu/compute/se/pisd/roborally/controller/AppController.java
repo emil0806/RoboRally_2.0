@@ -34,9 +34,11 @@ import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -81,62 +83,31 @@ public class AppController implements Observer {
         Optional<Integer> result = dialog.showAndWait();
 
         if (result.isPresent()) {
-            /*if (gameController != null) {
+            if (gameController != null) {
                 // The UI should not allow this, but in case this happens anyway.
                 // give the user the option to save the game or abort this operation!
                 if (!stopGame()) {
                     return;
                 }
-            }*/
+            }
             ChoiceDialog<String> dialogS = new ChoiceDialog<>(boardNames.get(0), boardNames);
             dialogS.setTitle("Choose Board");
             dialogS.setHeaderText("Select a board to play:");
             dialogS.setContentText("Available boards:");
-
-
             Optional<String> resultS = dialogS.showAndWait();
-            resultS.ifPresent(boardName -> {
-                Board board = LoadBoard.loadBoard(boardName);
-                gameController = new GameController(board);
-
-                for(int i = 0; i < board.width; i++) {
-                    for(int j = 0; j < board.height; j++) {
-                        for(FieldAction fieldAction : board.getSpace(i, j).getActions()) {
-                            if(fieldAction instanceof PriorityAntenna) {
-                                board.setPriorityAntenna(board.getSpace(i, j));
-                            }
-                        }
-                    }
-                }
-                int no = result.get();
-                for (int i = 0; i < no; i++) {
-                    Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                    ChoiceDialog<Double> choose = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
-                    choose.setTitle("Choose place to start ");
-                    choose.setHeaderText(" Player number " + (i + 1)  + " \n Select place to start: ");
-                    Optional<Double> startPlace = choose.showAndWait();
-                    board.addPlayer(player);
-                    Double sec = startPlace.get();
-                    int x = sec.intValue();
-                    int y = (int) Math.round((sec -x) * 10); // Convert decimal part to y
-                    player.setSpace(board.getSpace(x, y));
-                    player.setStartSpace(board.getSpace(x, y));
-                    Start_Place.remove(sec);
-                }
-                String gameString = boardName + "," + 1 + "," + board.getPlayersNumber();
-                client.uploadGame(gameString);
+            if(resultS.isPresent()) {
+                client.uploadGame(resultS.get(), 0, result.get(),0);
                 showAvailableGames();
-                //gameController.startProgrammingPhase();
-                //roboRally.createBoardView(gameController);
-            });
+            }
         }
     }
     public void showAvailableGames() {
-        String listOfGames = client.getGames();
+        ArrayList<ArrayList<String>> listOfGames = client.getGames();
+        System.out.println(listOfGames);
         roboRally.updateLobbyView(listOfGames);
     }
 
-    public void joinGame() {
+    public void joinGame(int gameID) {
         TextInputDialog dialogName = new TextInputDialog();
         dialogName.setTitle("Player Information");
         dialogName.setHeaderText("Enter your name");
@@ -147,9 +118,101 @@ public class AppController implements Observer {
         dialogAge.setHeaderText("Enter your age");
         Optional<Integer> resultAge = dialogAge.showAndWait();
         if(resultName.isPresent() && resultAge.isPresent()) {
-            String nameAndAgeResult = resultName.get() + resultAge.get();
-            client.joinGame(nameAndAgeResult);
+            int myPlayerID = client.getNumOfPlayers(gameID);
+
+            client.joinGame(gameID, myPlayerID, resultName.get(), resultAge.get());
+
+            Alert waitingToFillGame = new Alert(AlertType.INFORMATION, "Cancel", ButtonType.CANCEL);
+            PauseTransition delay = new PauseTransition(Duration.seconds(2));
+            waitingToFillGame.setTitle("Waiting for players to join game");
+            waitingToFillGame.setHeaderText("Game ID: " + gameID);
+            waitingToFillGame.setContentText("Players: " + client.getNumOfPlayers(gameID));
+            waitingToFillGame.setOnShown(e -> delay.playFromStart());
+            waitingToFillGame.setOnCloseRequest(e -> waitingToFillGame.close());
+            delay.setOnFinished(e -> {
+                showAvailableGames();
+                waitingToFillGame.setContentText("Players: " + client.getNumOfPlayers(gameID));
+                ArrayList<String> gameInfo = client.getGame(gameID);
+                delay.playFromStart();
+                if (client.getNumOfPlayers(gameID) == client.getMaxNumOfPlayers(gameID)) {
+                    waitingToFillGame.close();
+                    waitingToFillGame.setResult(ButtonType.OK);
+                    delay.stop();
+                }
+            });
+            waitingToFillGame.showAndWait();
+            if (waitingToFillGame.getResult() == ButtonType.CLOSE || waitingToFillGame.getResult() == ButtonType.CANCEL) {
+                client.leaveGame(gameID, myPlayerID);
+            }
+            if(client.getNumOfPlayers(gameID) == client.getMaxNumOfPlayers(gameID)) {
+                setupGame(gameID, myPlayerID);
+            }
         }
+    }
+
+    public void setupGame(int gameID, int myPlayerID) {
+        ArrayList<String> gameInfo = client.getGame(gameID);
+        Board board = LoadBoard.loadBoard(gameInfo.get(1));
+        gameController = new GameController(board);
+
+        for(int i = 0; i < board.width; i++) {
+            for(int j = 0; j < board.height; j++) {
+                for(FieldAction fieldAction : board.getSpace(i, j).getActions()) {
+                    if(fieldAction instanceof PriorityAntenna) {
+                        board.setPriorityAntenna(board.getSpace(i, j));
+                    }
+                }
+            }
+        }
+        int numOfPlayer = client.getNumOfPlayers(gameID);
+        ArrayList<ArrayList<String>> players = client.getPlayers(gameID);
+        for (int i = 1; i <= numOfPlayer; i++) {
+            ArrayList<String> playerInfo = players.get(i - 1);
+            Player player = new Player(board, PLAYER_COLORS.get(i), playerInfo.get(0), i, i == myPlayerID);
+            board.addPlayer(player);
+        }
+
+        ChoiceDialog<Double> waitingForStartPosition = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        waitingForStartPosition.setTitle("Waiting for players to choose start position");
+        waitingForStartPosition.setHeaderText("Start position");
+        waitingForStartPosition.setContentText("Waiting for players to choose start position");
+        waitingForStartPosition.setOnShown(e -> delay.playFromStart());
+        waitingForStartPosition.setOnCloseRequest(e -> {
+            waitingForStartPosition.close(); client.leaveGame(gameID, myPlayerID);
+        });
+        int turnID = client.getTurnID(gameID);
+        while(!board.getPlayer(turnID).isMyPlayer()) {
+            waitingForStartPosition.setContentText("Waiting for players to choose start position");
+            waitingForStartPosition.showAndWait();
+        }
+        delay.stop();
+        waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
+        waitingForStartPosition.setContentText("It is your turn to choose");
+        waitingForStartPosition.setTitle("Choose place to start ");
+        waitingForStartPosition.setHeaderText("Select place to start");
+        Optional<Double> result = waitingForStartPosition.showAndWait();
+        result.ifPresent(sec -> {
+            System.out.println(sec);
+            int x = sec.intValue();
+            int y = (int) Math.round((sec - x) * 10); // Convert decimal part to y
+            board.getPlayer(turnID).setSpace(board.getSpace(x, y));
+            board.getPlayer(turnID).setStartSpace(board.getSpace(x, y));
+            Start_Place.remove(sec);
+            client.setTurnID(gameID, turnID + 1);
+        });
+        System.out.println("check");
+        client.waitForAllUsersToBeReady(gameID).thenAccept(allReady -> {
+            if (allReady) {
+                Platform.runLater(() -> {
+                    gameController.startProgrammingPhase();
+                    roboRally.createBoardView(gameController);
+                });
+            }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     public void saveGame() {

@@ -11,6 +11,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class LobbyView extends VBox implements ViewObserver {
 
     private GridPane mainLobbyPane;
@@ -42,11 +45,9 @@ public class LobbyView extends VBox implements ViewObserver {
         mainLobbyPane.add(lobbyButtonPanel, 0, 1);
     }
 
-    public void updateGamesList(String gamesList) {
+    public void updateGamesList(ArrayList<ArrayList<String>> gamesList) {
         lobbyGamePanel.getChildren().clear();
-        String[] arrayGamesList = gamesList.split(";");
-        for(String game : arrayGamesList) {
-            String[] gameInfo = game.split(",");
+        for(ArrayList<String> game : gamesList) {
             HBox gameBox = new HBox();
             gameBox.setSpacing(5);
             gameBox.setStyle("-fx-padding: 10; -fx-border-style: solid inside; -fx-border-width: 1; -fx-border-insets: 5; -fx-border-radius: 5; -fx-border-color: gray;");
@@ -56,15 +57,14 @@ public class LobbyView extends VBox implements ViewObserver {
             VBox gameInfoBox = new VBox();
             gameInfoBox.setSpacing(5);
             gameInfoBox.setAlignment(Pos.CENTER_LEFT);
-
-            Label gameIdText = new Label("Game ID: " + gameInfo[0]);
-            Label boardNameText = new Label("Board: " + gameInfo[1]);
-            Label playersText = new Label("Players: " + gameInfo[2] + " / " + gameInfo[3]);
+            Label gameIdText = new Label("Game ID: " + game.get(0));
+            Label boardNameText = new Label("Board: " + game.get(1));
+            Label playersText = new Label("Players: " + game.get(2) + " / " + game.get(3));
 
             VBox gameButtonBox = new VBox();
             gameButtonBox.setAlignment(Pos.CENTER);
             Button joinGameButton = new Button("Join Game");
-            joinGameButton.setOnAction(e -> this.appController.joinGame());
+            joinGameButton.setOnAction(e -> this.appController.joinGame(Integer.parseInt(game.get(0))));
             gameButtonBox.getChildren().add(joinGameButton);
 
             gameInfoBox.getChildren().addAll(gameIdText, boardNameText, playersText);

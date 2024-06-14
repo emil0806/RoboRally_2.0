@@ -32,6 +32,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 /**
  * ...
  *
@@ -79,7 +81,7 @@ public class RoboRally extends Application {
         stage.show();
     }
 
-    public void updateLobbyView(String listOfGames) {
+    public void updateLobbyView(ArrayList<ArrayList<String>> listOfGames) {
         lobbyView.updateGamesList(listOfGames);
     }
 

@@ -42,6 +42,10 @@ public class Player extends Subject {
     private String name;
     private String color;
 
+    private int playerID;
+
+    final private boolean isMyPlayer;
+
     private Space space;
     private Heading heading = SOUTH;
 
@@ -53,10 +57,12 @@ public class Player extends Subject {
 
     private Space startSpace;
 
-    public Player(@NotNull Board board, String color, @NotNull String name) {
+    public Player(@NotNull Board board, String color, @NotNull String name, int playerID, boolean isMyPlayer) {
         this.board = board;
         this.name = name;
         this.color = color;
+        this.playerID = playerID;
+        this.isMyPlayer = isMyPlayer;
 
         this.space = null;
 
@@ -160,5 +166,17 @@ public class Player extends Subject {
 
     public void setStartSpace(Space startSpace) {
         this.startSpace = startSpace;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
+    }
+
+    public boolean isMyPlayer() {
+        return isMyPlayer;
     }
 }

@@ -95,7 +95,7 @@ public class LoadBoard {
                 result.setPriorityAntenna(result.getSpace(template.priorityAntenna.x, template.priorityAntenna.y));
                 for (int i = 0; i < template.players.size(); i++) {
                     PlayerTemplate playerTemplate = template.players.get(i);
-                    Player player = new Player(result, playerTemplate.color, playerTemplate.name);
+                    Player player = new Player(result, playerTemplate.color, playerTemplate.name, i, false);
                     if(i == template.current) {
                         result.setCurrentPlayer(player);
                     }
