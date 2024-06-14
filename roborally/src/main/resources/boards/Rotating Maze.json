@@ -18,6 +18,58 @@
       "y": 0
     },
     {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Gears",
+          "INSTANCE": {
+            "direction": "right"
+          }
+        }
+      ],
+      "x": 7,
+      "y": 0
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Gears",
+          "INSTANCE": {
+            "direction": "left"
+          }
+        }
+      ],
+      "x": 0,
+      "y": 7
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Gears",
+          "INSTANCE": {
+            "direction": "right"
+          }
+        }
+      ],
+      "x": 4,
+      "y": 2
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Gears",
+          "INSTANCE": {
+            "direction": "left"
+          }
+        }
+      ],
+      "x": 9,
+      "y": 6
+    },
+    {
       "walls": [
         "NORTH"
       ],
