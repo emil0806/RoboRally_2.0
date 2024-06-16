@@ -229,10 +229,10 @@ public class Client {
         }
     }
 
-    public void setTurnID(int gameID, int turnID) {
+    public void setTurnID(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(turnID)))
+                    .POST(HttpRequest.BodyPublishers.noBody())
                     .uri(URI.create(server + "/lobby/" + gameID + "/setTurnID"))
                     .setHeader("Content-Type", "application/json")
                     .build();
