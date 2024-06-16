@@ -41,10 +41,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -105,7 +102,6 @@ public class AppController implements Observer {
     }
     public void showAvailableGames() {
         ArrayList<ArrayList<String>> listOfGames = client.getGames();
-        System.out.println(listOfGames);
         roboRally.updateLobbyView(listOfGames);
     }
 
@@ -134,7 +130,6 @@ public class AppController implements Observer {
             delay.setOnFinished(e -> {
                 showAvailableGames();
                 waitingToFillGame.setContentText("Players: " + client.getNumOfPlayers(gameID));
-                ArrayList<String> gameInfo = client.getGame(gameID);
                 delay.playFromStart();
                 if (client.getNumOfPlayers(gameID) == client.getMaxNumOfPlayers(gameID)) {
                     waitingToFillGame.close();
@@ -155,7 +150,11 @@ public class AppController implements Observer {
     public void setupGame(int gameID, int myPlayerID) {
         ArrayList<String> gameInfo = client.getGame(gameID);
         Board board = LoadBoard.loadBoard(gameInfo.get(1));
-        gameController = new GameController(board);
+        if (board != null) {
+            board.setGameId(gameID);
+            gameController = new GameController(board);
+            board.setMyPlayerID(myPlayerID);
+        }
 
         for(int i = 0; i < board.width; i++) {
             for(int j = 0; j < board.height; j++) {
@@ -166,47 +165,45 @@ public class AppController implements Observer {
                 }
             }
         }
-        int numOfPlayer = client.getNumOfPlayers(gameID);
-        ArrayList<ArrayList<String>> players = client.getPlayers(gameID);
-        for (int i = 1; i <= numOfPlayer; i++) {
-            ArrayList<String> playerInfo = players.get(i - 1);
-            Player player = new Player(board, PLAYER_COLORS.get(i), playerInfo.get(0), i, i == myPlayerID);
-            board.addPlayer(player);
-        }
 
         ChoiceDialog<Double> waitingForStartPosition = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
-        PauseTransition delay = new PauseTransition(Duration.seconds(2));
         waitingForStartPosition.setTitle("Waiting for players to choose start position");
         waitingForStartPosition.setHeaderText("Start position");
         waitingForStartPosition.setContentText("Waiting for players to choose start position");
-        waitingForStartPosition.setOnShown(e -> delay.playFromStart());
         waitingForStartPosition.setOnCloseRequest(e -> {
             waitingForStartPosition.close(); client.leaveGame(gameID, myPlayerID);
         });
-        int turnID = client.getTurnID(gameID);
-        while(!board.getPlayer(turnID).isMyPlayer()) {
-            waitingForStartPosition.setContentText("Waiting for players to choose start position");
-            waitingForStartPosition.showAndWait();
-        }
-        delay.stop();
-        waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
-        waitingForStartPosition.setContentText("It is your turn to choose");
-        waitingForStartPosition.setTitle("Choose place to start ");
-        waitingForStartPosition.setHeaderText("Select place to start");
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (client.getTurnID(gameID) == board.getMyPlayerID()) {
+                        waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
+                        waitingForStartPosition.setContentText("It is your turn to choose");
+                        waitingForStartPosition.setTitle("Choose place to start");
+                        waitingForStartPosition.setHeaderText("Select place to start");
+                    } else {
+                        waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(true);
+                        waitingForStartPosition.setContentText("Waiting for players to choose start position");
+                    }
+                });
+            }
+        };
+
+        timer.schedule(task, 0, 2000);
+
         Optional<Double> result = waitingForStartPosition.showAndWait();
         result.ifPresent(sec -> {
-            System.out.println(sec);
-            int x = sec.intValue();
-            int y = (int) Math.round((sec - x) * 10); // Convert decimal part to y
-            board.getPlayer(turnID).setSpace(board.getSpace(x, y));
-            board.getPlayer(turnID).setStartSpace(board.getSpace(x, y));
+            client.setStartSpace(gameID, myPlayerID, result.get());
             Start_Place.remove(sec);
-            client.setTurnID(gameID, turnID + 1);
+            client.setTurnID(gameID, client.getTurnID(gameID) + 1);
+            timer.cancel();
         });
-        System.out.println("check");
         client.waitForAllUsersToBeReady(gameID).thenAccept(allReady -> {
             if (allReady) {
                 Platform.runLater(() -> {
+                    createPlayers(board, gameID);
                     gameController.startProgrammingPhase();
                     roboRally.createBoardView(gameController);
                 });
@@ -216,8 +213,18 @@ public class AppController implements Observer {
             return null;
         });
     }
-    public void printGames() {
-        System.out.println(client.getGames());
+    public void createPlayers(Board board, int gameID) {
+        ArrayList<ArrayList<String>> players = client.getPlayers(gameID);
+        for (int i = 0; i < players.size(); i++) {
+            ArrayList<String> playerInfo = players.get(i);
+            Player player = new Player(board, PLAYER_COLORS.get(i), playerInfo.get(1), Integer.parseInt(playerInfo.get(0)));
+            Double startSpace = Double.parseDouble(playerInfo.get(3));
+            int x = startSpace.intValue();
+            int y = (int) Math.round((startSpace - x) * 10); // Convert decimal part to y
+            player.setStartSpace(board.getSpace(x, y));
+            player.setSpace(board.getSpace(x, y));
+            board.addPlayer(player);
+        }
     }
 
     public void saveGame() {

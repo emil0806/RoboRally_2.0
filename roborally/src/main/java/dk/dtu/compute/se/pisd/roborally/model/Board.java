@@ -61,6 +61,7 @@ public class Board extends Subject {
     private int numOfCheckpoints;
 
     private Player winner;
+    private int myPlayerID;
 
     public Board(int width, int height, int numOfCheckpoints) {
         this.width = width;
@@ -271,5 +272,13 @@ public class Board extends Subject {
 
     public void setWinner(Player winner) {
         this.winner = winner;
+    }
+
+    public int getMyPlayerID() {
+        return myPlayerID;
+    }
+
+    public void setMyPlayerID(int playerID) {
+        this.myPlayerID = playerID;
     }
 }

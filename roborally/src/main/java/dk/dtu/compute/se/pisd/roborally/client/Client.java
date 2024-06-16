@@ -121,6 +121,7 @@ public class Client {
         jsonObject.addProperty("playerID", myPlayerID);
         jsonObject.addProperty("name", name);
         jsonObject.addProperty("age", age);
+        jsonObject.addProperty("startSpace", "null");
         String json = gson.toJson(jsonObject);
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -169,6 +170,8 @@ public class Client {
                 playerInfo.add(name);
                 String age = node.get("age").asText();
                 playerInfo.add(age);
+                String startSpace = node.get("startSpace").asText();
+                playerInfo.add(startSpace);
                 result.add(playerInfo);
             }
             return result;
@@ -342,6 +345,19 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+    public void setStartSpace(int gameID, int playerID, double startSpace) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(startSpace)))
+                    .uri(URI.create(server + "/lobby/" + gameID + "/" + playerID + "/setStartSpace"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
