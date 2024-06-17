@@ -219,7 +219,7 @@ public class AppController implements Observer {
         result.ifPresent(sec -> {
             client.setStartSpace(gameID, myPlayerID, result.get());
             client.setAvailableStartSpaces(gameID, sec);
-            client.setTurnID(gameID, client.getTurnID(gameID) + 1);
+            client.setTurnID(gameID);
             timer.cancel();
         });
         client.waitForAllUsersToBeReady(gameID).thenAccept(allReady -> {

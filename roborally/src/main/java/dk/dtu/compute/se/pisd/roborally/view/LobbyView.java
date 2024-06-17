@@ -24,7 +24,6 @@ public class LobbyView extends VBox implements ViewObserver {
     public LobbyView(AppController appController){
         this.appController = appController;
         mainLobbyPane = new GridPane();
-
         lobbyButtonPanel = new VBox();
         lobbyButtonPanel.setMinWidth(600);
         lobbyButtonPanel.setAlignment(Pos.CENTER);
