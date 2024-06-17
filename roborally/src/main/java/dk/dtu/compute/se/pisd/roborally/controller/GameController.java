@@ -235,7 +235,17 @@ public class GameController {
                 client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
             }
         }
-        System.out.println(client.getAllGameMoves(board.getGameId()));
+        if(client.waitForAllUsersChosen(board.getGameId())){
+            ArrayList<ArrayList<String>> allMoves = client.getAllGameMoves(board.getGameId());
+            for(Player player : board.getPlayers()) {
+                for(ArrayList<String> playersMoves : allMoves){
+                    if(Integer.parseInt(playersMoves.get(0)) == player.getPlayerID()) {
+
+                    }
+                }
+            }
+
+        }
     }
 
     public void executePrograms() {
@@ -443,4 +453,40 @@ public class GameController {
         return false;
     }
 
+    public Command convertToCommand(String move){
+
+        Command command;
+        switch (move) {
+            case "Fwd":
+                command = Command.FORWARD;
+                break;
+            case "Turn Right":
+                command = Command.RIGHT;
+                break;
+            case "Turn Left":
+                command = Command.LEFT;
+                break;
+            case "Fast Fwd":
+                command = Command.FAST_FORWARD;
+                break;
+            case "Fast 3 Fwd":
+                command = Command.FAST_THREE_FORWARD;
+                break;
+            case "Move back":
+                command = Command.BACKWARD;
+                break;
+            case "Make a U-Turn":
+                command = Command.U_TURN;
+                break;
+            case "Repeat programming of previous register":
+                command = Command.AGAIN;
+                break;
+            case "Left OR Right":
+                command = Command.OPTION_LEFT_RIGHT;
+                break;
+            default:
+                command = null;
+        }
+        return command;
+    }
 }
