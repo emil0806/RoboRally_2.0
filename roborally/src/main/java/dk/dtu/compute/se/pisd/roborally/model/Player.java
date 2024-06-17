@@ -174,14 +174,13 @@ public class Player extends Subject {
         this.playerID = playerID;
     }
 
-    public String getChosenMoves() {
-        List<String> chosenMoves = new ArrayList<>();
+    public ArrayList<String> getChosenMoves() {
+        ArrayList<String> chosenMoves = new ArrayList<>();
         for (CommandCardField field : program) {
             if (field != null && field.getCard() != null) {
                 chosenMoves.add(field.getCard().getName());
             }
         }
-        return String.join(",", chosenMoves);
+        return chosenMoves;
     }
-
 }

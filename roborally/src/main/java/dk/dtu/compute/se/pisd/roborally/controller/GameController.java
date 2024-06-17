@@ -26,6 +26,8 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 /**
  * ...
  *
@@ -227,10 +229,21 @@ public class GameController {
         board.setCurrentPlayer(board.getPlayer(0));
         board.setStep(0);
 
-        for(int i = 0; i < board.getPlayersNumber(); i++){
-            Player player = board.getPlayer(i);
-            String chosenMoves = player.getChosenMoves();
-            client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
+        for(Player player : board.getPlayers()){
+            ArrayList<String> chosenMoves = player.getChosenMoves();
+            if(board.getMyPlayerID() == player.getPlayerID()){
+                client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
+            }
+        }
+        if(client.waitForAllUsersChosen(board.getGameId())){
+            for(Player player : board.getPlayers()) {
+                ArrayList<String> playerMoves = client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
+                int i = 0;
+                for(String move : playerMoves){
+                    player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
+                    i++;
+                }
+            }
         }
     }
 
@@ -439,4 +452,40 @@ public class GameController {
         return false;
     }
 
+    public Command convertToCommand(String move){
+
+        Command command;
+        switch (move) {
+            case "Fwd":
+                command = Command.FORWARD;
+                break;
+            case "Turn Right":
+                command = Command.RIGHT;
+                break;
+            case "Turn Left":
+                command = Command.LEFT;
+                break;
+            case "Fast Fwd":
+                command = Command.FAST_FORWARD;
+                break;
+            case "Fast 3 Fwd":
+                command = Command.FAST_THREE_FORWARD;
+                break;
+            case "Move back":
+                command = Command.BACKWARD;
+                break;
+            case "Make a U-Turn":
+                command = Command.U_TURN;
+                break;
+            case "Repeat programming of previous register":
+                command = Command.AGAIN;
+                break;
+            case "Left OR Right":
+                command = Command.OPTION_LEFT_RIGHT;
+                break;
+            default:
+                command = null;
+        }
+        return command;
+    }
 }
