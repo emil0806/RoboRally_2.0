@@ -313,9 +313,17 @@ public class Client {
             for (JsonNode node : rootNode) {
                 ArrayList<String> gameMoves = new ArrayList<>();
                 String playerID = node.get("playerID").asText();
-                gameMoves.add(playerID);
-                String chosenMoves = node.get("chosenMoves").asText();
-                gameMoves.add(chosenMoves);
+                JsonNode chosenMovesNode = node.get("chosenMoves");
+                ArrayList<String> chosenMovesList = new ArrayList<>();
+                if (chosenMovesNode.isArray()) {
+                    for (JsonNode moveNode : chosenMovesNode) {
+                        chosenMovesList.add(moveNode.asText());
+                    }
+                }
+                String chosenMoves = String.join(",", chosenMovesList);
+                // Combine playerID and chosenMoves without spaces
+                String combinedMoves = playerID + "," + chosenMoves;
+                gameMoves.add(combinedMoves);
                 result.add(gameMoves);
             }
 
@@ -325,6 +333,7 @@ public class Client {
             return new ArrayList<>();
         }
     }
+
     public String getMovesByPlayerID(int gameID, int playerID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
