@@ -13,6 +13,7 @@ import java.net.http.HttpResponse;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -331,7 +332,7 @@ public class Client {
         }
     }
 
-    public String getMovesByPlayerID(int gameID, int playerID) {
+    public ArrayList<String> getMovesByPlayerID(int gameID, int playerID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -342,14 +343,15 @@ public class Client {
             CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
             String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
 
-            // Use ObjectMapper to parse the JSON string and extract chosenMoves
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
 
-            // Assuming the response is a single object, not an array
-            String chosenMoves = rootNode.get("chosenMoves").asText();
+            ArrayList<String> result = new ArrayList<>();
+            for(JsonNode node : rootNode) {
+                String move = node.asText();
+                result.add(move);
+            }
 
-            return chosenMoves;
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
             return null;

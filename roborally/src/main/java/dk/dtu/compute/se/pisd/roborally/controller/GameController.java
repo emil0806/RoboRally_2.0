@@ -236,15 +236,14 @@ public class GameController {
             }
         }
         if(client.waitForAllUsersChosen(board.getGameId())){
-            ArrayList<ArrayList<String>> allMoves = client.getAllGameMoves(board.getGameId());
             for(Player player : board.getPlayers()) {
-                for(ArrayList<String> playersMoves : allMoves){
-                    if(Integer.parseInt(playersMoves.get(0)) == player.getPlayerID()) {
-
-                    }
+                ArrayList<String> playerMoves = client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
+                int i = 0;
+                for(String move : playerMoves){
+                    player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
+                    i++;
                 }
             }
-
         }
     }
 
