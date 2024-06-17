@@ -391,7 +391,7 @@ public class Client {
             e.printStackTrace();
         }
     }
-    public List<Double> getAvailableStartSpaces(int gameID) {
+    public ArrayList<Double> getAvailableStartSpaces(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -400,8 +400,7 @@ public class Client {
                     .build();
             CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
             String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<Double> startSpaces = objectMapper.readValue(jsonResponse, new TypeReference<List<Double>>(){});
+            ArrayList<Double> startSpaces = objectMapper.readValue(jsonResponse, new TypeReference<ArrayList<Double>>(){});
             return startSpaces;
         } catch (Exception e) {
             e.printStackTrace();
