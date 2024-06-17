@@ -57,8 +57,6 @@ public class AppController implements Observer {
     final private List<String> SAVE_SLOT_OPTIONS = Arrays.asList("Slot1", "Slot2", "Slot3");
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
     final private List<String> boardNames = Arrays.asList("Rotating Maze", "High Octane", "Fractionation", "Death Trap");
-    private List<Double> Start_Place = new ArrayList<>(Arrays.asList(1.1, 3.0, 4.1, 5.1, 6.0, 9.1));
-
     final private RoboRally roboRally;
 
     private GameController gameController;
@@ -124,12 +122,20 @@ public class AppController implements Observer {
             PauseTransition delay = new PauseTransition(Duration.seconds(2));
             waitingToFillGame.setTitle("Waiting for players to join game");
             waitingToFillGame.setHeaderText("Game ID: " + gameID);
-            waitingToFillGame.setContentText("Players: " + client.getNumOfPlayers(gameID));
+            String playersName = "";
+            for (ArrayList<String> player : client.getPlayers(gameID)) {
+                playersName += player.get(1) + ", ";
+            }
+            waitingToFillGame.setContentText("Players: " + playersName);
             waitingToFillGame.setOnShown(e -> delay.playFromStart());
             waitingToFillGame.setOnCloseRequest(e -> waitingToFillGame.close());
             delay.setOnFinished(e -> {
                 showAvailableGames();
-                waitingToFillGame.setContentText("Players: " + client.getNumOfPlayers(gameID));
+                String playersName2 = "";
+                for (ArrayList<String> player : client.getPlayers(gameID)) {
+                    playersName2 += player.get(1) + ", ";
+                }
+                waitingToFillGame.setContentText("Players: " + playersName2);
                 delay.playFromStart();
                 if (client.getNumOfPlayers(gameID) == client.getMaxNumOfPlayers(gameID)) {
                     waitingToFillGame.close();
@@ -165,8 +171,8 @@ public class AppController implements Observer {
                 }
             }
         }
-
-        ChoiceDialog<Double> waitingForStartPosition = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
+        ArrayList<Double> Start_Place = new ArrayList<>( client.getAvailableStartSpaces(gameID));
+        ChoiceDialog<Double> waitingForStartPosition = new ChoiceDialog<>(Start_Place.get(0), Start_Place);;
         waitingForStartPosition.setTitle("Waiting for players to choose start position");
         waitingForStartPosition.setHeaderText("Start position");
         waitingForStartPosition.setContentText("Waiting for players to choose start position");
@@ -178,6 +184,9 @@ public class AppController implements Observer {
             @Override
             public void run() {
                 Platform.runLater(() -> {
+                    for(Double place : client.getRemovedStartingPlace(gameID)) {
+                        waitingForStartPosition.getItems().remove(place);
+                    }
                     if (client.getTurnID(gameID) == board.getMyPlayerID()) {
                         waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
                         waitingForStartPosition.setContentText("It is your turn to choose");
@@ -196,8 +205,8 @@ public class AppController implements Observer {
         Optional<Double> result = waitingForStartPosition.showAndWait();
         result.ifPresent(sec -> {
             client.setStartSpace(gameID, myPlayerID, result.get());
-            Start_Place.remove(sec);
-            client.setTurnID(gameID);
+            client.setAvailableStartSpaces(gameID, sec);
+            client.setTurnID(gameID, client.getTurnID(gameID) + 1);
             timer.cancel();
         });
         client.waitForAllUsersToBeReady(gameID).thenAccept(allReady -> {
