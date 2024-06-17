@@ -26,6 +26,8 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 /**
  * ...
  *
@@ -228,11 +230,12 @@ public class GameController {
         board.setStep(0);
 
         for(Player player : board.getPlayers()){
-            String chosenMoves = player.getChosenMoves();
+            ArrayList<String> chosenMoves = player.getChosenMoves();
             if(board.getMyPlayerID() == player.getPlayerID()){
                 client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
             }
         }
+        System.out.println(client.getAllGameMoves(board.getGameId()));
     }
 
     public void executePrograms() {

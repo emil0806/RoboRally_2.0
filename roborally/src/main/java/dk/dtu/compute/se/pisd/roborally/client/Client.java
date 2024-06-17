@@ -275,14 +275,13 @@ public class Client {
     }
 
 
-    public void uploadMoves(String chosenMoves, int playerID, int gameID) {
+    public void uploadMoves(ArrayList<String> chosenMoves, int playerID, int gameID) {
         try {
             Gson gson = new Gson();
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("playerID", playerID);
-            jsonObject.addProperty("chosenMoves", chosenMoves);
+            jsonObject.add("chosenMoves", gson.toJsonTree(chosenMoves));
             String json = gson.toJson(jsonObject);
-
             HttpRequest request = HttpRequest.newBuilder()
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .uri(URI.create(server + "/lobby/" + gameID + "/moves"))
@@ -290,13 +289,12 @@ public class Client {
                     .build();
 
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP Response Body: " + response.body());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public ArrayList<String> getAllGameMoves(int gameID) {
+    public ArrayList<ArrayList<String>> getAllGameMoves(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -310,11 +308,15 @@ public class Client {
             // Use ObjectMapper to parse the JSON string and extract chosenMoves
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            ArrayList<String> result = new ArrayList<>();
+            ArrayList<ArrayList<String>> result = new ArrayList<>();
 
             for (JsonNode node : rootNode) {
+                ArrayList<String> gameMoves = new ArrayList<>();
+                String playerID = node.get("playerID").asText();
+                gameMoves.add(playerID);
                 String chosenMoves = node.get("chosenMoves").asText();
-                result.add(chosenMoves);
+                gameMoves.add(chosenMoves);
+                result.add(gameMoves);
             }
 
             return result;
