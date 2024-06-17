@@ -360,4 +360,35 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    public CompletableFuture<Boolean> waitForInteraction(int gameID) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .GET()
+                            .uri(URI.create(server + "/lobby/" + gameID + "/allUsersReady"))
+                            .setHeader("Content-Type", "application/json")
+                            .build();
+                    HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+                    boolean allUsersReady = Boolean.parseBoolean(response.body());
+
+                    if (allUsersReady) {
+                        scheduler.shutdown();
+                        future.complete(true);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    future.completeExceptionally(e);
+                }
+            }
+        };
+
+        scheduler.scheduleAtFixedRate(task, 0, 2, TimeUnit.SECONDS);
+        return future;
+    }
 }
