@@ -179,6 +179,16 @@ public class AppController implements Observer {
         waitingForStartPosition.setOnCloseRequest(e -> {
             waitingForStartPosition.close(); client.leaveGame(gameID, myPlayerID);
         });
+        List<ArrayList<String>> players = client.getPlayers(gameID);
+        Map<Integer, Integer> playerTurnList = new HashMap<>();
+        for (ArrayList<String> player : players) {
+            int playerID = Integer.parseInt(player.get(0));
+            int age = Integer.parseInt(player.get(2));
+            playerTurnList.put(playerID, age);
+        }
+        List<Map.Entry<Integer, Integer>> sortedPlayers = new ArrayList<>(playerTurnList.entrySet());
+        sortedPlayers.sort(Map.Entry.comparingByValue());
+
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -187,7 +197,10 @@ public class AppController implements Observer {
                     for(Double place : client.getRemovedStartingPlace(gameID)) {
                         waitingForStartPosition.getItems().remove(place);
                     }
-                    if (client.getTurnID(gameID) == board.getMyPlayerID()) {
+                    int currentTurnPlayerID = sortedPlayers.get(client.getTurnID(gameID)).getKey();
+
+                    if (currentTurnPlayerID == myPlayerID) {
+                        System.out.println(client.getPlayers(gameID).get(currentTurnPlayerID));
                         waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
                         waitingForStartPosition.setContentText("It is your turn to choose");
                         waitingForStartPosition.setTitle("Choose place to start");
