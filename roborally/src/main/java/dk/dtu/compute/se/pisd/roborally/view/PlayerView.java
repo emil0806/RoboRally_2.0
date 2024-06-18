@@ -133,14 +133,6 @@ public class PlayerView extends Tab implements ViewObserver {
             player.board.attach(this);
             update(player.board);
         }
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                finishButton.setDisable(!allProgramSlotsFilled());
-            }
-        };
-        timer.schedule(task, 0, 500);
 
     }
 
@@ -185,7 +177,14 @@ public class PlayerView extends Tab implements ViewObserver {
                         break;
 
                     case PROGRAMMING:
-                        finishButton.setDisable(false);
+                        Timer timer = new Timer();
+                        TimerTask task = new TimerTask() {
+                            @Override
+                            public void run() {
+                                finishButton.setDisable(!allProgramSlotsFilled());
+                            }
+                        };
+                        timer.schedule(task, 0, 500);
                         executeButton.setDisable(true);
                         stepButton.setDisable(true);
                         break;

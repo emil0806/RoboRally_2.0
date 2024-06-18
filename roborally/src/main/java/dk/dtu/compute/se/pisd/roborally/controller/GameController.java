@@ -24,6 +24,10 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
+import javafx.animation.PauseTransition;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -235,7 +239,17 @@ public class GameController {
                 client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
             }
         }
+
+        Alert waitForAllMovesToBeChosen = new Alert(Alert.AlertType.WARNING);
+        waitForAllMovesToBeChosen.setTitle("GameID: " + board.getGameId());
+        waitForAllMovesToBeChosen.setHeaderText("");
+        waitForAllMovesToBeChosen.setContentText("Waiting for all players to choose their moves");
+        waitForAllMovesToBeChosen.getDialogPane().getButtonTypes().clear();
+        waitForAllMovesToBeChosen.setOnCloseRequest(e -> waitForAllMovesToBeChosen.close());
+        waitForAllMovesToBeChosen.show();
         if(client.waitForAllUsersChosen(board.getGameId())){
+            waitForAllMovesToBeChosen.setResult(ButtonType.OK);
+            waitForAllMovesToBeChosen.close();
             for(Player player : board.getPlayers()) {
                 ArrayList<String> playerMoves = client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
                 int i = 0;
