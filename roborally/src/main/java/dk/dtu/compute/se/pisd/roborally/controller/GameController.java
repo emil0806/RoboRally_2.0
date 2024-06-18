@@ -37,13 +37,10 @@ import java.util.ArrayList;
 public class GameController {
 
     final public Board board;
-    private final Client client = new Client();
 
     public GameController(Board board) {
         this.board = board;
     }
-
-
 
     public void moveForward(@NotNull Player player) {
         if (player.board == board) {
@@ -232,12 +229,12 @@ public class GameController {
         for(Player player : board.getPlayers()){
             ArrayList<String> chosenMoves = player.getChosenMoves();
             if(board.getMyPlayerID() == player.getPlayerID()){
-                client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
+                Client.uploadMoves(chosenMoves, player.getPlayerID(), board.getGameId());
             }
         }
-        if(client.waitForAllUsersChosen(board.getGameId())){
+        if(Client.waitForAllUsersChosen(board.getGameId())){
             for(Player player : board.getPlayers()) {
-                ArrayList<String> playerMoves = client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
+                ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
                 int i = 0;
                 for(String move : playerMoves){
                     player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
@@ -487,5 +484,9 @@ public class GameController {
                 command = null;
         }
         return command;
+    }
+
+    public void updateCommandOption(String command) {
+        Client.sendInteraction(board.getGameId(), command);
     }
 }

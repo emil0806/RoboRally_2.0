@@ -22,9 +22,11 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -191,25 +193,39 @@ public class PlayerView extends Tab implements ViewObserver {
                         stepButton.setDisable(true);
                 }
 
-
             } else if (player.board.getPhase() == Phase.PLAYER_INTERACTION) {
-                if (!programPane.getChildren().contains(playerInteractionPanel)) {
-                    programPane.getChildren().remove(buttonPanel);
-                    programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
-                }
-                playerInteractionPanel.getChildren().clear();
+                if(player.getPlayerID() == gameController.board.getCurrentPlayer().getPlayerID()) {
+                    final String[] chosenMove = new String[1];
+                    if (!programPane.getChildren().contains(playerInteractionPanel)) {
+                        programPane.getChildren().remove(buttonPanel);
+                        programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
+                    }
+                    playerInteractionPanel.getChildren().clear();
 
-                if (player.board.getCurrentPlayer() == player) {
+                    if (player.board.getCurrentPlayer() == player) {
 
-                    Button optionButton = new Button("Left");
-                    optionButton.setOnAction( e -> gameController.executeCommandOption(Command.LEFT));
-                    optionButton.setDisable(false);
-                    playerInteractionPanel.getChildren().add(optionButton);
+                        Button optionButton = new Button("Left");
+                        optionButton.setOnAction( e -> {
+                            gameController.executeCommandOption(Command.LEFT); Client.sendInteraction(gameController.board.getGameId(), "Turn Left");
+                        });
+                        optionButton.setDisable(false);
+                        playerInteractionPanel.getChildren().add(optionButton);
 
-                    optionButton = new Button("Right");
-                    optionButton.setOnAction( e -> gameController.executeCommandOption(Command.RIGHT));
-                    optionButton.setDisable(false);
-                    playerInteractionPanel.getChildren().add(optionButton);
+                        optionButton = new Button("Right");
+                        optionButton.setOnAction( e -> {
+                            gameController.executeCommandOption(Command.RIGHT); Client.sendInteraction(gameController.board.getGameId(), "Turn Right");
+                        });
+                        optionButton.setDisable(false);
+                        playerInteractionPanel.getChildren().add(optionButton);
+                    }
+                } else {
+                    if(Client.waitForInteraction(gameController.board.getGameId())) {
+                        Platform.runLater(() -> {
+                            String chosenMove = Client.getInteraction(gameController.board.getGameId());
+                            Command command = gameController.convertToCommand(chosenMove);
+                            gameController.executeCommandOption(command);
+                        });
+                    }
                 }
             }
         }
