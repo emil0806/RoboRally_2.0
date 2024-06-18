@@ -178,6 +178,16 @@ public class AppController implements Observer {
         waitingForStartPosition.setOnCloseRequest(e -> {
             waitingForStartPosition.close(); Client.leaveGame(gameID, myPlayerID);
         });
+        List<ArrayList<String>> players = client.getPlayers(gameID);
+        Map<Integer, Integer> playerTurnList = new HashMap<>();
+        for (ArrayList<String> player : players) {
+            int playerID = Integer.parseInt(player.get(0));
+            int age = Integer.parseInt(player.get(2));
+            playerTurnList.put(playerID, age);
+        }
+        List<Map.Entry<Integer, Integer>> sortedPlayers = new ArrayList<>(playerTurnList.entrySet());
+        sortedPlayers.sort(Map.Entry.comparingByValue());
+
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
             @Override
@@ -186,7 +196,9 @@ public class AppController implements Observer {
                     for(Double place : Client.getRemovedStartingPlace(gameID)) {
                         waitingForStartPosition.getItems().remove(place);
                     }
-                    if (Client.getTurnID(gameID) == board.getMyPlayerID()) {
+                    int currentTurnPlayerID = sortedPlayers.get(Client.getTurnID(gameID)).getKey();
+
+                    if (currentTurnPlayerID == myPlayerID) {
                         waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
                         waitingForStartPosition.setContentText("It is your turn to choose");
                         waitingForStartPosition.setTitle("Choose place to start");
@@ -208,9 +220,17 @@ public class AppController implements Observer {
             Client.setTurnID(gameID);
             timer.cancel();
         });
+        Alert waitingAlert = new Alert(AlertType.WARNING);
+        waitingAlert.setTitle("Waiting for Players");
+        waitingAlert.setHeaderText(null);
+        waitingAlert.getDialogPane().getButtonTypes().clear();  // Remove all buttons
+        waitingAlert.setContentText("Waiting for the others to choose a start place");
+        waitingAlert.show();
         Client.waitForAllUsersToBeReady(gameID).thenAccept(allReady -> {
             if (allReady) {
                 Platform.runLater(() -> {
+                    waitingAlert.setResult(ButtonType.OK);
+                    waitingAlert.close();
                     createPlayers(board, gameID);
                     gameController.startProgrammingPhase();
                     roboRally.createBoardView(gameController);
