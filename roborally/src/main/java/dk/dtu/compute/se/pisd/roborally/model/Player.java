@@ -23,7 +23,8 @@ package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import org.jetbrains.annotations.NotNull;
-
+import java.util.ArrayList;
+import java.util.List;
 import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
 
 /**
@@ -42,6 +43,8 @@ public class Player extends Subject {
     private String name;
     private String color;
 
+    private int playerID;
+
     private Space space;
     private Heading heading = SOUTH;
 
@@ -53,10 +56,11 @@ public class Player extends Subject {
 
     private Space startSpace;
 
-    public Player(@NotNull Board board, String color, @NotNull String name) {
+    public Player(@NotNull Board board, String color, @NotNull String name, int playerID) {
         this.board = board;
         this.name = name;
         this.color = color;
+        this.playerID = playerID;
 
         this.space = null;
 
@@ -160,5 +164,23 @@ public class Player extends Subject {
 
     public void setStartSpace(Space startSpace) {
         this.startSpace = startSpace;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
+    }
+
+    public ArrayList<String> getChosenMoves() {
+        ArrayList<String> chosenMoves = new ArrayList<>();
+        for (CommandCardField field : program) {
+            if (field != null && field.getCard() != null) {
+                chosenMoves.add(field.getCard().getName());
+            }
+        }
+        return chosenMoves;
     }
 }

@@ -20,7 +20,9 @@ public class SerializeGame {
         boardTemplate.width = board.width;
         boardTemplate.height = board.height;
         boardTemplate.phase = board.getPhase();
-        boardTemplate.current = board.getPlayerNumber(board.getCurrentPlayer());
+        if(board.getCurrentPlayer() != null) {
+            boardTemplate.current = board.getPlayerNumber(board.getCurrentPlayer());
+        }
         boardTemplate.priorityAntenna = new SpaceTemplate();
         boardTemplate.priorityAntenna.x = board.getPriorityAntenna().x;
         boardTemplate.priorityAntenna.y = board.getPriorityAntenna().y;

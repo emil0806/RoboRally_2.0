@@ -24,12 +24,15 @@ package dk.dtu.compute.se.pisd.roborally;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.view.BoardView;
+import dk.dtu.compute.se.pisd.roborally.view.LobbyView;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
 
 /**
  * ...
@@ -43,6 +46,7 @@ public class RoboRally extends Application {
 
     private Stage stage;
     private BorderPane boardRoot;
+    private LobbyView lobbyView;
 
     @Override
     public void init() throws Exception {
@@ -60,6 +64,8 @@ public class RoboRally extends Application {
         // when the user creates a new game or loads a game
         RoboRallyMenuBar menuBar = new RoboRallyMenuBar(appController);
         boardRoot = new BorderPane();
+        lobbyView = new LobbyView(appController);
+        boardRoot.setCenter(lobbyView);
         VBox vbox = new VBox(menuBar, boardRoot);
         vbox.setMinWidth(MIN_APP_WIDTH);
         Scene primaryScene = new Scene(vbox);
@@ -73,6 +79,10 @@ public class RoboRally extends Application {
         stage.setResizable(false);
         stage.sizeToScene();
         stage.show();
+    }
+
+    public void updateLobbyView(ArrayList<ArrayList<String>> listOfGames) {
+        lobbyView.updateGamesList(listOfGames);
     }
 
     public void createBoardView(GameController gameController) {
