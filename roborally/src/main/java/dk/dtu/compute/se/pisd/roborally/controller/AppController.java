@@ -222,9 +222,17 @@ public class AppController implements Observer {
             client.setTurnID(gameID);
             timer.cancel();
         });
+        Alert waitingAlert = new Alert(AlertType.WARNING);
+        waitingAlert.setTitle("Waiting for Players");
+        waitingAlert.setHeaderText(null);
+        waitingAlert.getDialogPane().getButtonTypes().clear();  // Remove all buttons
+        waitingAlert.setContentText("Waiting for the others to choose a start place");
+        waitingAlert.show();
         client.waitForAllUsersToBeReady(gameID).thenAccept(allReady -> {
             if (allReady) {
                 Platform.runLater(() -> {
+                    waitingAlert.setResult(ButtonType.OK);
+                    waitingAlert.close();
                     createPlayers(board, gameID);
                     gameController.startProgrammingPhase();
                     roboRally.createBoardView(gameController);
