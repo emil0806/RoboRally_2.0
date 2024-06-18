@@ -66,6 +66,8 @@ public class PlayerView extends Tab implements ViewObserver {
     private VBox playerInteractionPanel;
 
     private GameController gameController;
+    private Timer timer;
+    private TimerTask task;
 
     public PlayerView(@NotNull GameController gameController, @NotNull Player player) {
         super(player.getName());
@@ -179,19 +181,23 @@ public class PlayerView extends Tab implements ViewObserver {
                         break;
 
                     case PROGRAMMING:
-                        Timer timer = new Timer();
-                        TimerTask task = new TimerTask() {
+                        timer = new Timer();
+                        task = new TimerTask() {
                             @Override
                             public void run() {
-                                finishButton.setDisable(!allProgramSlotsFilled());
+                                Platform.runLater(() -> {
+                                    finishButton.setDisable(!allProgramSlotsFilled());
+                                });
                             }
                         };
                         timer.schedule(task, 0, 500);
+
                         executeButton.setDisable(true);
                         stepButton.setDisable(true);
                         break;
 
                     case ACTIVATION:
+                        timer.cancel();
                         finishButton.setDisable(true);
                         executeButton.setDisable(false);
                         stepButton.setDisable(false);

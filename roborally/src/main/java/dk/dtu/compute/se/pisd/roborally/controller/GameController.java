@@ -239,7 +239,7 @@ public class GameController {
 
         Alert waitForAllMovesToBeChosen = new Alert(Alert.AlertType.WARNING);
         waitForAllMovesToBeChosen.setTitle("GameID: " + board.getGameId());
-        waitForAllMovesToBeChosen.setHeaderText("");
+        waitForAllMovesToBeChosen.setHeaderText(null);
         waitForAllMovesToBeChosen.setContentText("Waiting for all players to choose their moves");
         waitForAllMovesToBeChosen.getDialogPane().getButtonTypes().clear();
         waitForAllMovesToBeChosen.setOnCloseRequest(e -> waitForAllMovesToBeChosen.close());
