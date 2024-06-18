@@ -534,4 +534,17 @@ public class Client {
             throw new RuntimeException(e);
         }
     }
+
+    public static void clearAllMoves(int gameID){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .DELETE()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/clearAllMoves"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
