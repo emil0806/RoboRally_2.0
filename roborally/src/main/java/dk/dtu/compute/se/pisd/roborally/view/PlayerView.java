@@ -32,6 +32,8 @@ import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * ...
@@ -131,6 +133,15 @@ public class PlayerView extends Tab implements ViewObserver {
             player.board.attach(this);
             update(player.board);
         }
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                finishButton.setDisable(!allProgramSlotsFilled());
+            }
+        };
+        timer.schedule(task, 0, 500);
+
     }
 
     @Override
@@ -214,5 +225,12 @@ public class PlayerView extends Tab implements ViewObserver {
             }
         }
     }
-
+    private boolean allProgramSlotsFilled() {
+        for (int i = 0; i < Player.NO_REGISTERS; i++) {
+            if (player.getProgramField(i).getCard() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
