@@ -1,6 +1,6 @@
 {
   "width": 10,
-  "height": 8,
+  "height": 9,
   "spaces": [
     {
       "walls": [
@@ -29,6 +29,19 @@
       ],
       "x": 7,
       "y": 0
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.Gears",
+          "INSTANCE": {
+            "direction": "right"
+          }
+        }
+      ],
+      "x": 5,
+      "y": 8
     },
     {
       "walls": [],
@@ -110,8 +123,8 @@
           }
         }
       ],
-      "x": 3,
-      "y": 0
+      "x": 0,
+      "y": 3
     },
     {
       "actions": [
@@ -121,8 +134,8 @@
           }
         }
       ],
-      "x": 4,
-      "y": 1
+      "x": 0,
+      "y": 6
     },
     {
       "actions": [
@@ -132,8 +145,8 @@
           }
         }
       ],
-      "x": 5,
-      "y": 1
+      "x": 1,
+      "y": 4
     },
     {
       "actions": [
@@ -143,8 +156,8 @@
           }
         }
       ],
-      "x": 6,
-      "y": 0
+      "x": 1,
+      "y": 5
     },
     {
       "actions": [
@@ -154,8 +167,8 @@
           }
         }
       ],
-      "x": 8,
-      "y": 1
+      "x": 1,
+      "y": 8
     },
     {
       "walls": [],
@@ -281,8 +294,21 @@
           }
         }
       ],
-      "x": 1,
-      "y": 4
+      "x": 6,
+      "y": 1
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "heading": "SOUTH"
+          }
+        }
+      ],
+      "x": 7,
+      "y": 8
     },
     {
       "walls": [],
@@ -294,8 +320,8 @@
           }
         }
       ],
-      "x": 1,
-      "y": 5
+      "x": 8,
+      "y": 1
     },
     {
       "walls": [],
@@ -307,8 +333,21 @@
           }
         }
       ],
-      "x": 1,
-      "y": 6
+      "x": 5,
+      "y": 1
+    },
+    {
+      "walls": [],
+      "actions": [
+        {
+          "CLASSNAME": "dk.dtu.compute.se.pisd.roborally.model.elements.ConveyorBelt",
+          "INSTANCE": {
+            "heading": "NORTH"
+          }
+        }
+      ],
+      "x": 4,
+      "y": 1
     },
     {
       "walls": [
