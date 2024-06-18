@@ -476,7 +476,6 @@ public class Client {
                     .setHeader("Content-Type", "application/json")
                     .build();
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response);
         } catch (Exception e) {
             e.printStackTrace();
         }

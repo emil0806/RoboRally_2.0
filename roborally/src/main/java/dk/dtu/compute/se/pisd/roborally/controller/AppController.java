@@ -178,7 +178,7 @@ public class AppController implements Observer {
         waitingForStartPosition.setOnCloseRequest(e -> {
             waitingForStartPosition.close(); Client.leaveGame(gameID, myPlayerID);
         });
-        List<ArrayList<String>> players = client.getPlayers(gameID);
+        List<ArrayList<String>> players = Client.getPlayers(gameID);
         Map<Integer, Integer> playerTurnList = new HashMap<>();
         for (ArrayList<String> player : players) {
             int playerID = Integer.parseInt(player.get(0));
