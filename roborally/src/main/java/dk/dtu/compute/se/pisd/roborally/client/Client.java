@@ -10,21 +10,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import javafx.application.Platform;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import static java.lang.Double.parseDouble;
 
 public class Client {
 
@@ -101,6 +92,8 @@ public class Client {
                 gameInfo.add(numOfPlayers);
                 String maxNumOfPlayers = node.get("maxNumberOfPlayers").asText();
                 gameInfo.add(maxNumOfPlayers);
+                String players = node.get("players").asText();
+                gameInfo.add(players);
                 String turnID = node.get("turnID").asText();
                 gameInfo.add(turnID);
                 result.add(gameInfo);
@@ -370,6 +363,74 @@ public class Client {
             e.printStackTrace();
         }
     }
+    public double getStartSpace(int gameID, int playerID) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/" + playerID + "/getStartSpace"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
+            return parseDouble(jsonResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    public void setAvailableStartSpaces(int gameID, double startSpace) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(startSpace)))
+                    .uri(URI.create(server + "/lobby/" + gameID + "/setAvailableStartSpaces"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public ArrayList<Double> getAvailableStartSpaces(int gameID) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/getAvailableStartSpaces"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
+            ArrayList<Double> startSpaces = objectMapper.readValue(jsonResponse, new TypeReference<ArrayList<Double>>(){});
+            return startSpaces;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public List<Double> getRemovedStartingPlace(int gameID) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/getRemovedStartingPlace"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            ArrayList<Double> startSpaces = new ArrayList<>();
+            if (rootNode != null || rootNode.size() >= 1) {
+                for(JsonNode node : rootNode) {
+                    Double place = node.asDouble();
+                    startSpaces.add(place);
+                }
+            }
+            return startSpaces;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
     public boolean waitForAllUsersChosen(int gameID) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -405,5 +466,36 @@ public class Client {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public CompletableFuture<Boolean> waitForInteraction(int gameID) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .GET()
+                            .uri(URI.create(server + "/lobby/" + gameID + "/allUsersReady"))
+                            .setHeader("Content-Type", "application/json")
+                            .build();
+                    HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+                    boolean allUsersReady = Boolean.parseBoolean(response.body());
+
+                    if (allUsersReady) {
+                        scheduler.shutdown();
+                        future.complete(true);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    future.completeExceptionally(e);
+                }
+            }
+        };
+
+        scheduler.scheduleAtFixedRate(task, 0, 2, TimeUnit.SECONDS);
+        return future;
     }
 }
