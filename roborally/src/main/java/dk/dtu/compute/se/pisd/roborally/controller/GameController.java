@@ -399,6 +399,7 @@ public class GameController {
 
 
     public void startProgrammingPhase() {
+        Client.clearAllMoves(board.getGameId());
         board.setPhase(Phase.PROGRAMMING);
         board.getPriorityAntenna().getActions().get(0).doAction(this, board.getPriorityAntenna());
         board.setCurrentPlayer(board.getPlayer(0));
