@@ -247,13 +247,17 @@ public class GameController {
         if(Client.waitForAllUsersChosen(board.getGameId())){
             waitForAllMovesToBeChosen.setResult(ButtonType.OK);
             waitForAllMovesToBeChosen.close();
-            for(Player player : board.getPlayers()) {
-                ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
-                int i = 0;
-                for(String move : playerMoves){
-                    player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
-                    i++;
-                }
+            setupMoves();
+        }
+    }
+
+    public void setupMoves() {
+        for(Player player : board.getPlayers()) {
+            ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
+            int i = 0;
+            for(String move : playerMoves){
+                player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
+                i++;
             }
         }
     }
@@ -309,6 +313,7 @@ public class GameController {
                         board.setStep(step);
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
+                        Client.incrementPlayersReady(board.getGameId());
                         startProgrammingPhase();
                     }
                 }
@@ -375,6 +380,7 @@ public class GameController {
                     board.setStep(step);
                     board.setCurrentPlayer(board.getPlayer(0));
                 } else {
+                    Client.incrementPlayersReady(board.getGameId());
                     startProgrammingPhase();
                 }
             }
@@ -399,12 +405,11 @@ public class GameController {
 
 
     public void startProgrammingPhase() {
-        Client.clearAllMoves(board.getGameId());
         board.setPhase(Phase.PROGRAMMING);
         board.getPriorityAntenna().getActions().get(0).doAction(this, board.getPriorityAntenna());
         board.setCurrentPlayer(board.getPlayer(0));
         board.setStep(0);
-
+        Client.clearAllMoves(board.getGameId());
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
@@ -499,9 +504,5 @@ public class GameController {
                 command = null;
         }
         return command;
-    }
-
-    public void updateCommandOption(String command) {
-        Client.sendInteraction(board.getGameId(), command);
     }
 }

@@ -33,6 +33,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -205,7 +206,6 @@ public class PlayerView extends Tab implements ViewObserver {
 
             } else if (player.board.getPhase() == Phase.PLAYER_INTERACTION) {
                 if(player.getPlayerID() == gameController.board.getCurrentPlayer().getPlayerID()) {
-                    final String[] chosenMove = new String[1];
                     if (!programPane.getChildren().contains(playerInteractionPanel)) {
                         programPane.getChildren().remove(buttonPanel);
                         programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
@@ -216,26 +216,33 @@ public class PlayerView extends Tab implements ViewObserver {
 
                         Button optionButton = new Button("Left");
                         optionButton.setOnAction( e -> {
-                            gameController.executeCommandOption(Command.LEFT); Client.sendInteraction(gameController.board.getGameId(), "Turn Left");
+                             Client.sendInteraction(gameController.board.getGameId(), player.getPlayerID(), gameController.board.getStep(), "Turn Left"); gameController.executeCommandOption(Command.LEFT);
                         });
                         optionButton.setDisable(false);
                         playerInteractionPanel.getChildren().add(optionButton);
 
                         optionButton = new Button("Right");
                         optionButton.setOnAction( e -> {
-                            gameController.executeCommandOption(Command.RIGHT); Client.sendInteraction(gameController.board.getGameId(), "Turn Right");
+                             Client.sendInteraction(gameController.board.getGameId(), player.getPlayerID(), gameController.board.getStep(), "Turn Right"); gameController.executeCommandOption(Command.RIGHT);
                         });
                         optionButton.setDisable(false);
                         playerInteractionPanel.getChildren().add(optionButton);
                     }
                 } else {
-                    if(Client.waitForInteraction(gameController.board.getGameId())) {
-                        Platform.runLater(() -> {
-                            String chosenMove = Client.getInteraction(gameController.board.getGameId());
-                            Command command = gameController.convertToCommand(chosenMove);
-                            gameController.executeCommandOption(command);
-                        });
-                    }
+                    Client.waitForInteraction(gameController.board.getGameId(), gameController.board.getCurrentPlayer().getPlayerID(), gameController.board.getStep()).thenAccept(allReady -> {
+                        if (allReady) {
+                            gameController.setupMoves();
+                            gameController.board.setPhase(Phase.ACTIVATION);
+                            if(gameController.board.isStepMode()) {
+                                gameController.executeStep();
+                            } else {
+                                gameController.executePrograms();
+                            }
+                        }
+                    }).exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return null;
+                    });
                 }
             }
         }
