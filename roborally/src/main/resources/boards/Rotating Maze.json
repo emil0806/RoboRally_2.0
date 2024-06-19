@@ -271,7 +271,7 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "actions": [
         {
@@ -396,7 +396,7 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "actions": [
         {
@@ -427,7 +427,7 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "actions": [
         {
@@ -506,14 +506,14 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "x": 7,
       "y": 0
     },
     {
       "walls": [
-        "WEST", "SOUTH"
+        "EAST", "SOUTH"
       ],
       "actions": [
         {
