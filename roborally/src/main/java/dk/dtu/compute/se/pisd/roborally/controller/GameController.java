@@ -25,6 +25,7 @@ import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.util.Duration;
@@ -244,15 +245,26 @@ public class GameController {
         Alert waitForAllMovesToBeChosen = new Alert(Alert.AlertType.WARNING);
         waitForAllMovesToBeChosen.setTitle("RoboRally");
         waitForAllMovesToBeChosen.setHeaderText(null);
-        waitForAllMovesToBeChosen.setContentText("Waiting for all players to choose their moves");
         waitForAllMovesToBeChosen.getDialogPane().getButtonTypes().clear();
-        waitForAllMovesToBeChosen.setOnCloseRequest(e -> waitForAllMovesToBeChosen.close());
+        waitForAllMovesToBeChosen.setContentText("Waiting for all players to choose their moves");
         waitForAllMovesToBeChosen.show();
-        if(Client.waitForAllUsersChosen(board.getGameId())){
-            waitForAllMovesToBeChosen.setResult(ButtonType.OK);
-            waitForAllMovesToBeChosen.close();
-            setupMoves();
-        }
+
+        new Thread(() -> {
+            if(Client.waitForAllUsersChosen(board.getGameId())){
+                Platform.runLater(() -> {
+                    waitForAllMovesToBeChosen.setResult(ButtonType.OK);
+                    waitForAllMovesToBeChosen.close();
+                    for(Player player : board.getPlayers()) {
+                        ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
+                        int i = 0;
+                        for(String move : playerMoves){
+                            player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
+                            i++;
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
     public void setupMoves() {
