@@ -23,7 +23,6 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.client.Client;
-import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.application.Platform;
@@ -32,9 +31,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -172,6 +168,9 @@ public class PlayerView extends Tab implements ViewObserver {
                     programPane.getChildren().remove(playerInteractionPanel);
                     programPane.add(buttonPanel, Player.NO_REGISTERS, 0);
                 }
+
+                cancelTimer();
+
                 switch (player.board.getPhase()) {
                     case INITIALISATION:
                         finishButton.setDisable(true);
@@ -198,7 +197,6 @@ public class PlayerView extends Tab implements ViewObserver {
                         break;
 
                     case ACTIVATION:
-                        timer.cancel();
                         finishButton.setDisable(true);
                         executeButton.setDisable(false);
                         stepButton.setDisable(false);
@@ -252,6 +250,10 @@ public class PlayerView extends Tab implements ViewObserver {
                 }
             }
         }
+        if (timer != null && player.board.getPhase() != Phase.PROGRAMMING) {
+            timer.cancel();
+        }
+
     }
     private boolean allProgramSlotsFilled() {
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
@@ -260,5 +262,12 @@ public class PlayerView extends Tab implements ViewObserver {
             }
         }
         return true;
+    }
+
+    public void cancelTimer() {
+        if(timer != null){
+            timer.cancel();
+            timer = null;
+        }
     }
 }

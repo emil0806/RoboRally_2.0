@@ -25,6 +25,7 @@ import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.util.Duration;
@@ -50,9 +51,13 @@ public class GameController {
         if (player.board == board) {
             Space space = player.getSpace();
             Heading heading = player.getHeading();
-
             Space target = board.getNeighbour(space, heading);
-            if (target != null) {
+
+            if(board.isOutOfMap(space, heading)){
+                moveCurrentPlayerToSpace(player.getStartSpace());
+                player.setHeading(Heading.SOUTH);
+            }
+            else if (target != null) {
                 try {
                     moveToSpace(player, target, heading);
                 } catch (ImpossibleMoveException e) {
@@ -190,7 +195,7 @@ public class GameController {
      * //@author David Wellejus, s220218@dtu.dk
      * //@param space player who should be moved
      */
-    /*public void moveCurrentPlayerToSpace(@NotNull Space space)  {
+    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
         if(space.getPlayer() == null){
             Player currentPlayer = board.getCurrentPlayer();
 
@@ -201,11 +206,11 @@ public class GameController {
             currentPlayer.setSpace(space);
             space.setPlayer(currentPlayer);
 
-            int nextPlayerNumber = (board.getPlayerNumber(currentPlayer) + 1) % board.getPlayersNumber();
-
-            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+//            int nextPlayerNumber = (board.getPlayerNumber(currentPlayer) + 1) % board.getPlayersNumber();
+//
+//            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
         }
-    }*/
+    }
 
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NO_REGISTERS) {
@@ -242,17 +247,28 @@ public class GameController {
         }
 
         Alert waitForAllMovesToBeChosen = new Alert(Alert.AlertType.WARNING);
-        waitForAllMovesToBeChosen.setTitle("GameID: " + board.getGameId());
+        waitForAllMovesToBeChosen.setTitle("RoboRally");
         waitForAllMovesToBeChosen.setHeaderText(null);
-        waitForAllMovesToBeChosen.setContentText("Waiting for all players to choose their moves");
         waitForAllMovesToBeChosen.getDialogPane().getButtonTypes().clear();
-        waitForAllMovesToBeChosen.setOnCloseRequest(e -> waitForAllMovesToBeChosen.close());
+        waitForAllMovesToBeChosen.setContentText("Waiting for all players to choose their moves");
         waitForAllMovesToBeChosen.show();
-        if(Client.waitForAllUsersChosen(board.getGameId())){
-            waitForAllMovesToBeChosen.setResult(ButtonType.OK);
-            waitForAllMovesToBeChosen.close();
-            setupMoves();
-        }
+
+        new Thread(() -> {
+            if(Client.waitForAllUsersChosen(board.getGameId())){
+                Platform.runLater(() -> {
+                    waitForAllMovesToBeChosen.setResult(ButtonType.OK);
+                    waitForAllMovesToBeChosen.close();
+                    for(Player player : board.getPlayers()) {
+                        ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
+                        int i = 0;
+                        for(String move : playerMoves){
+                            player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
+                            i++;
+                        }
+                    }
+                });
+            }
+        }).start();
     }
 
     public void setupMoves() {
