@@ -23,7 +23,6 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.client.Client;
-import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.application.Platform;
@@ -32,8 +31,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -66,6 +63,8 @@ public class PlayerView extends Tab implements ViewObserver {
     private VBox playerInteractionPanel;
 
     private GameController gameController;
+    private Timer timer;
+    private TimerTask task;
 
     public PlayerView(@NotNull GameController gameController, @NotNull Player player) {
         super(player.getName());
@@ -169,6 +168,9 @@ public class PlayerView extends Tab implements ViewObserver {
                     programPane.getChildren().remove(playerInteractionPanel);
                     programPane.add(buttonPanel, Player.NO_REGISTERS, 0);
                 }
+
+                cancelTimer();
+
                 switch (player.board.getPhase()) {
                     case INITIALISATION:
                         finishButton.setDisable(true);
@@ -179,14 +181,17 @@ public class PlayerView extends Tab implements ViewObserver {
                         break;
 
                     case PROGRAMMING:
-                        Timer timer = new Timer();
-                        TimerTask task = new TimerTask() {
+                        timer = new Timer();
+                        task = new TimerTask() {
                             @Override
                             public void run() {
-                                finishButton.setDisable(!allProgramSlotsFilled());
+                                Platform.runLater(() -> {
+                                    finishButton.setDisable(!allProgramSlotsFilled());
+                                });
                             }
                         };
                         timer.schedule(task, 0, 500);
+
                         executeButton.setDisable(true);
                         stepButton.setDisable(true);
                         break;
@@ -205,7 +210,6 @@ public class PlayerView extends Tab implements ViewObserver {
 
             } else if (player.board.getPhase() == Phase.PLAYER_INTERACTION) {
                 if(player.getPlayerID() == gameController.board.getCurrentPlayer().getPlayerID()) {
-                    final String[] chosenMove = new String[1];
                     if (!programPane.getChildren().contains(playerInteractionPanel)) {
                         programPane.getChildren().remove(buttonPanel);
                         programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
@@ -216,29 +220,51 @@ public class PlayerView extends Tab implements ViewObserver {
 
                         Button optionButton = new Button("Left");
                         optionButton.setOnAction( e -> {
-                            gameController.executeCommandOption(Command.LEFT); Client.sendInteraction(gameController.board.getGameId(), "Turn Left");
+                             Client.sendInteraction(gameController.board.getGameId(), player.getPlayerID(), gameController.board.getStep(), "Turn Left"); gameController.executeCommandOption(Command.LEFT);
                         });
                         optionButton.setDisable(false);
                         playerInteractionPanel.getChildren().add(optionButton);
 
                         optionButton = new Button("Right");
                         optionButton.setOnAction( e -> {
-                            gameController.executeCommandOption(Command.RIGHT); Client.sendInteraction(gameController.board.getGameId(), "Turn Right");
+                             Client.sendInteraction(gameController.board.getGameId(), player.getPlayerID(), gameController.board.getStep(), "Turn Right"); gameController.executeCommandOption(Command.RIGHT);
                         });
                         optionButton.setDisable(false);
                         playerInteractionPanel.getChildren().add(optionButton);
                     }
                 } else {
-                    if(Client.waitForInteraction(gameController.board.getGameId())) {
-                        Platform.runLater(() -> {
-                            String chosenMove = Client.getInteraction(gameController.board.getGameId());
-                            Command command = gameController.convertToCommand(chosenMove);
-                            gameController.executeCommandOption(command);
-                        });
-                    }
+                    Alert waitingForInteraction = new Alert(Alert.AlertType.WARNING);
+                    waitingForInteraction.setTitle("RoboRally");
+                    waitingForInteraction.setHeaderText(null);
+                    waitingForInteraction.getDialogPane().getButtonTypes().clear();  // Remove all buttons
+                    waitingForInteraction.setContentText("Waiting for an opponent to choose interaction");
+                    waitingForInteraction.show();
+
+                    Client.waitForInteraction(gameController.board.getGameId(), gameController.board.getCurrentPlayer().getPlayerID(), gameController.board.getStep()).thenAccept(allReady -> {
+                        if (allReady) {
+                            Platform.runLater(() -> {
+                                waitingForInteraction.setResult(ButtonType.OK);
+                                waitingForInteraction.close();
+                                gameController.setupMoves();
+                                gameController.board.setPhase(Phase.ACTIVATION);
+                                if (gameController.board.isStepMode()) {
+                                    gameController.executeStep();
+                                } else {
+                                    gameController.executePrograms();
+                                }
+                            });
+                        }
+                    }).exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return null;
+                    });
                 }
             }
         }
+        if (timer != null && player.board.getPhase() != Phase.PROGRAMMING) {
+            timer.cancel();
+        }
+
     }
     private boolean allProgramSlotsFilled() {
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
@@ -247,5 +273,12 @@ public class PlayerView extends Tab implements ViewObserver {
             }
         }
         return true;
+    }
+
+    public void cancelTimer() {
+        if(timer != null){
+            timer.cancel();
+            timer = null;
+        }
     }
 }

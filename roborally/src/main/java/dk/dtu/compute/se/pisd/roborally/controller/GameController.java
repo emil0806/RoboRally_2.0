@@ -25,6 +25,7 @@ import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.util.Duration;
@@ -50,9 +51,13 @@ public class GameController {
         if (player.board == board) {
             Space space = player.getSpace();
             Heading heading = player.getHeading();
-
             Space target = board.getNeighbour(space, heading);
-            if (target != null) {
+
+            if(board.isOutOfMap(space, heading)){
+                moveCurrentPlayerToSpace(player.getStartSpace());
+                player.setHeading(Heading.SOUTH);
+            }
+            else if (target != null) {
                 try {
                     moveToSpace(player, target, heading);
                 } catch (ImpossibleMoveException e) {
@@ -147,11 +152,15 @@ public class GameController {
             int j = 0;
             if(player.getProgramField(i - 1).getCard() != null) {
                 if(player.getProgramField(i - 1).getCard().command == Command.OPTION_LEFT_RIGHT) {
-                    board.setPhase(Phase.PLAYER_INTERACTION);
+                    setupMoves();
                 }
                 while (player.getProgramField(i).getCard().command == Command.AGAIN && board.getStep() != 0) {
-                    i--;
-                    j++;
+                    if(i > 0) {
+                        i--;
+                        j++;
+                    } else {
+                        return;
+                    }
                 }
                 executeCommand(player, player.getProgramField(board.getStep() - j).getCard().command);
             }
@@ -183,8 +192,8 @@ public class GameController {
 
     /**
      * ...
-     * @author David Wellejus, s220218@dtu.dk
-     * @param space player who should be moved
+     * //@author David Wellejus, s220218@dtu.dk
+     * //@param space player who should be moved
      */
     public void moveCurrentPlayerToSpace(@NotNull Space space)  {
         if(space.getPlayer() == null){
@@ -197,9 +206,9 @@ public class GameController {
             currentPlayer.setSpace(space);
             space.setPlayer(currentPlayer);
 
-            int nextPlayerNumber = (board.getPlayerNumber(currentPlayer) + 1) % board.getPlayersNumber();
-
-            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+//            int nextPlayerNumber = (board.getPlayerNumber(currentPlayer) + 1) % board.getPlayersNumber();
+//
+//            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
         }
     }
 
@@ -238,22 +247,37 @@ public class GameController {
         }
 
         Alert waitForAllMovesToBeChosen = new Alert(Alert.AlertType.WARNING);
-        waitForAllMovesToBeChosen.setTitle("GameID: " + board.getGameId());
-        waitForAllMovesToBeChosen.setHeaderText("");
-        waitForAllMovesToBeChosen.setContentText("Waiting for all players to choose their moves");
+        waitForAllMovesToBeChosen.setTitle("RoboRally");
+        waitForAllMovesToBeChosen.setHeaderText(null);
         waitForAllMovesToBeChosen.getDialogPane().getButtonTypes().clear();
-        waitForAllMovesToBeChosen.setOnCloseRequest(e -> waitForAllMovesToBeChosen.close());
+        waitForAllMovesToBeChosen.setContentText("Waiting for all players to choose their moves");
         waitForAllMovesToBeChosen.show();
-        if(Client.waitForAllUsersChosen(board.getGameId())){
-            waitForAllMovesToBeChosen.setResult(ButtonType.OK);
-            waitForAllMovesToBeChosen.close();
-            for(Player player : board.getPlayers()) {
-                ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
-                int i = 0;
-                for(String move : playerMoves){
-                    player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
-                    i++;
-                }
+
+        new Thread(() -> {
+            if(Client.waitForAllUsersChosen(board.getGameId())){
+                Platform.runLater(() -> {
+                    waitForAllMovesToBeChosen.setResult(ButtonType.OK);
+                    waitForAllMovesToBeChosen.close();
+                    for(Player player : board.getPlayers()) {
+                        ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
+                        int i = 0;
+                        for(String move : playerMoves){
+                            player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
+                            i++;
+                        }
+                    }
+                });
+            }
+        }).start();
+    }
+
+    public void setupMoves() {
+        for(Player player : board.getPlayers()) {
+            ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
+            int i = 0;
+            for(String move : playerMoves){
+                player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
+                i++;
             }
         }
     }
@@ -309,6 +333,7 @@ public class GameController {
                         board.setStep(step);
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
+                        Client.incrementPlayersReady(board.getGameId());
                         startProgrammingPhase();
                     }
                 }
@@ -375,6 +400,7 @@ public class GameController {
                     board.setStep(step);
                     board.setCurrentPlayer(board.getPlayer(0));
                 } else {
+                    Client.incrementPlayersReady(board.getGameId());
                     startProgrammingPhase();
                 }
             }
@@ -403,7 +429,7 @@ public class GameController {
         board.getPriorityAntenna().getActions().get(0).doAction(this, board.getPriorityAntenna());
         board.setCurrentPlayer(board.getPlayer(0));
         board.setStep(0);
-
+        Client.clearAllMoves(board.getGameId());
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
@@ -498,9 +524,5 @@ public class GameController {
                 command = null;
         }
         return command;
-    }
-
-    public void updateCommandOption(String command) {
-        Client.sendInteraction(board.getGameId(), command);
     }
 }

@@ -281,4 +281,26 @@ public class Board extends Subject {
     public void setMyPlayerID(int playerID) {
         this.myPlayerID = playerID;
     }
+
+    public boolean isOutOfMap(Space space, Heading heading) {
+        int newX = space.x;
+        int newY = space.y;
+
+        switch (heading) {
+            case NORTH:
+                newY -= 1;
+                break;
+            case SOUTH:
+                newY += 1;
+                break;
+            case EAST:
+                newX += 1;
+                break;
+            case WEST:
+                newX -= 1;
+                break;
+        }
+
+        return (newX < 0 || newX >= width || newY < 0 || newY >= height);
+    }
 }

@@ -27,6 +27,7 @@ import dk.dtu.compute.se.pisd.roborally.view.BoardView;
 import dk.dtu.compute.se.pisd.roborally.view.LobbyView;
 import dk.dtu.compute.se.pisd.roborally.view.RoboRallyMenuBar;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -66,10 +67,11 @@ public class RoboRally extends Application {
         boardRoot = new BorderPane();
         lobbyView = new LobbyView(appController);
         boardRoot.setCenter(lobbyView);
-        VBox vbox = new VBox(menuBar, boardRoot);
+        VBox gameVbox = new VBox(boardRoot);
+        gameVbox.setPadding(new Insets(10,10,10,10));
+        VBox vbox = new VBox(menuBar, gameVbox);
         vbox.setMinWidth(MIN_APP_WIDTH);
         Scene primaryScene = new Scene(vbox);
-
         stage.setScene(primaryScene);
         stage.setTitle("RoboRally");
         stage.setOnCloseRequest(
@@ -78,6 +80,8 @@ public class RoboRally extends Application {
                     appController.exit();} );
         stage.setResizable(false);
         stage.sizeToScene();
+        stage.setX(0);
+        stage.setY(0);
         stage.show();
     }
 
