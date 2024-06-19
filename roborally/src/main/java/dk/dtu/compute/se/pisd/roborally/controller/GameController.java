@@ -147,11 +147,15 @@ public class GameController {
             int j = 0;
             if(player.getProgramField(i - 1).getCard() != null) {
                 if(player.getProgramField(i - 1).getCard().command == Command.OPTION_LEFT_RIGHT) {
-                    board.setPhase(Phase.PLAYER_INTERACTION);
+                    setupMoves();
                 }
                 while (player.getProgramField(i).getCard().command == Command.AGAIN && board.getStep() != 0) {
-                    i--;
-                    j++;
+                    if(i > 0) {
+                        i--;
+                        j++;
+                    } else {
+                        return;
+                    }
                 }
                 executeCommand(player, player.getProgramField(board.getStep() - j).getCard().command);
             }
@@ -183,10 +187,10 @@ public class GameController {
 
     /**
      * ...
-     * @author David Wellejus, s220218@dtu.dk
-     * @param space player who should be moved
+     * //@author David Wellejus, s220218@dtu.dk
+     * //@param space player who should be moved
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
+    /*public void moveCurrentPlayerToSpace(@NotNull Space space)  {
         if(space.getPlayer() == null){
             Player currentPlayer = board.getCurrentPlayer();
 
@@ -201,7 +205,7 @@ public class GameController {
 
             board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
         }
-    }
+    }*/
 
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NO_REGISTERS) {

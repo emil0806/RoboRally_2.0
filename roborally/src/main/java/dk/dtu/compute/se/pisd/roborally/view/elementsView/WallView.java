@@ -25,10 +25,10 @@ public class WallView {
             for(Heading heading : spaceView.space.getWalls()) {
                 switch (heading) {
                     case EAST:
-                        context.drawImage(wallImage, 0,0);
+                        context.drawImage(wallImage, 50,0);
                         break;
                     case WEST:
-                        context.drawImage(wallImage, 50,0);
+                        context.drawImage(wallImage, 0,0);
                         break;
                     case SOUTH:
                         wallImageView.setRotate(90);
