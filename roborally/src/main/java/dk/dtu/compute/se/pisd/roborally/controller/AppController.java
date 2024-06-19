@@ -161,10 +161,10 @@ public class AppController implements Observer {
             board.setMyPlayerID(myPlayerID);
         }
 
-        for(int i = 0; i < board.width; i++) {
-            for(int j = 0; j < board.height; j++) {
-                for(FieldAction fieldAction : board.getSpace(i, j).getActions()) {
-                    if(fieldAction instanceof PriorityAntenna) {
+        for (int i = 0; i < board.width; i++) {
+            for (int j = 0; j < board.height; j++) {
+                for (FieldAction fieldAction : board.getSpace(i, j).getActions()) {
+                    if (fieldAction instanceof PriorityAntenna) {
                         board.setPriorityAntenna(board.getSpace(i, j));
                     }
                 }
@@ -199,6 +199,7 @@ public class AppController implements Observer {
                     int currentTurnPlayerID = sortedPlayers.get(Client.getTurnID(gameID)).getKey();
 
                     if (currentTurnPlayerID == myPlayerID) {
+                        waitingForStartPosition.setSelectedItem(Client.getAvailableStartSpaces(gameID).get(0));
                         waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
                         waitingForStartPosition.setContentText("It is your turn to choose");
                         waitingForStartPosition.setTitle("Choose place to start");
