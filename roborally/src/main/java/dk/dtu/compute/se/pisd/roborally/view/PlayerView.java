@@ -241,10 +241,10 @@ public class PlayerView extends Tab implements ViewObserver {
                     waitingForInteraction.show();
 
                     Client.waitForInteraction(gameController.board.getGameId(), gameController.board.getCurrentPlayer().getPlayerID(), gameController.board.getStep()).thenAccept(allReady -> {
-                        Platform.runLater(() -> {
-                            waitingForInteraction.close();  // Close the alert
-
-                            if (allReady) {
+                        if (allReady) {
+                            Platform.runLater(() -> {
+                                waitingForInteraction.setResult(ButtonType.OK);
+                                waitingForInteraction.close();
                                 gameController.setupMoves();
                                 gameController.board.setPhase(Phase.ACTIVATION);
                                 if (gameController.board.isStepMode()) {
@@ -252,10 +252,9 @@ public class PlayerView extends Tab implements ViewObserver {
                                 } else {
                                     gameController.executePrograms();
                                 }
-                            }
-                        });
+                            });
+                        }
                     }).exceptionally(ex -> {
-                        Platform.runLater(() -> waitingForInteraction.close());
                         ex.printStackTrace();
                         return null;
                     });
