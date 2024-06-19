@@ -233,17 +233,29 @@ public class PlayerView extends Tab implements ViewObserver {
                         playerInteractionPanel.getChildren().add(optionButton);
                     }
                 } else {
+                    Alert waitingForInteraction = new Alert(Alert.AlertType.WARNING);
+                    waitingForInteraction.setTitle("RoboRally");
+                    waitingForInteraction.setHeaderText(null);
+                    waitingForInteraction.getDialogPane().getButtonTypes().clear();  // Remove all buttons
+                    waitingForInteraction.setContentText("Waiting for an opponent to choose interaction");
+                    waitingForInteraction.show();
+
                     Client.waitForInteraction(gameController.board.getGameId(), gameController.board.getCurrentPlayer().getPlayerID(), gameController.board.getStep()).thenAccept(allReady -> {
-                        if (allReady) {
-                            gameController.setupMoves();
-                            gameController.board.setPhase(Phase.ACTIVATION);
-                            if(gameController.board.isStepMode()) {
-                                gameController.executeStep();
-                            } else {
-                                gameController.executePrograms();
+                        Platform.runLater(() -> {
+                            waitingForInteraction.close();  // Close the alert
+
+                            if (allReady) {
+                                gameController.setupMoves();
+                                gameController.board.setPhase(Phase.ACTIVATION);
+                                if (gameController.board.isStepMode()) {
+                                    gameController.executeStep();
+                                } else {
+                                    gameController.executePrograms();
+                                }
                             }
-                        }
+                        });
                     }).exceptionally(ex -> {
+                        Platform.runLater(() -> waitingForInteraction.close());
                         ex.printStackTrace();
                         return null;
                     });
