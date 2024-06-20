@@ -47,13 +47,13 @@
       "y": 2
     },
     {
-      "walls": ["WEST"],
+      "walls": ["EAST"],
       "actions": [],
       "x": 2,
       "y": 4
     },
     {
-      "walls": ["WEST"],
+      "walls": ["EAST"],
       "actions": [],
       "x": 2,
       "y": 5
@@ -447,7 +447,7 @@
     },
     {
       "walls": [
-        "EAST"
+        "WEST"
       ],
       "actions": [
         {
@@ -463,7 +463,7 @@
     },
     {
       "walls": [
-        "EAST"
+        "WEST"
       ],
       "actions": [
         {
@@ -479,7 +479,7 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "actions": [
         {
@@ -511,7 +511,7 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "actions": [
         {
@@ -527,7 +527,7 @@
     },
     {
       "walls": [
-        "EAST"
+        "WEST"
       ],
       "actions": [
         {
@@ -559,7 +559,7 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "actions": [
         {
@@ -575,7 +575,7 @@
     },
     {
       "walls": [
-        "EAST"
+        "WEST"
       ],
       "actions": [
         {
@@ -607,7 +607,7 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "actions": [
         {
@@ -623,7 +623,7 @@
     },
     {
       "walls": [
-        "WEST"
+        "EAST"
       ],
       "actions": [
         {
@@ -813,7 +813,7 @@
       "y": 0
     },
     {
-      "walls": ["WEST"],
+      "walls": ["EAST"],
       "x": 4,
       "y": 6
     },
@@ -823,7 +823,7 @@
       "y": 1
     },
     {
-      "walls": ["EAST"],
+      "walls": ["WEST"],
       "x": 7,
       "y": 5
     },
@@ -833,7 +833,7 @@
       "y": 8
     },
     {
-      "walls": ["EAST"],
+      "walls": ["WEST"],
       "x": 11,
       "y": 3
     }

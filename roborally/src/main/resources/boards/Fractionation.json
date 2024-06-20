@@ -46,12 +46,12 @@
       "y": 2
     },
     {
-      "walls": ["WEST"],
+      "walls": ["EAST"],
       "x": 2,
       "y": 4
     },
     {
-      "walls": ["WEST"],
+      "walls": ["EAST"],
       "x": 2,
       "y": 5
     },
