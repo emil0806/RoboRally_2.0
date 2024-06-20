@@ -113,7 +113,7 @@ public class Client {
         jsonObject.addProperty("name", name);
         jsonObject.addProperty("age", age);
         jsonObject.addProperty("startSpace", "null");
-        jsonObject.addProperty("round", 0);
+        //jsonObject.addProperty("round", 0);
         String json = gson.toJson(jsonObject);
         try {
             HttpRequest request = HttpRequest.newBuilder()
