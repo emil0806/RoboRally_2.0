@@ -181,6 +181,42 @@ public class PlayerView extends Tab implements ViewObserver {
                         break;
 
                     case PROGRAMMING:
+
+                        /*if(player.getPlayerID() != gameController.board.getCurrentPlayer().getPlayerID()){
+                            Alert waitingForSameRound = new Alert(Alert.AlertType.WARNING);
+                            waitingForSameRound.setTitle("RoboRally");
+                            waitingForSameRound.setHeaderText(null);
+                            waitingForSameRound.getDialogPane().getButtonTypes().clear();
+                            waitingForSameRound.setContentText("Waiting for all opponents to finish this round");
+                            waitingForSameRound.show();
+
+                            Client.allPlayersAtSameRound(gameController.board.getGameId()).thenAccept(allReady -> {
+                                if (allReady) {
+                                    Platform.runLater(() -> {
+                                        waitingForSameRound.setResult(ButtonType.OK);
+                                        waitingForSameRound.close();
+                                        timer = new Timer();
+                                        task = new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                Platform.runLater(() -> {
+                                                    finishButton.setDisable(!allProgramSlotsFilled());
+                                                });
+                                            }
+                                        };
+                                        timer.schedule(task, 0, 500);
+
+                                        executeButton.setDisable(true);
+                                        stepButton.setDisable(true);
+
+
+                                    });
+                                }
+                            }).exceptionally(ex -> {
+                                ex.printStackTrace();
+                                return null;
+                            });
+                        }*/
                         timer = new Timer();
                         task = new TimerTask() {
                             @Override
