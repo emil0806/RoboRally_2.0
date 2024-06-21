@@ -53,7 +53,7 @@ public class GameController {
             Heading heading = player.getHeading();
             Space target = board.getNeighbour(space, heading);
 
-            if(board.isOutOfMap(space, heading)){
+            if(board.isOutOfMap(space, heading) || board.isPit(space, heading)){
                 moveCurrentPlayerToSpace(player.getStartSpace());
                 player.setHeading(Heading.SOUTH);
             }

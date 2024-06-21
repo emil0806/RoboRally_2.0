@@ -55,6 +55,7 @@ public class Player extends Subject {
     private int distanceToPriorityAntenna;
 
     private Space startSpace;
+    //private int round;
 
     public Player(@NotNull Board board, String color, @NotNull String name, int playerID) {
         this.board = board;
@@ -183,4 +184,12 @@ public class Player extends Subject {
         }
         return chosenMoves;
     }
+
+//    public void incrementRound(){
+//        this.round++;
+//    }
+//
+//    public int getRound(){
+//        return this.round;
+//    }
 }
