@@ -1,6 +1,7 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.controller.AppController;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import javafx.geometry.Pos;
@@ -64,6 +65,9 @@ public class LobbyView extends VBox implements ViewObserver {
             gameButtonBox.setAlignment(Pos.CENTER);
             Button joinGameButton = new Button("Join Game");
             joinGameButton.setOnAction(e -> this.appController.joinGame(Integer.parseInt(game.get(0))));
+            if(Client.getNumOfPlayers(Integer.parseInt(game.get(0))) == Client.getMaxNumOfPlayers(Integer.parseInt(game.get(0)))) {
+                joinGameButton.setDisable(true);
+            }
             gameButtonBox.getChildren().add(joinGameButton);
 
             gameInfoBox.getChildren().addAll(gameIdText, boardNameText, playersText);

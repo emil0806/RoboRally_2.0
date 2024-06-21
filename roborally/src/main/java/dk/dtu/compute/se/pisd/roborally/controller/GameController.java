@@ -456,7 +456,7 @@ public class GameController {
             if(player.getCheckpoints() == board.getNumOfCheckpoints()) {
                 board.setPhase(Phase.FINISHED);
                 board.setWinner(player);
-                AppController.showWinner(player.getName());
+                AppController.showWinner(player, board);
                 return true;
             }
         }
