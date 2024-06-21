@@ -11,7 +11,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -20,7 +19,7 @@ import static java.lang.Double.parseDouble;
 public class Client {
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
-    private static String server = "http://localhost:8080";
+    private static final String server = "http://localhost:8080";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

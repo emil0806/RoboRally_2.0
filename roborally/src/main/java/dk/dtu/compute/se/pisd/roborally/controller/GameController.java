@@ -23,14 +23,10 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 
 /**
@@ -61,9 +57,7 @@ public class GameController {
                 try {
                     moveToSpace(player, target, heading);
                 } catch (ImpossibleMoveException e) {
-                    // we don't do anything here  for now; we just catch the
-                    // exception so that we do no pass it on to the caller
-                    // (which would be very bad style).
+                    e.printStackTrace();
                 }
             }
         }
@@ -75,8 +69,15 @@ public class GameController {
      * @param player player who should be moved
      */
     public void fastForward(@NotNull Player player) {
-        moveForward(player);
-        moveForward(player);
+        if(!board.isPit(player.getSpace(), player.getHeading())){
+            moveForward(player);
+        }
+        if(!board.isPit(player.getSpace(), player.getHeading())){
+            moveForward(player);
+        }else {
+            moveCurrentPlayerToSpace(player.getStartSpace());
+            player.setHeading(Heading.SOUTH);
+        }
     }
 
     /**
@@ -103,9 +104,18 @@ public class GameController {
      * @param player player who should move three forward
      */
     public void fastThreeForward(@NotNull Player player) {
-        moveForward(player);
-        moveForward(player);
-        moveForward(player);
+        if(!board.isPit(player.getSpace(), player.getHeading())){
+            moveForward(player);
+        }
+        if(!board.isPit(player.getSpace(), player.getHeading())){
+            moveForward(player);
+        }
+        if(!board.isPit(player.getSpace(), player.getHeading())){
+            moveForward(player);
+        }else {
+            moveCurrentPlayerToSpace(player.getStartSpace());
+            player.setHeading(Heading.SOUTH);
+        }
     }
 
     /**
@@ -169,22 +179,15 @@ public class GameController {
 
 
     public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
-        assert board.getNeighbour(player.getSpace(), heading) == space; // make sure the move to here is possible in principle
+        assert board.getNeighbour(player.getSpace(), heading) == space;
         Player other = space.getPlayer();
         if (other != null){
             Space target = board.getNeighbour(space, heading);
             if (target != null) {
-                // XXX Note that there might be additional problems with
-                //     infinite recursion here (in some special cases)!
-                //     We will come back to that!
                 moveToSpace(other, target, heading);
-
-                // Note that we do NOT embed the above statement in a try catch block, since
-                // the thrown exception is supposed to be passed on to the caller
-
-                assert target.getPlayer() == null : target; // make sure target is free now
+                assert target.getPlayer() == null : target;
             } else {
-                throw new ImpossibleMoveException(player, space, heading);
+                throw new ImpossibleMoveException();
             }
         }
         player.setSpace(space);
@@ -202,13 +205,8 @@ public class GameController {
             if(currentPlayer.getSpace() != null){
                 currentPlayer.getSpace().setPlayer(null);
             }
-
             currentPlayer.setSpace(space);
             space.setPlayer(currentPlayer);
-
-//            int nextPlayerNumber = (board.getPlayerNumber(currentPlayer) + 1) % board.getPlayersNumber();
-//
-//            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
         }
     }
 
@@ -261,6 +259,7 @@ public class GameController {
                     for(Player player : board.getPlayers()) {
                         ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
                         int i = 0;
+                        assert playerMoves != null;
                         for(String move : playerMoves){
                             player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
                             i++;
@@ -275,6 +274,7 @@ public class GameController {
         for(Player player : board.getPlayers()) {
             ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
             int i = 0;
+            assert playerMoves != null;
             for(String move : playerMoves){
                 player.getProgramField(i).setCard(new CommandCard(convertToCommand(move)));
                 i++;
@@ -348,11 +348,7 @@ public class GameController {
     }
 
     private void executeCommand(@NotNull Player player, Command command) {
-        if (player != null && player.board == board && command != null) {
-            // XXX This is a very simplistic way of dealing with some basic cards and
-            //     their execution. This should eventually be done in a more elegant way
-            //     (this concerns the way cards are modelled as well as the way they are executed).
-
+        if (player.board == board && command != null) {
             switch (command) {
                 case FORWARD:
                     this.moveForward(player);
@@ -387,7 +383,7 @@ public class GameController {
     public void executeCommandOption(@NotNull Command option) {
         Player currentPlayer = board.getCurrentPlayer();
         int step = board.getStep();
-        if(currentPlayer != null && option != null && board.getPhase() == Phase.PLAYER_INTERACTION) {
+        if(currentPlayer != null && board.getPhase() == Phase.PLAYER_INTERACTION) {
             board.setPhase(Phase.ACTIVATION);
             executeCommand(currentPlayer, option);
             int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
@@ -408,9 +404,7 @@ public class GameController {
                 continuePrograms();
             }
         }
-
     }
-
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -422,8 +416,6 @@ public class GameController {
             return false;
         }
     }
-
-
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
         board.getPriorityAntenna().getActions().get(0).doAction(this, board.getPriorityAntenna());
@@ -452,28 +444,10 @@ public class GameController {
         int random = (int) (Math.random() * commands.length);
         return new CommandCard(commands[random]);
     }
+    static class ImpossibleMoveException extends Exception {
 
-    /**
-     * A method called when no corresponding controller operation is implemented yet. This
-     * should eventually be removed.
-     */
-    public void notImplemented() {
-        // XXX just for now to indicate that the actual method is not yet implemented
-        assert false;
-    }
-
-
-    class ImpossibleMoveException extends Exception {
-
-        private Player player;
-        private Space space;
-        private Heading heading;
-
-        public ImpossibleMoveException(Player player, Space space, Heading heading) {
+        public ImpossibleMoveException() {
             super("Move impossible");
-            this.player = player;
-            this.space = space;
-            this.heading = heading;
         }
     }
 
@@ -488,41 +462,19 @@ public class GameController {
         }
         return false;
     }
-
     public Command convertToCommand(String move){
 
-        Command command;
-        switch (move) {
-            case "Fwd":
-                command = Command.FORWARD;
-                break;
-            case "Turn Right":
-                command = Command.RIGHT;
-                break;
-            case "Turn Left":
-                command = Command.LEFT;
-                break;
-            case "Fast Fwd":
-                command = Command.FAST_FORWARD;
-                break;
-            case "Fast 3 Fwd":
-                command = Command.FAST_THREE_FORWARD;
-                break;
-            case "Move back":
-                command = Command.BACKWARD;
-                break;
-            case "Make a U-Turn":
-                command = Command.U_TURN;
-                break;
-            case "Repeat programming of previous register":
-                command = Command.AGAIN;
-                break;
-            case "Left OR Right":
-                command = Command.OPTION_LEFT_RIGHT;
-                break;
-            default:
-                command = null;
-        }
-        return command;
+        return switch (move) {
+            case "Fwd" -> Command.FORWARD;
+            case "Turn Right" -> Command.RIGHT;
+            case "Turn Left" -> Command.LEFT;
+            case "Fast Fwd" -> Command.FAST_FORWARD;
+            case "Fast 3 Fwd" -> Command.FAST_THREE_FORWARD;
+            case "Move back" -> Command.BACKWARD;
+            case "Make a U-Turn" -> Command.U_TURN;
+            case "Repeat programming of previous register" -> Command.AGAIN;
+            case "Left OR Right" -> Command.OPTION_LEFT_RIGHT;
+            default -> null;
+        };
     }
 }
