@@ -34,6 +34,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.Duration;
@@ -54,6 +55,7 @@ public class AppController implements Observer {
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
     final private List<String> boardNames = Arrays.asList("Rotating Maze", "High Octane", "Fractionation", "Death Trap");
     final private RoboRally roboRally;
+    private int count = 0;
 
     private GameController gameController;
 
@@ -195,13 +197,24 @@ public class AppController implements Observer {
                     int currentTurnPlayerID = sortedPlayers.get(Client.getTurnID(gameID)).getKey();
 
                     if (currentTurnPlayerID == myPlayerID) {
-                        waitingForStartPosition.setSelectedItem(Client.getAvailableStartSpaces(gameID).get(0));
+                        if (count == 0){
+                            waitingForStartPosition.setSelectedItem(Client.getAvailableStartSpaces(gameID).get(0));
+                            count ++;
+                        }
                         waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
+                        for (ButtonType buttonType : waitingForStartPosition.getDialogPane().getButtonTypes()) {
+                            Node button = waitingForStartPosition.getDialogPane().lookupButton(buttonType);
+                            button.setDisable(false);
+                        }
                         waitingForStartPosition.setContentText("It is your turn to choose");
                         waitingForStartPosition.setTitle("Choose place to start");
                         waitingForStartPosition.setHeaderText("Select place to start");
                     } else {
                         waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(true);
+                        for (ButtonType buttonType : waitingForStartPosition.getDialogPane().getButtonTypes()) {
+                            Node button = waitingForStartPosition.getDialogPane().lookupButton(buttonType);
+                            button.setDisable(true);
+                        }
                         waitingForStartPosition.setContentText("Waiting for players to choose start position");
                     }
                 });
