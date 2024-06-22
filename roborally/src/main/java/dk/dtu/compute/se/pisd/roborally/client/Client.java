@@ -11,7 +11,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -20,7 +19,7 @@ import static java.lang.Double.parseDouble;
 public class Client {
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
-    private static String server = "http://localhost:8080";
+    private static final String server = "http://localhost:8080";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -585,78 +584,78 @@ public class Client {
         return future;
     }
 
-//    public static void incrementRoundNumber(int gameID) {
-//        try {
-//            HttpRequest request = HttpRequest.newBuilder()
-//                    .PUT(HttpRequest.BodyPublishers.noBody())
-//                    .uri(URI.create(server + "/lobby/" + gameID + "/round"))
-//                    .setHeader("Content-Type", "application/json")
-//                    .build();
-//            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public static int getRoundNumber(int gameID){
-//        try {
-//            HttpRequest request = HttpRequest.newBuilder()
-//                    .GET()
-//                    .uri(URI.create(server + "/lobby/" + gameID + "/round"))
-//                    .setHeader("Content-Type", "application/json")
-//                    .build();
-//            CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
-//            String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
-//            return Integer.parseInt(jsonResponse);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return 0;
-//        }
-//    }
-//
-//    public static void incrementPlayerRoundNumber(int gameID, int playerID){
-//        try {
-//            HttpRequest request = HttpRequest.newBuilder()
-//                    .PUT(HttpRequest.BodyPublishers.noBody())
-//                    .uri(URI.create(server + "/lobby/" + gameID + "/" + playerID + "/round"))
-//                    .setHeader("Content-Type", "application/json")
-//                    .build();
-//            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public static CompletableFuture<Boolean> allPlayersAtSameRound(int gameID) {
-//        CompletableFuture<Boolean> future = new CompletableFuture<>();
-//        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-//
-//        Runnable task = new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    HttpRequest request = HttpRequest.newBuilder()
-//                            .GET()
-//                            .uri(URI.create(server + "/lobby/" + gameID + "/round/allready"))
-//                            .setHeader("Content-Type", "application/json")
-//                            .build();
-//                    HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-//                    boolean interactionDone = Boolean.parseBoolean(response.body());
-//
-//                    if (interactionDone) {
-//                        scheduler.shutdown();
-//                        future.complete(true);
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    future.completeExceptionally(e);
-//                }
-//            }
-//        };
-//
-//        scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
-//        return future;
-//    }
+    public static void incrementRoundNumber(int gameID) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .PUT(HttpRequest.BodyPublishers.noBody())
+                    .uri(URI.create(server + "/lobby/" + gameID + "/round"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static int getRoundNumber(int gameID){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/round"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
+            return Integer.parseInt(jsonResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static void incrementPlayerRoundNumber(int gameID, int playerID){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .PUT(HttpRequest.BodyPublishers.noBody())
+                    .uri(URI.create(server + "/lobby/" + gameID + "/" + playerID + "/round"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static CompletableFuture<Boolean> allPlayersAtSameRound(int gameID) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .GET()
+                            .uri(URI.create(server + "/lobby/" + gameID + "/round/allready"))
+                            .setHeader("Content-Type", "application/json")
+                            .build();
+                    HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+                    boolean interactionDone = Boolean.parseBoolean(response.body());
+
+                    if (interactionDone) {
+                        scheduler.shutdown();
+                        future.complete(true);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    future.completeExceptionally(e);
+                }
+            }
+        };
+
+        scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+        return future;
+    }
 }

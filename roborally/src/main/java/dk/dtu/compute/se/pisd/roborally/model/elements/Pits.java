@@ -16,13 +16,12 @@ public class Pits extends FieldAction {
      */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
-            try {
-                space.getPlayer().setSpace(space.getPlayer().getStartSpace());
-                return true;
-            }
-            catch(Exception e){
-                return false;
-            }
-
+        try {
+            space.getPlayer().setSpace(space.getPlayer().getStartSpace());
+            return true;
+        }
+        catch(Exception e){
+            return false;
+        }
     }
 }

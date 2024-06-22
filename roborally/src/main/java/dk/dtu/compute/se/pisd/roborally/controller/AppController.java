@@ -28,9 +28,7 @@ import dk.dtu.compute.se.pisd.roborally.RoboRally;
 import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 
-import dk.dtu.compute.se.pisd.roborally.fileaccess.SerializeGame;
 import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
@@ -41,9 +39,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -173,7 +169,7 @@ public class AppController implements Observer {
             }
         }
         ArrayList<Double> Start_Place = new ArrayList<>(Client.getAvailableStartSpaces(gameID));
-        ChoiceDialog<Double> waitingForStartPosition = new ChoiceDialog<>(Start_Place.get(0), Start_Place);;
+        ChoiceDialog<Double> waitingForStartPosition = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
         waitingForStartPosition.setTitle("Waiting for players to choose start position");
         waitingForStartPosition.setHeaderText("Start position");
         waitingForStartPosition.setContentText("Waiting for players to choose start position");
@@ -324,7 +320,7 @@ public class AppController implements Observer {
             alert.setContentText("Are you sure you want to exit RoboRally?");
             Optional<ButtonType> result = alert.showAndWait();
 
-            if (!result.isPresent() || result.get() != ButtonType.OK) {
+            if (result.isEmpty() || result.get() != ButtonType.OK) {
                 return; // return without exiting the application
             }
         }
@@ -345,8 +341,7 @@ public class AppController implements Observer {
         alert.setTitle("WINNER");
         alert.setContentText("Congratulations!\n" + name + " have won the game!");
         Optional<ButtonType> result = alert.showAndWait();
-        if (!result.isPresent() || result.get() != ButtonType.OK) {
-            return;
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
         }
     }
 
