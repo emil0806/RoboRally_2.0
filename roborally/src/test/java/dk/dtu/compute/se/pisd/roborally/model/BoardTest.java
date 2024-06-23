@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class BoardTest {
-    Board board = new Board(8, 8);
+    Board board = new Board(8, 8, 4);
     GameController gameController = new GameController(board);
 
     @Test

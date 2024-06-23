@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  */
 public class ConveyorBeltTest {
-    Board board = new Board(8, 8);
+    Board board = new Board(8, 8, 4);
     GameController gameController = new GameController(board);
 
     @Test
     void conveyorBeltTest() {
-        Player player = new Player(board, null,"Player");
+        Player player = new Player(board, null,"Player", 3);
         player.setHeading(Heading.SOUTH);
         player.setSpace(gameController.board.getSpace(4,4));
 
