@@ -181,17 +181,20 @@ public class GameController {
     public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space;
         Player other = space.getPlayer();
-        if (other != null){
+        if (other != null) {
             Space target = board.getNeighbour(space, heading);
-            if (target != null) {
+            if (target == null || board.isOutOfMap(target, heading) || board.isPit(target, heading)) {
+                moveToStartSpace(other, other.getStartSpace());
+                other.setHeading(Heading.SOUTH);
+            } else {
                 moveToSpace(other, target, heading);
                 assert target.getPlayer() == null : target;
-            } else {
-                throw new ImpossibleMoveException();
             }
         }
         player.setSpace(space);
+        space.setPlayer(player);
     }
+
 
     /**
      * ...
@@ -476,5 +479,12 @@ public class GameController {
             case "Left OR Right" -> Command.OPTION_LEFT_RIGHT;
             default -> null;
         };
+    }
+    public void moveToStartSpace(Player player, Space space){
+        if(player.getSpace() != null){
+            player.getSpace().setPlayer(null);
+        }
+        player.setSpace(space);
+        space.setPlayer(player);
     }
 }
