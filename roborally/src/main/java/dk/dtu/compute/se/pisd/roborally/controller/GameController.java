@@ -337,6 +337,7 @@ public class GameController {
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
                         Client.incrementPlayersReady(board.getGameId());
+                        Client.incrementPlayerRoundNumber(board.getGameId(), board.getMyPlayerID());
                         startProgrammingPhase();
                     }
                 }
@@ -400,6 +401,7 @@ public class GameController {
                     board.setCurrentPlayer(board.getPlayer(0));
                 } else {
                     Client.incrementPlayersReady(board.getGameId());
+                    Client.incrementPlayerRoundNumber(board.getGameId(), board.getMyPlayerID());
                     startProgrammingPhase();
                 }
             }
@@ -420,6 +422,23 @@ public class GameController {
         }
     }
     public void startProgrammingPhase() {
+        Alert waitingForSameRound = new Alert(Alert.AlertType.WARNING);
+        waitingForSameRound.setTitle("RoboRally");
+        waitingForSameRound.setHeaderText(null);
+        waitingForSameRound.getDialogPane().getButtonTypes().clear();
+        waitingForSameRound.setContentText("Waiting for all opponents to be ready");
+        waitingForSameRound.show();
+        Client.allPlayersAtSameRound(board.getGameId()).thenAccept(allReady -> {
+            if (allReady) {
+                Platform.runLater(() -> {
+                    waitingForSameRound.setResult(ButtonType.OK);
+                    waitingForSameRound.close();
+                });
+            }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
         board.setPhase(Phase.PROGRAMMING);
         board.getPriorityAntenna().getActions().get(0).doAction(this, board.getPriorityAntenna());
         board.setCurrentPlayer(board.getPlayer(0));
