@@ -13,15 +13,16 @@ class GameControllerTest {
 
     private final int TEST_WIDTH = 8;
     private final int TEST_HEIGHT = 8;
+    private final int TEST_NUMBER_OF_STARTSPACES = 2;
 
     private GameController gameController;
 
     @BeforeEach
     void setUp() {
-        Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
+        Board board = new Board(TEST_WIDTH, TEST_HEIGHT, TEST_NUMBER_OF_STARTSPACES);
         gameController = new GameController(board);
         for (int i = 0; i < 6; i++) {
-            Player player = new Player(board, null,"Player " + i);
+            Player player = new Player(board, null,"Player " + i, 1);
             board.addPlayer(player);
             player.setSpace(board.getSpace(i, i));
             player.setHeading(Heading.values()[i % Heading.values().length]);

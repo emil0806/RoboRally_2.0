@@ -11,17 +11,17 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PriorityAntennaTest {
-    Board board = new Board(8, 8);
+    Board board = new Board(8, 8, 2);
     GameController gameController = new GameController(board);
 
     @Test
     void priorityAntennaTest() {
-        Player player1 = new Player(board, null,"Player1");
+        Player player1 = new Player(board, null,"Player1", 1);
         player1.setHeading(Heading.NORTH);
         player1.setSpace(gameController.board.getSpace(1,1));
         board.addPlayer(player1);
 
-        Player player2 = new Player(board, null,"Player2");
+        Player player2 = new Player(board, null,"Player2", 2);
         player2.setHeading(Heading.NORTH);
         player2.setSpace(gameController.board.getSpace(3,3));
         board.addPlayer(player2);

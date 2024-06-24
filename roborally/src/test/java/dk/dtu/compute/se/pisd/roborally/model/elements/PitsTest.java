@@ -9,12 +9,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PitsTest {
-    Board board = new Board(8, 8);
+    Board board = new Board(8, 8, 2);
     GameController gameController = new GameController(board);
 
     @Test
     void pitsTest() {
-        Player player = new Player(board, null,"Player");
+        Player player = new Player(board, null,"Player", 1);
         player.setHeading(Heading.SOUTH);
         player.setStartSpace(gameController.board.getSpace(1,1));
 
