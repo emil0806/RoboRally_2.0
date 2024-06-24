@@ -37,31 +37,24 @@ public class Player extends Subject {
 
     final public static int NO_REGISTERS = 5;
     final public static int NO_CARDS = 8;
-
     final public Board board;
-
     private String name;
     private String color;
-
     private int playerID;
-
     private Space space;
     private Heading heading = SOUTH;
-
     private CommandCardField[] program;
     private CommandCardField[] cards;
-
     private int checkpoints;
     private int distanceToPriorityAntenna;
-
     private Space startSpace;
+    //private int round;
 
     public Player(@NotNull Board board, String color, @NotNull String name, int playerID) {
         this.board = board;
         this.name = name;
         this.color = color;
         this.playerID = playerID;
-
         this.space = null;
 
         program = new CommandCardField[NO_REGISTERS];
@@ -123,7 +116,6 @@ public class Player extends Subject {
     public Heading getHeading() {
         return heading;
     }
-
     public void setHeading(@NotNull Heading heading) {
         if (heading != this.heading) {
             this.heading = heading;
@@ -183,4 +175,12 @@ public class Player extends Subject {
         }
         return chosenMoves;
     }
+
+//    public void incrementRound(){
+//        this.round++;
+//    }
+//
+//    public int getRound(){
+//        return this.round;
+//    }
 }

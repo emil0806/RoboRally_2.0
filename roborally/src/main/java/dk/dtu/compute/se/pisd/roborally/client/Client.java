@@ -11,7 +11,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -20,11 +19,11 @@ import static java.lang.Double.parseDouble;
 public class Client {
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
-    private String server = "http://localhost:8080";
+    private static final String server = "http://localhost:8080";
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void uploadGame(String boardName, int numOfPlayers, int maxPlayers, int turnID){
+    public static void uploadGame(String boardName, int numOfPlayers, int maxPlayers, int turnID){
         try {
             Gson gson = new Gson();
             JsonObject jsonObject = new JsonObject();
@@ -46,7 +45,7 @@ public class Client {
         }
     }
 
-    public ArrayList<String> getGame(int gameID) {
+    public static ArrayList<String> getGame(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -71,7 +70,7 @@ public class Client {
         return null;
     }
 
-    public ArrayList<ArrayList<String>> getGames() {
+    public static ArrayList<ArrayList<String>> getGames() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -106,13 +105,14 @@ public class Client {
         return null;
     }
 
-    public void joinGame(int gameID, int myPlayerID, String name, int age) {
+    public static void joinGame(int gameID, int myPlayerID, String name, int age) {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("playerID", myPlayerID);
         jsonObject.addProperty("name", name);
         jsonObject.addProperty("age", age);
         jsonObject.addProperty("startSpace", "null");
+        //jsonObject.addProperty("round", 0);
         String json = gson.toJson(jsonObject);
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -128,7 +128,7 @@ public class Client {
         }
     }
 
-    public void leaveGame(int gameID, int playerID) {
+    public static void leaveGame(int gameID, int playerID) {
         try{
             HttpRequest request = HttpRequest.newBuilder()
                     .DELETE()
@@ -142,7 +142,7 @@ public class Client {
         }
     }
 
-    public ArrayList<ArrayList<String>> getPlayers(int gameID) {
+    public static ArrayList<ArrayList<String>> getPlayers(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -172,7 +172,7 @@ public class Client {
         }
     }
 
-    public int getNumOfPlayers(int gameID) {
+    public static int getNumOfPlayers(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -188,7 +188,7 @@ public class Client {
         }
     }
 
-    public int getMaxNumOfPlayers(int gameID) {
+    public static int getMaxNumOfPlayers(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -204,7 +204,7 @@ public class Client {
         }
     }
 
-    public int getTurnID(int gameID) {
+    public static int getTurnID(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -220,7 +220,7 @@ public class Client {
         }
     }
 
-    public void setTurnID(int gameID) {
+    public static void setTurnID(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .POST(HttpRequest.BodyPublishers.noBody())
@@ -234,7 +234,7 @@ public class Client {
         }
     }
 
-    public CompletableFuture<Boolean> waitForAllUsersToBeReady(int gameID) {
+    public static CompletableFuture<Boolean> waitForAllUsersToBeReady(int gameID) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -266,7 +266,7 @@ public class Client {
     }
 
 
-    public void uploadMoves(ArrayList<String> chosenMoves, int playerID, int gameID) {
+    public static void uploadMoves(ArrayList<String> chosenMoves, int playerID, int gameID) {
         try {
             Gson gson = new Gson();
             JsonObject jsonObject = new JsonObject();
@@ -285,7 +285,7 @@ public class Client {
         }
     }
 
-    public ArrayList<ArrayList<String>> getAllGameMoves(int gameID) {
+    public static ArrayList<ArrayList<String>> getAllGameMoves(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -325,7 +325,7 @@ public class Client {
         }
     }
 
-    public ArrayList<String> getMovesByPlayerID(int gameID, int playerID) {
+    public static ArrayList<String> getMovesByPlayerID(int gameID, int playerID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -350,7 +350,7 @@ public class Client {
             return null;
         }
     }
-    public void setStartSpace(int gameID, int playerID, double startSpace) {
+    public static void setStartSpace(int gameID, int playerID, double startSpace) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(startSpace)))
@@ -363,7 +363,7 @@ public class Client {
             e.printStackTrace();
         }
     }
-    public double getStartSpace(int gameID, int playerID) {
+    public static double getStartSpace(int gameID, int playerID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -378,7 +378,7 @@ public class Client {
             return 0;
         }
     }
-    public void setAvailableStartSpaces(int gameID, double startSpace) {
+    public static void setAvailableStartSpaces(int gameID, double startSpace) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(startSpace)))
@@ -391,7 +391,7 @@ public class Client {
             e.printStackTrace();
         }
     }
-    public ArrayList<Double> getAvailableStartSpaces(int gameID) {
+    public static ArrayList<Double> getAvailableStartSpaces(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -407,7 +407,7 @@ public class Client {
             return new ArrayList<>();
         }
     }
-    public List<Double> getRemovedStartingPlace(int gameID) {
+    public static List<Double> getRemovedStartingPlace(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
@@ -431,7 +431,7 @@ public class Client {
             return new ArrayList<>();
         }
     }
-    public boolean waitForAllUsersChosen(int gameID) {
+    public static boolean waitForAllUsersChosen(int gameID) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -468,7 +468,20 @@ public class Client {
         }
     }
 
-    public CompletableFuture<Boolean> waitForInteraction(int gameID) {
+    public static void sendInteraction(int gameID, int playerID, int step, String interaction) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(interaction))
+                    .uri(URI.create(server + "/lobby/" + gameID + "/moves/" + playerID + "/" + step + "/setInteraction"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static CompletableFuture<Boolean> waitForInteraction(int gameID, int playerID, int step) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -478,13 +491,13 @@ public class Client {
                 try {
                     HttpRequest request = HttpRequest.newBuilder()
                             .GET()
-                            .uri(URI.create(server + "/lobby/" + gameID + "/allUsersReady"))
+                            .uri(URI.create(server + "/lobby/" + gameID + "/moves/" + playerID + "/waitForInteraction/" + step))
                             .setHeader("Content-Type", "application/json")
                             .build();
                     HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-                    boolean allUsersReady = Boolean.parseBoolean(response.body());
+                    boolean interactionDone = Boolean.parseBoolean(response.body());
 
-                    if (allUsersReady) {
+                    if (interactionDone) {
                         scheduler.shutdown();
                         future.complete(true);
                     }
@@ -495,7 +508,154 @@ public class Client {
             }
         };
 
-        scheduler.scheduleAtFixedRate(task, 0, 2, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+        return future;
+    }
+
+    public static void clearAllMoves(int gameID){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .DELETE()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/clearAllMoves"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setPlayersReady(int gameID, int playersReady) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(playersReady)))
+                    .uri(URI.create(server + "/lobby/" + gameID + "/playersReady"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void incrementPlayersReady(int gameID) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .PUT(HttpRequest.BodyPublishers.noBody())
+                    .uri(URI.create(server + "/lobby/" + gameID + "/playersReady"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static CompletableFuture<Boolean> getPlayersReady(int gameID) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .GET()
+                            .uri(URI.create(server + "/lobby/" + gameID + "/playersReady"))
+                            .setHeader("Content-Type", "application/json")
+                            .build();
+                    HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+                    boolean interactionDone = Boolean.parseBoolean(response.body());
+
+                    if (interactionDone) {
+                        scheduler.shutdown();
+                        future.complete(true);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    future.completeExceptionally(e);
+                }
+            }
+        };
+
+        scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+        return future;
+    }
+
+    public static void incrementRoundNumber(int gameID) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .PUT(HttpRequest.BodyPublishers.noBody())
+                    .uri(URI.create(server + "/lobby/" + gameID + "/round"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static int getRoundNumber(int gameID){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .GET()
+                    .uri(URI.create(server + "/lobby/" + gameID + "/round"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            CompletableFuture<HttpResponse<String>> response = HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            String jsonResponse = response.thenApply(HttpResponse::body).get(5, TimeUnit.SECONDS);
+            return Integer.parseInt(jsonResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public static void incrementPlayerRoundNumber(int gameID, int playerID){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .PUT(HttpRequest.BodyPublishers.noBody())
+                    .uri(URI.create(server + "/lobby/" + gameID + "/" + playerID + "/round"))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static CompletableFuture<Boolean> allPlayersAtSameRound(int gameID) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        Runnable task = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .GET()
+                            .uri(URI.create(server + "/lobby/" + gameID + "/round/allready"))
+                            .setHeader("Content-Type", "application/json")
+                            .build();
+                    HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+                    boolean interactionDone = Boolean.parseBoolean(response.body());
+
+                    if (interactionDone) {
+                        scheduler.shutdown();
+                        future.complete(true);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    future.completeExceptionally(e);
+                }
+            }
+        };
+
+        scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
         return future;
     }
 }

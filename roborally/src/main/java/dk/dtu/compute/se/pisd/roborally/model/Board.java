@@ -22,6 +22,8 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.model.elements.Pits;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import org.jetbrains.annotations.NotNull;
 
@@ -280,5 +282,58 @@ public class Board extends Subject {
 
     public void setMyPlayerID(int playerID) {
         this.myPlayerID = playerID;
+    }
+
+    public boolean isOutOfMap(Space space, Heading heading) {
+        int newX = space.x;
+        int newY = space.y;
+
+        switch (heading) {
+            case NORTH:
+                newY -= 1;
+                break;
+            case SOUTH:
+                newY += 1;
+                break;
+            case EAST:
+                newX += 1;
+                break;
+            case WEST:
+                newX -= 1;
+                break;
+        }
+
+        return (newX < 0 || newX >= width || newY < 0 || newY >= height);
+    }
+    public boolean isPit(@NotNull Space space, @NotNull Heading heading) {
+        int newX = space.x;
+        int newY = space.y;
+
+        switch (heading) {
+            case NORTH:
+                newY -= 1;
+                break;
+            case SOUTH:
+                newY += 1;
+                break;
+            case EAST:
+                newX += 1;
+                break;
+            case WEST:
+                newX -= 1;
+                break;
+        }
+
+        if (newX >= 0 && newX < width && newY >= 0 && newY < height) {
+            Space targetSpace = getSpace(newX, newY);
+            if (targetSpace != null) {
+                for (FieldAction action : targetSpace.getActions()) {
+                    if (action instanceof Pits) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

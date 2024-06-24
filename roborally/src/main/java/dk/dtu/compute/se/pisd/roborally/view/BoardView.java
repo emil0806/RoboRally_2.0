@@ -28,9 +28,11 @@ import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,9 +62,14 @@ public class BoardView extends VBox implements ViewObserver {
         playersView = new PlayersView(gameController);
         statusLabel = new Label("<no status>");
 
-        this.getChildren().add(mainBoardPane);
-        this.getChildren().add(playersView);
-        this.getChildren().add(statusLabel);
+        HBox hBox = new HBox(10);
+        hBox.setAlignment(Pos.CENTER);
+        hBox.getChildren().addAll(mainBoardPane, playersView);
+
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(hBox,statusLabel);
+
+        this.getChildren().add(vbox);
 
         spaces = new SpaceView[board.width][board.height];
 
@@ -109,7 +116,7 @@ public class BoardView extends VBox implements ViewObserver {
                 Board board = space.board;
 
                 if (board == gameController.board) {
-                    gameController.moveCurrentPlayerToSpace(space);
+                    //gameController.moveCurrentPlayerToSpace(space);
                     event.consume();
                 }
             }
