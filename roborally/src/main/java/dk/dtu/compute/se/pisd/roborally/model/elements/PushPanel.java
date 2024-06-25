@@ -34,10 +34,11 @@ public class PushPanel extends FieldAction {
 
     /**
      * ...
-     * @author Emil Lauritzen, s231331@dtu.dk
+     *
      * @param gameController, the controller for the game
-     * @param space, the actual space
+     * @param space,          the actual space
      * @return depends on if action is possible
+     * @author Emil Lauritzen, s231331@dtu.dk
      */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
@@ -50,12 +51,17 @@ public class PushPanel extends FieldAction {
                 break;
             }
         }
-        if(shouldActivate) {
+        if (shouldActivate) {
             try {
-                gameController.moveToSpace(space.getPlayer(), space, this.heading);
+                Space targetSpace = gameController.board.getNeighbour(space, this.heading);
+                if (targetSpace == null) {
+                    space.getPlayer().setSpace(space.getPlayer().getStartSpace());
+                } else {
+                    gameController.moveToSpace(space.getPlayer(), targetSpace, this.heading);
+                }
                 return true;
-            }
-            catch(Exception e){
+            } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
         }
