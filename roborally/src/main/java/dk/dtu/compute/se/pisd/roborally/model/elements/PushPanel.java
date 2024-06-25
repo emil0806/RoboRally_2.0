@@ -52,7 +52,9 @@ public class PushPanel extends FieldAction {
         }
         if(shouldActivate) {
             try {
-                gameController.moveToSpace(space.getPlayer(), space, this.heading);
+                Space target = gameController.board.getNeighbour(space.getPlayer().getSpace(), this.heading);
+
+                gameController.moveToSpace(space.getPlayer(), target, this.heading);
                 return true;
             }
             catch(Exception e){
