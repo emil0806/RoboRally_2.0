@@ -336,13 +336,16 @@ public class AppController implements Observer {
         return gameController != null;
     }
 
-    static void showWinner(String name) {
+    static void showWinner(Player player, Board board) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("WINNER");
-        alert.setContentText("Congratulations!\n" + name + " have won the game!");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isEmpty() || result.get() != ButtonType.OK) {
+        if(player.getPlayerID() == board.getMyPlayerID()) {
+            alert.setTitle("WINNER");
+            alert.setContentText("Congratulations!\n" + "You have won the game!");
+        } else {
+            alert.setTitle("LOSER");
+            alert.setContentText("You lost!\n" + player.getName() + " have won the game!");
         }
+        alert.showAndWait();
     }
 
 
