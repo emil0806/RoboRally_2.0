@@ -193,7 +193,7 @@ public class Board extends Subject {
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
         if (space.getWalls().contains(heading)) {
-            return null;
+            return space;
         }
         // TODO needs to be implemented based on the actual spaces
         //      and obstacles and walls placed there. For now it,
@@ -207,41 +207,35 @@ public class Board extends Subject {
         int y = space.y;
         switch (heading) {
             case SOUTH:
-                if(y + 1 < height) {
-                    y = (y + 1) % height;
+                    y += 1;
                     break;
-                } else {
-                    return null;
-                }
             case WEST:
-                if(x - 1 >= 0) {
-                    x = (x + width - 1) % width;
+                    x -= 1;
                     break;
-                } else {
-                    return null;
-                }
             case NORTH:
-                if(y - 1 >= 0) {
-                    y = (y + height - 1) % height;
+                    y -= 1;
                     break;
-                } else {
-                    return null;
-                }
             case EAST:
-                if(x + 1 < width) {
-                    x = (x + 1) % width;
+                    x += 1;
                     break;
-                } else {
+        }
+        if((x < 0) || (x > (width - 1)) || (y < 0) || (y > (height - 1))) {
+            space.getPlayer().setSentToStartSpace(true);
+            return null;
+        } else {
+            Space result = getSpace(x, y);
+            for (FieldAction fieldAction : result.getActions()) {
+                if (fieldAction instanceof Pits) {
+                    space.getPlayer().setSentToStartSpace(true);
                     return null;
                 }
-        }
+            }
+            if (result != null && result.getWalls().contains(heading.opposite())) {
+                return space;
+            }
 
-        Space result = getSpace(x, y);
-        if (result != null && result.getWalls().contains(heading.opposite())) {
-            return null;
+            return result;
         }
-
-        return result;
     }
 
     public String getStatusMessage() {
@@ -282,58 +276,5 @@ public class Board extends Subject {
 
     public void setMyPlayerID(int playerID) {
         this.myPlayerID = playerID;
-    }
-
-    public boolean isOutOfMap(Space space, Heading heading) {
-        int newX = space.x;
-        int newY = space.y;
-
-        switch (heading) {
-            case NORTH:
-                newY -= 1;
-                break;
-            case SOUTH:
-                newY += 1;
-                break;
-            case EAST:
-                newX += 1;
-                break;
-            case WEST:
-                newX -= 1;
-                break;
-        }
-
-        return (newX < 0 || newX >= width || newY < 0 || newY >= height);
-    }
-    public boolean isPit(@NotNull Space space, @NotNull Heading heading) {
-        int newX = space.x;
-        int newY = space.y;
-
-        switch (heading) {
-            case NORTH:
-                newY -= 1;
-                break;
-            case SOUTH:
-                newY += 1;
-                break;
-            case EAST:
-                newX += 1;
-                break;
-            case WEST:
-                newX -= 1;
-                break;
-        }
-
-        if (newX >= 0 && newX < width && newY >= 0 && newY < height) {
-            Space targetSpace = getSpace(newX, newY);
-            if (targetSpace != null) {
-                for (FieldAction action : targetSpace.getActions()) {
-                    if (action instanceof Pits) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 }

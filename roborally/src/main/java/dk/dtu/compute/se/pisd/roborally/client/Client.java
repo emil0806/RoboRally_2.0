@@ -638,7 +638,7 @@ public class Client {
                 try {
                     HttpRequest request = HttpRequest.newBuilder()
                             .GET()
-                            .uri(URI.create(server + "/lobby/" + gameID + "/round/allready"))
+                            .uri(URI.create(server + "/lobby/" + gameID + "/round/allReady"))
                             .setHeader("Content-Type", "application/json")
                             .build();
                     HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());

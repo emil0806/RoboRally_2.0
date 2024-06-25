@@ -44,21 +44,18 @@ public class GameController {
     }
 
     public void moveForward(@NotNull Player player) {
-        if (player.board == board) {
+        if (player.board == board && !player.isSentToStartSpace()) {
             Space space = player.getSpace();
             Heading heading = player.getHeading();
             Space target = board.getNeighbour(space, heading);
-
-            if(board.isOutOfMap(space, heading) || board.isPit(space, heading)){
-                moveCurrentPlayerToSpace(player.getStartSpace());
-                player.setHeading(Heading.SOUTH);
-            }
-            else if (target != null) {
+            if (target != null) {
                 try {
                     moveToSpace(player, target, heading);
                 } catch (ImpossibleMoveException e) {
                     e.printStackTrace();
                 }
+            } else {
+                player.setSpace(player.getStartSpace());
             }
         }
     }
@@ -69,15 +66,8 @@ public class GameController {
      * @param player player who should be moved
      */
     public void fastForward(@NotNull Player player) {
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }else {
-            moveCurrentPlayerToSpace(player.getStartSpace());
-            player.setHeading(Heading.SOUTH);
-        }
     }
 
     /**
@@ -104,18 +94,9 @@ public class GameController {
      * @param player player who should move three forward
      */
     public void fastThreeForward(@NotNull Player player) {
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }else {
-            moveCurrentPlayerToSpace(player.getStartSpace());
-            player.setHeading(Heading.SOUTH);
-        }
     }
 
     /**
@@ -137,6 +118,8 @@ public class GameController {
                     // exception so that we do no pass it on to the caller
                     // (which would be very bad style).
                 }
+            } else {
+                player.setSpace(player.getStartSpace());
             }
         }
     }
@@ -181,17 +164,19 @@ public class GameController {
     public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space;
         Player other = space.getPlayer();
-        if (other != null){
+        if (other != null) {
             Space target = board.getNeighbour(space, heading);
-            if (target != null) {
+            if (target == null) {
+                other.setSpace(other.getStartSpace());
+            } else {
                 moveToSpace(other, target, heading);
                 assert target.getPlayer() == null : target;
-            } else {
-                throw new ImpossibleMoveException();
             }
         }
         player.setSpace(space);
+        space.setPlayer(player);
     }
+
 
     /**
      * ...
@@ -316,6 +301,7 @@ public class GameController {
                     }
                 }
                 int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+                board.getCurrentPlayer().setSentToStartSpace(false);
                 if (nextPlayerNumber < board.getPlayersNumber()) {
                     board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
                 } else {
@@ -334,6 +320,7 @@ public class GameController {
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
                         Client.incrementPlayersReady(board.getGameId());
+                        Client.incrementPlayerRoundNumber(board.getGameId(), board.getMyPlayerID());
                         startProgrammingPhase();
                     }
                 }
@@ -397,6 +384,7 @@ public class GameController {
                     board.setCurrentPlayer(board.getPlayer(0));
                 } else {
                     Client.incrementPlayersReady(board.getGameId());
+                    Client.incrementPlayerRoundNumber(board.getGameId(), board.getMyPlayerID());
                     startProgrammingPhase();
                 }
             }
@@ -417,6 +405,23 @@ public class GameController {
         }
     }
     public void startProgrammingPhase() {
+        Alert waitingForSameRound = new Alert(Alert.AlertType.WARNING);
+        waitingForSameRound.setTitle("RoboRally");
+        waitingForSameRound.setHeaderText(null);
+        waitingForSameRound.getDialogPane().getButtonTypes().clear();
+        waitingForSameRound.setContentText("Waiting for all opponents to be ready");
+        waitingForSameRound.show();
+        Client.allPlayersAtSameRound(board.getGameId()).thenAccept(allReady -> {
+            if (allReady) {
+                Platform.runLater(() -> {
+                    waitingForSameRound.setResult(ButtonType.OK);
+                    waitingForSameRound.close();
+                });
+            }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
         board.setPhase(Phase.PROGRAMMING);
         board.getPriorityAntenna().getActions().get(0).doAction(this, board.getPriorityAntenna());
         board.setCurrentPlayer(board.getPlayer(0));
@@ -476,5 +481,12 @@ public class GameController {
             case "Left OR Right" -> Command.OPTION_LEFT_RIGHT;
             default -> null;
         };
+    }
+    public void moveToStartSpace(Player player, Space space){
+        if(player.getSpace() != null){
+            player.getSpace().setPlayer(null);
+        }
+        player.setSpace(space);
+        space.setPlayer(player);
     }
 }
