@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class BoardTest {
-    Board board = new Board(8, 8);
+    Board board = new Board(8, 8, 2);
     GameController gameController = new GameController(board);
 
     @Test
@@ -27,10 +27,9 @@ public class BoardTest {
         assertEquals(board.getSpace(3,4), westNeighbor);
 
 
-        board = LoadBoard.loadBoard("defaultboard");
-        startSpace = board.getSpace(2, 1);
-        southNeighbor = board.getNeighbour(startSpace, Heading.SOUTH);
+        board = LoadBoard.loadBoard("Rotating Maze");
+        startSpace = board.getSpace(6, 0);
+        southNeighbor = board.getNeighbour(startSpace, Heading.EAST);
         assertNull(southNeighbor);
-
     }
 }
