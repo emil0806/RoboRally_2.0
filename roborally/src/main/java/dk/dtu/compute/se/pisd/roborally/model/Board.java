@@ -231,7 +231,7 @@ public class Board extends Subject {
                 }
             }
             if (result != null && result.getWalls().contains(heading.opposite())) {
-                return null;
+                return space;
             }
 
             return result;
