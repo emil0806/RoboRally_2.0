@@ -95,10 +95,25 @@ public class AppController implements Observer {
             }
         }
     }
+
+    /**
+     * Displays the available games by fetching the game list from the server
+     * and updating the lobby view.
+     * @author Emil Leonhard Lauritzen s231331
+     */
     public void showAvailableGames() {
         ArrayList<ArrayList<String>> listOfGames = Client.getGames();
         roboRally.updateLobbyView(listOfGames);
     }
+
+    /**
+     * Joins an existing game by prompting the user for their name and age,
+     * then sending the join request to the server. It handles player information
+     * and game setup steps, including waiting for all players to join and choose start positions.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game to join
+     * @return void This method does not return a value but may perform UI updates and server communications.
+     */
 
     public void joinGame(int gameID) {
         TextInputDialog dialogName = new TextInputDialog();
@@ -150,6 +165,16 @@ public class AppController implements Observer {
         }
     }
 
+
+    /**
+     * Sets up the game by loading the board and configuring player positions.
+     * This method retrieves game information, loads the board, and initializes the game controller.
+     * It then prompts the player to choose a starting position and waits for all players to be ready before starting the game.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game
+     * @param myPlayerID the unique ID of the player setting up the game
+     * @return void This method does not return a value but may perform UI updates and server communications.
+     */
     public void setupGame(int gameID, int myPlayerID) {
         ArrayList<String> gameInfo = Client.getGame(gameID);
         Board board = LoadBoard.loadBoard(gameInfo.get(1));
@@ -251,6 +276,16 @@ public class AppController implements Observer {
             return null;
         });
     }
+
+    /**
+     * Creates player objects and assigns them starting positions on the board.
+     * This method retrieves player information from the server, creates Player instances,
+     * and sets their starting positions based on the retrieved data.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param board the game board on which the players will be placed
+     * @param gameID the unique ID of the game
+     * @return void This method does not return a value but initializes player objects and assigns them to the board.
+     */
     public void createPlayers(Board board, int gameID) {
         ArrayList<ArrayList<String>> players = Client.getPlayers(gameID);
         for (int i = 0; i < players.size(); i++) {
@@ -265,6 +300,13 @@ public class AppController implements Observer {
         }
     }
 
+    /**
+     * Saves the current game state by prompting the user to choose a save slot.
+     * This method displays a choice dialog for the user to select a save slot and then saves the game board to the chosen slot.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but performs a save operation if a game is in progress.
+     */
+
     public void saveGame() {
         // XXX needs to be implemented eventually
         if(this.gameController != null) {
@@ -277,6 +319,14 @@ public class AppController implements Observer {
             }
         }
     }
+
+    /**
+     * Loads a saved game state by prompting the user to choose a load slot.
+     * This method displays a choice dialog for the user to select a load slot, then loads the game board from the chosen slot
+     * and initializes the game controller.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but loads a saved game and updates the game view.
+     */
 
     public void loadGame() {
         ChoiceDialog<String> dialog = new ChoiceDialog<>(SAVE_SLOT_OPTIONS.get(0), SAVE_SLOT_OPTIONS);
@@ -313,6 +363,14 @@ public class AppController implements Observer {
         return false;
     }
 
+
+    /**
+     * Exits the RoboRally application, prompting the user for confirmation.
+     * If a game is in progress, the user is given the option to cancel the exit or to save the game before exiting.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but may exit the application if confirmed by the user.
+     */
+
     public void exit() {
         if (gameController != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -332,9 +390,28 @@ public class AppController implements Observer {
         }
     }
 
+
+    /**
+     * Checks if a game is currently running.
+     * This method returns true if the game controller is not null, indicating that a game is in progress.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @return boolean true if a game is running; false otherwise
+     */
+
     public boolean isGameRunning() {
         return gameController != null;
     }
+
+
+    /**
+     * Displays an alert showing the winner of the game.
+     * This method shows a confirmation alert indicating whether the player is the winner or not.
+     * If the player is the winner, a congratulatory message is shown; otherwise, it displays the name of the winning player.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param player the player who won the game
+     * @param board the game board
+     * @return void This method does not return a value but displays an alert with the game result.
+     */
 
     static void showWinner(Player player, Board board) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

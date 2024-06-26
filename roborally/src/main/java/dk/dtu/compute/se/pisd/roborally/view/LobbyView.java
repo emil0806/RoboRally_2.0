@@ -22,6 +22,13 @@ public class LobbyView extends VBox implements ViewObserver {
     private FlowPane lobbyGamePanel;
     private AppController appController;
 
+    /**
+     * Constructs a LobbyView for the given AppController.
+     * Sets up the main lobby pane, button panel, and game panel.
+     * Initializes the buttons for creating a new game and refreshing the lobby.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param appController the app controller managing the application
+     */
     public LobbyView(AppController appController){
         this.appController = appController;
         mainLobbyPane = new GridPane();
@@ -44,6 +51,14 @@ public class LobbyView extends VBox implements ViewObserver {
         mainLobbyPane.add(lobbyGamePanel,0,0);
         mainLobbyPane.add(lobbyButtonPanel, 0, 1);
     }
+
+    /**
+     * Updates the list of games displayed in the lobby.
+     * Clears the current game list and populates it with the new list of games.
+     * Each game is displayed with its ID, board name, number of players, and a join button.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gamesList the list of games to display, where each game is represented by a list of strings
+     */
 
     public void updateGamesList(ArrayList<ArrayList<String>> gamesList) {
         lobbyGamePanel.getChildren().clear();
@@ -76,8 +91,15 @@ public class LobbyView extends VBox implements ViewObserver {
         }
     }
 
+    /**
+     * Updates the view based on changes in the observed subject.
+     * This method is called when the subject notifies its observers of a change.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param subject the subject being observed for changes
+     */
     @Override
     public void updateView(Subject subject) {
-
+        // Implementation
     }
+
 }

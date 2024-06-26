@@ -244,6 +244,13 @@ public class Board extends Subject {
         return result;
     }
 
+    /**
+     * Retrieves the current status message of the game.
+     * This method returns a string containing the current phase, the name and heading of the current player,
+     * the number of checkpoints the player has, and the current step.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return String the status message of the game
+     */
     public String getStatusMessage() {
 
         return "Phase: " + getPhase().name() +
@@ -284,6 +291,15 @@ public class Board extends Subject {
         this.myPlayerID = playerID;
     }
 
+    /**
+     * Checks if moving from a given space in a specified direction will result in moving out of the map boundaries.
+     * This method calculates the new coordinates based on the current space and heading, and determines if they are out of bounds.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param space the current space of the player
+     * @param heading the direction in which the player is moving
+     * @return boolean true if the new coordinates are out of the map boundaries; false otherwise
+     */
+
     public boolean isOutOfMap(Space space, Heading heading) {
         int newX = space.x;
         int newY = space.y;
@@ -305,6 +321,17 @@ public class Board extends Subject {
 
         return (newX < 0 || newX >= width || newY < 0 || newY >= height);
     }
+
+    /**
+     * Checks if moving from a given space in a specified direction will result in landing in a pit.
+     * This method calculates the new coordinates based on the current space and heading,
+     * and determines if the target space contains a pit.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param space the current space of the player
+     * @param heading the direction in which the player is moving
+     * @return boolean true if the target space contains a pit; false otherwise
+     */
+
     public boolean isPit(@NotNull Space space, @NotNull Heading heading) {
         int newX = space.x;
         int newY = space.y;

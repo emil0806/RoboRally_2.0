@@ -52,6 +52,16 @@ public class Adapter<E> implements JsonSerializer<E>, JsonDeserializer<E>{
     private static final String CLASSNAME = "CLASSNAME";
     private static final String INSTANCE  = "INSTANCE";
 
+    /**
+     * Serializes an object into its JSON representation.
+     * This method creates a JSON object that includes the class name of the source object and its serialized instance.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param src the object to serialize
+     * @param typeOfSrc the type of the source object
+     * @param context the serialization context
+     * @return JsonElement a JSON element representing the serialized object
+     */
+
     @Override
     public JsonElement serialize(E src, Type typeOfSrc,
             JsonSerializationContext context) {
@@ -63,6 +73,18 @@ public class Adapter<E> implements JsonSerializer<E>, JsonDeserializer<E>{
         retValue.add(INSTANCE, elem);
         return retValue;
     }
+
+    /**
+     * Deserializes a JSON element into an object of the specified type.
+     * Retrieves the class name from the JSON object, loads the corresponding class,
+     * and uses the provided deserialization context to deserialize the JSON element.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param json the JSON element to deserialize
+     * @param typeOfT the type of the target object
+     * @param context the deserialization context
+     * @return E an instance of the deserialized object
+     * @throws JsonParseException if there is an error during deserialization, such as if the class cannot be found
+     */
 
     @Override
     public E deserialize(JsonElement json, Type typeOfT,

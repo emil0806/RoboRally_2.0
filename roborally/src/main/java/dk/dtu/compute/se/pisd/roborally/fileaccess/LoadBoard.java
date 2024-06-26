@@ -59,10 +59,14 @@ public class LoadBoard {
     private static final int DEFAULT_HEIGHT = 8;
 
     /**
-     * ...
-     *
-     * @author Emil Lauritzen, s231331@dtu.dk
+     * Loads a game board from a JSON resource file based on the given board name.
+     * This method retrieves the board configuration from a JSON file and constructs a Board object,
+     * setting up spaces, actions, walls, and player positions.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param boardname the name of the board to load
+     * @return Board the constructed Board object; returns a default Board if the resource file is not found or an error occurs
      */
+
     public static Board loadBoard(String boardname) {
         switch (boardname) {
             case DEFAULTBOARD -> boardname = DEFAULTBOARD;

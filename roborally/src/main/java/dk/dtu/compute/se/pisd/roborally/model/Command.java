@@ -31,6 +31,8 @@ import java.util.List;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
+
+
 public enum Command {
 
     // This is a very simplistic way of realizing different commands.

@@ -66,6 +66,14 @@ public class PlayerView extends Tab implements ViewObserver {
     private Timer timer;
     private TimerTask task;
 
+    /**
+     * Constructs a PlayerView for the given GameController and Player.
+     * Initializes the view with the player's name, color, program fields, command cards, and buttons.
+     * Attaches this view as an observer to the player's board and updates the view.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameController the game controller managing the game
+     * @param player the player associated with this view
+     */
     public PlayerView(@NotNull GameController gameController, @NotNull Player player) {
         super(player.getName());
         this.setStyle("-fx-text-base-color: " + player.getColor() + ";");
@@ -137,6 +145,13 @@ public class PlayerView extends Tab implements ViewObserver {
 
     }
 
+    /**
+     * Updates the view based on changes in the observed subject.
+     * Adjusts the background colors of the program card fields and handles the visibility and state of action buttons.
+     * Manages the interaction phase by displaying interaction options or waiting for opponent interactions.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param subject the subject being observed for changes
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == player.board) {
@@ -266,6 +281,12 @@ public class PlayerView extends Tab implements ViewObserver {
         }
 
     }
+
+    /**
+     * Checks if all program slots for the player are filled with command cards.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @return boolean true if all program slots are filled, false otherwise
+     */
     private boolean allProgramSlotsFilled() {
         for (int i = 0; i < Player.NO_REGISTERS; i++) {
             if (player.getProgramField(i).getCard() == null) {
@@ -275,6 +296,10 @@ public class PlayerView extends Tab implements ViewObserver {
         return true;
     }
 
+    /**
+     * Cancels the timer if it is running and sets it to null.
+     * @author David Kasper Vilmann Wellejus s220218
+     */
     public void cancelTimer() {
         if(timer != null){
             timer.cancel();

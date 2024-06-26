@@ -58,13 +58,13 @@ public class IOUtil {
     }
 
     /**
-     * Returns a string from a resource of the project. This method is implemented
-     * in such a way that resource can be read when the project is deployed in
-     * a jar file.
-     *
-     * @param relativeResourcePath the relative path to the resource
-     * @return the string contents of the resource
+     * Reads the content of a resource file from the given relative resource path.
+     * This method uses the class loader to find and read the resource file, then converts the input stream to a string.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param relativeResourcePath the relative path to the resource file
+     * @return String the content of the resource file as a string
      */
+
     public static String readResource(String relativeResourcePath) {
         ClassLoader classLoader = IOUtil.class.getClassLoader();
         InputStream inputStream = classLoader.getResourceAsStream(relativeResourcePath);

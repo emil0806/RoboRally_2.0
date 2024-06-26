@@ -43,6 +43,16 @@ public class GameController {
         this.board = board;
     }
 
+
+    /**
+     * Moves the player forward in the direction they are currently facing.
+     * If the player encounters the edge of the board or a pit, they are moved back to their starting space.
+     * If the target space is valid, the player is moved to that space.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param player the player to be moved forward
+     * @return void This method does not return a value but moves the player on the board.
+     */
+
     public void moveForward(@NotNull Player player) {
         if (player.board == board) {
             Space space = player.getSpace();
@@ -64,10 +74,14 @@ public class GameController {
     }
 
     /**
-     * ...
-     * @author Emil Lauritzen, s231331@dtu.dk
-     * @param player player who should be moved
+     * Moves the player forward twice in the direction they are currently facing.
+     * If the player encounters a pit after the first move, they are moved back to their starting space.
+     * If the player encounters a pit after the second move, they are moved back to their starting space and their heading is set to south.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param player the player to be moved forward twice
+     * @return void This method does not return a value but moves the player on the board.
      */
+
     public void fastForward(@NotNull Player player) {
         if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
@@ -178,6 +192,18 @@ public class GameController {
     }
 
 
+    /**
+     * Moves the player to the specified space in the given heading direction.
+     * If another player occupies the target space, it attempts to move the other player to the next space in the same direction.
+     * If the next space is invalid, the other player is moved to their starting space.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param player the player to be moved
+     * @param space the target space to move the player to
+     * @param heading the direction the player is moving
+     * @throws ImpossibleMoveException if the move cannot be completed
+     * @return void This method does not return a value but moves the player on the board.
+     */
+
     public void moveToSpace(@NotNull Player player, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(player.getSpace(), heading) == space;
         Player other = space.getPlayer();
@@ -213,6 +239,14 @@ public class GameController {
         }
     }
 
+    /**
+     * Makes the program fields visible for all players at the specified register.
+     * This method sets the visibility of the command card field for each player based on the given register index.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param register the index of the program register to make visible
+     * @return void This method does not return a value but changes the visibility of the program fields.
+     */
+
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NO_REGISTERS) {
             for (int i = 0; i < board.getPlayersNumber(); i++) {
@@ -223,6 +257,13 @@ public class GameController {
         }
     }
 
+    /**
+     * Makes all program fields invisible for all players.
+     * This method sets the visibility of all command card fields to false for each player.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but changes the visibility of the program fields.
+     */
+
     private void makeProgramFieldsInvisible() {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
@@ -232,6 +273,16 @@ public class GameController {
             }
         }
     }
+
+
+
+    /**
+     * Completes the programming phase by making the program fields invisible,
+     * setting the phase to activation, and uploading the chosen moves for each player to the server.
+     * It waits for all players to choose their moves before proceeding.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @return void This method does not return a value but performs necessary updates to transition to the next game phase.
+     */
 
     public void finishProgrammingPhase() {
         makeProgramFieldsInvisible();
@@ -273,6 +324,13 @@ public class GameController {
         }).start();
     }
 
+    /**
+     * Sets up the moves for each player by retrieving their chosen moves from the server
+     * and updating their program fields with the corresponding command cards.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @return void This method does not return a value but initializes the program fields for each player with their moves.
+     */
+
     public void setupMoves() {
         for(Player player : board.getPlayers()) {
             ArrayList<String> playerMoves = Client.getMovesByPlayerID(board.getGameId(), player.getPlayerID());
@@ -285,21 +343,52 @@ public class GameController {
         }
     }
 
+    /**
+     * Executes the program cards for all players by setting the board to non-step mode
+     * and initiating the continuation of program execution.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but starts the execution of player programs.
+     */
+
     public void executePrograms() {
         board.setStepMode(false);
         continuePrograms();
     }
+
+    /**
+     * Executes a single step of the program cards for all players by setting the board to step mode
+     * and initiating the continuation of program execution.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but starts the execution of a single step of player programs.
+     */
 
     public void executeStep() {
         board.setStepMode(true);
         continuePrograms();
     }
 
+    /**
+     * Continues the execution of program cards for all players.
+     * This method repeatedly executes the next step while the board is in the activation phase
+     * and not in step mode.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but continues the execution of player programs.
+     */
+
     private void continuePrograms() {
         do {
             executeNextStep();
         } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
     }
+
+    /**
+     * Executes the next step of the current player's program.
+     * This method handles the activation phase, executing commands for each player in sequence,
+     * and manages the transition to the player interaction phase if necessary.
+     * It also updates the current player and step, performs field actions, and checks for a winner.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but progresses the game state through program execution.
+     */
 
     private void executeNextStep() {
         Player currentPlayer = board.getCurrentPlayer();
@@ -351,6 +440,16 @@ public class GameController {
         }
     }
 
+    /**
+     * Executes the given command for the specified player.
+     * This method performs the corresponding action based on the command type,
+     * such as moving forward, turning, or performing special movements.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param player the player for whom the command is to be executed
+     * @param command the command to be executed
+     * @return void This method does not return a value but executes the specified command for the player.
+     */
+
     private void executeCommand(@NotNull Player player, Command command) {
         if (player.board == board && command != null) {
             switch (command) {
@@ -384,6 +483,16 @@ public class GameController {
         }
     }
 
+    /**
+     * Executes a given command option for the current player during the player interaction phase.
+     * This method transitions the game phase back to activation, executes the command, and updates the current player and step.
+     * If all steps are completed, it increments the round number and starts a new programming phase.
+     * If not in step mode, it continues the execution of programs.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param option the command option to be executed
+     * @return void This method does not return a value but executes the specified command option and progresses the game state.
+     */
+
     public void executeCommandOption(@NotNull Command option) {
         Player currentPlayer = board.getCurrentPlayer();
         int step = board.getStep();
@@ -410,6 +519,16 @@ public class GameController {
             }
         }
     }
+
+    /**
+     * Moves a command card from the source field to the target field.
+     * If the source field has a card and the target field is empty, the card is moved and the source is cleared.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param source the command card field from which the card is to be moved
+     * @param target the command card field to which the card is to be moved
+     * @return boolean true if the card was successfully moved; false otherwise
+     */
+
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
@@ -421,6 +540,15 @@ public class GameController {
             return false;
         }
     }
+
+    /**
+     * Initiates the programming phase of the game.
+     * This method waits for all players to be ready, sets the game phase to programming, and initializes the command card fields for each player.
+     * It also clears all previous moves and sets up the current player and step.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but starts the programming phase and prepares the game state.
+     */
+
     public void startProgrammingPhase() {
         Alert waitingForSameRound = new Alert(Alert.AlertType.WARNING);
         waitingForSameRound.setTitle("RoboRally");
@@ -461,17 +589,38 @@ public class GameController {
         }
     }
 
+    /**
+     * Generates a random command card.
+     * This method selects a random command from the available commands and creates a command card with it.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return CommandCard a randomly generated command card
+     */
+
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
         int random = (int) (Math.random() * commands.length);
         return new CommandCard(commands[random]);
     }
+
+    /**
+     * Exception thrown when a move is impossible to execute.
+     * This exception is used to indicate that a player's move cannot be completed due to game rules or conditions.
+     * @author Emil Leonhard Lauritzen s231331
+     */
     static class ImpossibleMoveException extends Exception {
 
         public ImpossibleMoveException() {
             super("Move impossible");
         }
     }
+
+    /**
+     * Checks if any player has reached all checkpoints and declares the winner.
+     * This method iterates through all players to check if any player has collected all checkpoints.
+     * If a winner is found, the game phase is set to finished, the winner is set, and a winner message is displayed.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return boolean true if a winner is found; false otherwise
+     */
 
     public boolean checkForWinner() {
         for(Player player : board.getPlayers()) {
@@ -484,6 +633,15 @@ public class GameController {
         }
         return false;
     }
+
+    /**
+     * Converts a string representation of a move to its corresponding Command enum.
+     * This method maps specific move strings to their respective Command values.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param move the string representation of the move
+     * @return Command the corresponding Command enum value; null if the move string does not match any command
+     */
+
     public Command convertToCommand(String move){
 
         return switch (move) {
@@ -499,6 +657,14 @@ public class GameController {
             default -> null;
         };
     }
+
+    /**
+     * Moves the player to the specified start space on the board.
+     * Sets the player's current space to null and updates the player's new space on the board.
+     * @param player the player to move
+     * @param space the start space to move the player to
+     */
+
     public void moveToStartSpace(Player player, Space space){
         if(player.getSpace() != null){
             player.getSpace().setPlayer(null);
