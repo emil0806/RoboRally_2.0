@@ -31,7 +31,7 @@ public class PriorityAntennaTest {
 
         assertEquals(board.getPlayers().get(0), player1);
 
-        gameController.fastThreeForward(player1);
+        gameController.moveForward(player1);
 
         priorityAntenna.doAction(gameController, gameController.board.getSpace(2,2));
 

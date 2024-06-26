@@ -28,8 +28,9 @@ public class BoardTest {
 
 
         board = LoadBoard.loadBoard("Rotating Maze");
-        startSpace = board.getSpace(6, 0);
-        southNeighbor = board.getNeighbour(startSpace, Heading.EAST);
+        startSpace = board.getSpace(8, 0);
+        southNeighbor = board.getNeighbour(startSpace, Heading.WEST);
         assertNull(southNeighbor);
+
     }
 }

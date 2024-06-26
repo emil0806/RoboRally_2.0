@@ -26,7 +26,6 @@ public class PushPanelTest {
         pushPanel.setHeading(Heading.NORTH);
         pushPanel.setActivationRegisters(new int[] {1, 3, 5});
         pushPanel.doAction(gameController, gameController.board.getSpace(3,3));
-
         assertEquals(player.getSpace(), board.getSpace(3,2));
     }
 }
