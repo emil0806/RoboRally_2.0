@@ -54,8 +54,6 @@ public class GameController {
                 } catch (ImpossibleMoveException e) {
                     e.printStackTrace();
                 }
-            } else {
-                player.setSpace(player.getStartSpace());
             }
         }
     }
@@ -118,8 +116,6 @@ public class GameController {
                     // exception so that we do no pass it on to the caller
                     // (which would be very bad style).
                 }
-            } else {
-                player.setSpace(player.getStartSpace());
             }
         }
     }
@@ -166,9 +162,7 @@ public class GameController {
         Player other = space.getPlayer();
         if (other != null) {
             Space target = board.getNeighbour(space, heading);
-            if (target == null) {
-                other.setSpace(other.getStartSpace());
-            } else {
+            if (target != null) {
                 moveToSpace(other, target, heading);
                 assert target.getPlayer() == null : target;
             }
@@ -481,12 +475,5 @@ public class GameController {
             case "Left OR Right" -> Command.OPTION_LEFT_RIGHT;
             default -> null;
         };
-    }
-    public void moveToStartSpace(Player player, Space space){
-        if(player.getSpace() != null){
-            player.getSpace().setPlayer(null);
-        }
-        player.setSpace(space);
-        space.setPlayer(player);
     }
 }

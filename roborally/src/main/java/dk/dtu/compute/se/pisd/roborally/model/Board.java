@@ -193,7 +193,7 @@ public class Board extends Subject {
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
         if (space.getWalls().contains(heading)) {
-            return space;
+            return null;
         }
         // TODO needs to be implemented based on the actual spaces
         //      and obstacles and walls placed there. For now it,
@@ -219,23 +219,23 @@ public class Board extends Subject {
                     x += 1;
                     break;
         }
+        Space result;
         if((x < 0) || (x > (width - 1)) || (y < 0) || (y > (height - 1))) {
             space.getPlayer().setSentToStartSpace(true);
-            return null;
+            result = space.getPlayer().getStartSpace();
         } else {
-            Space result = getSpace(x, y);
+            result = getSpace(x, y);
             for (FieldAction fieldAction : result.getActions()) {
                 if (fieldAction instanceof Pits) {
                     space.getPlayer().setSentToStartSpace(true);
-                    return null;
+                    result = space.getPlayer().getStartSpace();
                 }
             }
             if (result != null && result.getWalls().contains(heading.opposite())) {
-                return space;
+                return null;
             }
-
-            return result;
         }
+        return result;
     }
 
     public String getStatusMessage() {
