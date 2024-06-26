@@ -117,7 +117,7 @@ public class GameController {
      * @param player player who should move back
      */
     public void moveBackward(@NotNull Player player) {
-        if (player.board == board) {
+        if (player.board == board && (!player.isSentToStartSpace())) {
             Space space = player.getSpace();
             Heading heading = player.getHeading().next().next();
 
