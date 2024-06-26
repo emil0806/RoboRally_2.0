@@ -43,13 +43,13 @@ If the previous steps are performed the user is now ready to run the game.
 2. Wait for the server to establish a connection (the terminal will tell when the application is started)
 3. Open the roborally project
 4. Click on the play button close to the upper right corner and a window will popup
-5. Click "New game"-buttonand those board and number of players
+5. Click "New game"-button and select a number of players and a map to play
 6. When the game is created click "Join game"-button to participate in the game
 7. Enter name and age
 8. Open the roborally project again
-9. Click on the play button to open another window
+9. Click on the greeen run/play button to open another window
 10. Click "Refresh"-button
-11. Choose to create new game or join game
+11. Choose to create a new game or join game
 12. If new game -> repeat from 5
 13. If join game, enter name and age -> repeat from 9 until game is full
 14. When a game is full you will be asked to choose start space.
