@@ -48,7 +48,8 @@ public class Player extends Subject {
     private int checkpoints;
     private int distanceToPriorityAntenna;
     private Space startSpace;
-    //private int round;
+
+    private boolean sentToStartSpace = false;
 
     /**
      * Constructs a Player with the specified board, color, name, and player ID.
@@ -238,11 +239,11 @@ public class Player extends Subject {
         return chosenMoves;
     }
 
-//    public void incrementRound(){
-//        this.round++;
-//    }
-//
-//    public int getRound(){
-//        return this.round;
-//    }
+    public boolean isSentToStartSpace() {
+        return sentToStartSpace;
+    }
+
+    public void setSentToStartSpace(boolean sentBack) {
+        this.sentToStartSpace = sentBack;
+    }
 }

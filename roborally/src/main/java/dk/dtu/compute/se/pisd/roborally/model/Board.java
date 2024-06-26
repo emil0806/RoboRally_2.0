@@ -207,40 +207,34 @@ public class Board extends Subject {
         int y = space.y;
         switch (heading) {
             case SOUTH:
-                if(y + 1 < height) {
-                    y = (y + 1) % height;
+                    y += 1;
                     break;
-                } else {
-                    return null;
-                }
             case WEST:
-                if(x - 1 >= 0) {
-                    x = (x + width - 1) % width;
+                    x -= 1;
                     break;
-                } else {
-                    return null;
-                }
             case NORTH:
-                if(y - 1 >= 0) {
-                    y = (y + height - 1) % height;
+                    y -= 1;
                     break;
-                } else {
-                    return null;
-                }
             case EAST:
-                if(x + 1 < width) {
-                    x = (x + 1) % width;
+                    x += 1;
                     break;
-                } else {
-                    return null;
+        }
+        Space result;
+        if((x < 0) || (x > (width - 1)) || (y < 0) || (y > (height - 1))) {
+            space.getPlayer().setSentToStartSpace(true);
+            result = space.getPlayer().getStartSpace();
+        } else {
+            result = getSpace(x, y);
+            for (FieldAction fieldAction : result.getActions()) {
+                if (fieldAction instanceof Pits) {
+                    space.getPlayer().setSentToStartSpace(true);
+                    result = space.getPlayer().getStartSpace();
                 }
+            }
+            if (result != null && result.getWalls().contains(heading.opposite())) {
+                return null;
+            }
         }
-
-        Space result = getSpace(x, y);
-        if (result != null && result.getWalls().contains(heading.opposite())) {
-            return null;
-        }
-
         return result;
     }
 

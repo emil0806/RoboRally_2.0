@@ -54,16 +54,11 @@ public class GameController {
      */
 
     public void moveForward(@NotNull Player player) {
-        if (player.board == board) {
+        if (player.board == board && !player.isSentToStartSpace()) {
             Space space = player.getSpace();
             Heading heading = player.getHeading();
             Space target = board.getNeighbour(space, heading);
-
-            if(board.isOutOfMap(space, heading) || board.isPit(space, heading)){
-                moveCurrentPlayerToSpace(player.getStartSpace());
-                player.setHeading(Heading.SOUTH);
-            }
-            else if (target != null) {
+            if (target != null) {
                 try {
                     moveToSpace(player, target, heading);
                 } catch (ImpossibleMoveException e) {
@@ -83,15 +78,8 @@ public class GameController {
      */
 
     public void fastForward(@NotNull Player player) {
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }else {
-            moveCurrentPlayerToSpace(player.getStartSpace());
-            player.setHeading(Heading.SOUTH);
-        }
     }
 
     /**
@@ -118,18 +106,9 @@ public class GameController {
      * @param player player who should move three forward
      */
     public void fastThreeForward(@NotNull Player player) {
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }
-        if(!board.isPit(player.getSpace(), player.getHeading())){
             moveForward(player);
-        }else {
-            moveCurrentPlayerToSpace(player.getStartSpace());
-            player.setHeading(Heading.SOUTH);
-        }
     }
 
     /**
@@ -209,10 +188,7 @@ public class GameController {
         Player other = space.getPlayer();
         if (other != null) {
             Space target = board.getNeighbour(space, heading);
-            if (target == null || board.isOutOfMap(target, heading) || board.isPit(target, heading)) {
-                moveToStartSpace(other, other.getStartSpace());
-                other.setHeading(Heading.SOUTH);
-            } else {
+            if (target != null) {
                 moveToSpace(other, target, heading);
                 assert target.getPlayer() == null : target;
             }
@@ -408,6 +384,7 @@ public class GameController {
                     }
                 }
                 int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
+                board.getCurrentPlayer().setSentToStartSpace(false);
                 if (nextPlayerNumber < board.getPlayersNumber()) {
                     board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
                 } else {
@@ -656,20 +633,5 @@ public class GameController {
             case "Left OR Right" -> Command.OPTION_LEFT_RIGHT;
             default -> null;
         };
-    }
-
-    /**
-     * Moves the player to the specified start space on the board.
-     * Sets the player's current space to null and updates the player's new space on the board.
-     * @param player the player to move
-     * @param space the start space to move the player to
-     */
-
-    public void moveToStartSpace(Player player, Space space){
-        if(player.getSpace() != null){
-            player.getSpace().setPlayer(null);
-        }
-        player.setSpace(space);
-        space.setPlayer(player);
     }
 }
