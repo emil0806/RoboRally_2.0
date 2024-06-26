@@ -17,12 +17,21 @@ import java.util.concurrent.*;
 import static java.lang.Double.parseDouble;
 
 public class Client {
-
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).build();
     private static final String server = "http://localhost:8080";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+
+    /**
+     * Uploads game details to the server.
+     * Sends a POST request with the game details as JSON to the specified server endpoint.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param boardName the name of the board
+     * @param numOfPlayers the current number of players
+     * @param maxPlayers the maximum number of players allowed
+     * @param turnID the ID of the current turn
+     */
     public static void uploadGame(String boardName, int numOfPlayers, int maxPlayers, int turnID){
         try {
             Gson gson = new Gson();
@@ -44,6 +53,14 @@ public class Client {
             e.printStackTrace();
         }
     }
+    /**
+     * Retrieves game details from the server based on a specific game ID. This method constructs an HTTP GET request
+     * to query the "lobby" endpoint with the game ID, and parses the JSON response to extract game details.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param gameID the unique ID of the game to be retrieved
+     * @return ArrayList<String> a list containing game data as text; returns null if an error occurs
+     */
+
 
     public static ArrayList<String> getGame(int gameID) {
         try {
@@ -69,6 +86,15 @@ public class Client {
         }
         return null;
     }
+
+    /**
+     * Retrieves a list of all games stored on the server from the "lobby" endpoint.
+     * This method constructs an HTTP GET request, receives data as a JSON string,
+     * and parses this string into a nested list, with each sublist containing specific details about a game.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return ArrayList<ArrayList<String>> a nested list of game details in text format; returns null if an error occurs
+     */
+
 
     public static ArrayList<ArrayList<String>> getGames() {
         try {
@@ -105,6 +131,17 @@ public class Client {
         return null;
     }
 
+    /**
+     * Joins a player to a specific game on the server using the player's details. This method constructs a JSON object
+     * with the player's ID, name, and age, and sends it as a POST request to the "lobby" endpoint associated with the game ID.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game to join
+     * @param myPlayerID the player's unique ID
+     * @param name the player's name
+     * @param age the player's age
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void joinGame(int gameID, int myPlayerID, String name, int age) {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -128,6 +165,16 @@ public class Client {
         }
     }
 
+
+    /**
+     * Removes a player from a specific game on the server. This method constructs an HTTP DELETE request
+     * and sends it to the "lobby" endpoint, specifying the game ID and player ID in the URL to target the correct player and game.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param gameID the unique ID of the game from which the player is leaving
+     * @param playerID the ID of the player who is leaving the game
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void leaveGame(int gameID, int playerID) {
         try{
             HttpRequest request = HttpRequest.newBuilder()
@@ -141,6 +188,16 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+
+    /**
+     * Retrieves a list of all players participating in a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint, specifying the game ID and adding "/players" to fetch player details.
+     * It then parses the JSON response into a nested list, where each sublist contains details about a player.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game for which player details are being retrieved
+     * @return ArrayList<ArrayList<String>> a nested list containing player details such as ID, name, age, and starting space; returns null if an error occurs
+     */
 
     public static ArrayList<ArrayList<String>> getPlayers(int gameID) {
         try {
@@ -172,6 +229,16 @@ public class Client {
         }
     }
 
+
+    /**
+     * Retrieves the number of players currently registered in a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appends "/getNumberOfPlayers" to specifically request the count of players, and parses the response to return an integer.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game for which the number of players is being retrieved
+     * @return int the number of players in the game; returns 0 if an error occurs
+     */
+
     public static int getNumOfPlayers(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -187,6 +254,15 @@ public class Client {
             return 0;
         }
     }
+
+    /**
+     * Retrieves the maximum number of players allowed in a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appends "/getMaxNumberOfPlayers" to specifically request the maximum player capacity, and parses the response to return an integer.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game for which the maximum number of players is being retrieved
+     * @return int the maximum number of players allowed in the game; returns 0 if an error occurs
+     */
 
     public static int getMaxNumOfPlayers(int gameID) {
         try {
@@ -204,6 +280,16 @@ public class Client {
         }
     }
 
+
+    /**
+     * Retrieves the current turn ID for a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appends "/getTurnID" to specifically request the turn ID, and parses the response to return an integer.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game for which the turn ID is being retrieved
+     * @return int the current turn ID of the game; returns 0 if an error occurs
+     */
+
     public static int getTurnID(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -220,6 +306,16 @@ public class Client {
         }
     }
 
+
+    /**
+     * Sets or updates the turn ID for a specific game on the server.
+     * This method constructs an HTTP POST request to the "lobby" endpoint for the specified game ID,
+     * appends "/setTurnID" to specifically target the turn ID setting operation, and sends the request with no body.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game for which the turn ID is being set or updated
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void setTurnID(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -233,6 +329,17 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+
+    /**
+     * Checks periodically if all users in a specific game on the server are ready to proceed.
+     * This method schedules a task that repeatedly sends an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appended with "/allUsersReady". It evaluates the response to determine if all users are ready.
+     * If so, it completes the CompletableFuture with a value of true.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game for which readiness of all users is being checked
+     * @return CompletableFuture<Boolean> a future that will be completed with true if all users are ready, or exceptionally if an error occurs
+     */
 
     public static CompletableFuture<Boolean> waitForAllUsersToBeReady(int gameID) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -266,6 +373,18 @@ public class Client {
     }
 
 
+    /**
+     * Uploads a list of chosen moves for a player in a specific game to the server.
+     * This method constructs a JSON object with the player's ID and the list of chosen moves,
+     * then sends it as a POST request to the "lobby" endpoint for the specified game ID, appended with "/moves".
+     * The server processes these moves as part of the game's ongoing activities.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param chosenMoves an ArrayList of Strings representing the moves selected by the player
+     * @param playerID the unique ID of the player submitting the moves
+     * @param gameID the unique ID of the game where the moves need to be recorded
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void uploadMoves(ArrayList<String> chosenMoves, int playerID, int gameID) {
         try {
             Gson gson = new Gson();
@@ -284,6 +403,17 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+
+    /**
+     * Retrieves a list of all moves made in a specific game from the server. Each sublist in the returned list contains
+     * a combined string of player ID and their chosen moves, separated by commas.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID, appended with "/moves".
+     * It processes the JSON response to extract move details for each player.
+     * @author David Kasper Vilmann Wellejus s220218.
+     * @param gameID the unique ID of the game for which moves are being retrieved
+     * @return ArrayList<ArrayList<String>> a list of lists, where each sublist contains a string of player ID and moves; returns an empty list if an error occurs
+     */
 
     public static ArrayList<ArrayList<String>> getAllGameMoves(int gameID) {
         try {
@@ -325,6 +455,18 @@ public class Client {
         }
     }
 
+
+    /**
+     * Retrieves a list of all moves made by a specific player in a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appending the player ID to target the moves of a specific player.
+     * It processes the JSON response to extract and return a list of moves.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param gameID the unique ID of the game for which moves are being retrieved
+     * @param playerID the unique ID of the player whose moves are being retrieved
+     * @return ArrayList<String> a list of moves made by the specified player; returns null if an error occurs
+     */
+
     public static ArrayList<String> getMovesByPlayerID(int gameID, int playerID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -350,6 +492,18 @@ public class Client {
             return null;
         }
     }
+
+    /**
+     * Sets the starting space for a specific player in a specific game on the server.
+     * This method constructs an HTTP POST request, sending the starting space value as the body of the request,
+     * to the "lobby" endpoint for the specified game and player IDs, appended with "/setStartSpace".
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game
+     * @param playerID the unique ID of the player
+     * @param startSpace the starting space value to be set for the player
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void setStartSpace(int gameID, int playerID, double startSpace) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -363,6 +517,17 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Retrieves the starting space for a specific player in a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game and player IDs,
+     * appending "/getStartSpace" to the URL. It processes the JSON response to return the starting space as a double.
+     * @author Mikkel Lau Petersen s235082
+     * @param gameID the unique ID of the game
+     * @param playerID the unique ID of the player
+     * @return double the starting space value for the player; returns 0 if an error occurs
+     */
+
     public static double getStartSpace(int gameID, int playerID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -378,6 +543,17 @@ public class Client {
             return 0;
         }
     }
+
+    /**
+     * Sets the available starting spaces for a specific game on the server.
+     * This method constructs an HTTP POST request, sending the starting space value as the body of the request,
+     * to the "lobby" endpoint for the specified game ID, appended with "/setAvailableStartSpaces".
+     * @author Mikkel Lau Petersen s235082
+     * @param gameID the unique ID of the game
+     * @param startSpace the starting space value to be set as available
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void setAvailableStartSpaces(int gameID, double startSpace) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -391,6 +567,16 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Retrieves the available starting spaces for a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appending "/getAvailableStartSpaces" to the URL. It processes the JSON response to return a list of available starting spaces.
+     * @author Mikkel Lau Petersen s235082
+     * @param gameID the unique ID of the game
+     * @return ArrayList<Double> a list of available starting spaces for the game; returns an empty list if an error occurs
+     */
+
     public static ArrayList<Double> getAvailableStartSpaces(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -407,6 +593,16 @@ public class Client {
             return new ArrayList<>();
         }
     }
+
+    /**
+     * Retrieves the list of removed starting places for a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appending "/getRemovedStartingPlace" to the URL. It processes the JSON response to return a list of removed starting places.
+     * @author Mikkel Lau Petersen s235082
+     * @param gameID the unique ID of the game
+     * @return List<Double> a list of removed starting places for the game; returns an empty list if an error occurs
+     */
+
     public static List<Double> getRemovedStartingPlace(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -431,6 +627,17 @@ public class Client {
             return new ArrayList<>();
         }
     }
+
+    /**
+     * Waits for all players in a specific game to have chosen their actions.
+     * This method periodically sends an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appending "/allPlayersChosen" to check if all players have made their choices.
+     * It returns true once all players have chosen, otherwise it will keep checking at a fixed interval.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param gameID the unique ID of the game
+     * @return boolean true if all players have chosen their actions; throws a RuntimeException if an error occurs
+     */
+
     public static boolean waitForAllUsersChosen(int gameID) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -468,6 +675,19 @@ public class Client {
         }
     }
 
+    /**
+     * Sends a player's interaction for a specific step in a specific game to the server.
+     * This method constructs an HTTP POST request with the interaction string as the body,
+     * and sends it to the "lobby" endpoint for the specified game ID, player ID, and step,
+     * appending "/setInteraction" to the URL.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game
+     * @param playerID the unique ID of the player
+     * @param step the step number for which the interaction is being sent
+     * @param interaction the interaction data to be sent
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void sendInteraction(int gameID, int playerID, int step, String interaction) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -480,6 +700,19 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+
+    /**
+     * Waits for a specific interaction to be completed by a player at a specific step in a specific game.
+     * This method periodically sends an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * player ID, and step, appending "/waitForInteraction" to check if the interaction is completed.
+     * It returns a CompletableFuture that will be completed with true once the interaction is done.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param gameID the unique ID of the game
+     * @param playerID the unique ID of the player
+     * @param step the step number for which the interaction is being checked
+     * @return CompletableFuture<Boolean> a future that will be completed with true if the interaction is done; or exceptionally if an error occurs
+     */
 
     public static CompletableFuture<Boolean> waitForInteraction(int gameID, int playerID, int step) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -512,6 +745,15 @@ public class Client {
         return future;
     }
 
+    /**
+     * Clears all moves for a specific game on the server.
+     * This method constructs an HTTP DELETE request and sends it to the "lobby" endpoint for the specified game ID,
+     * appending "/clearAllMoves" to the URL.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param gameID the unique ID of the game
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void clearAllMoves(int gameID){
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -524,6 +766,16 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Sets the number of players that are ready in a specific game on the server.
+     * This method constructs an HTTP POST request, sending the number of players ready as the body of the request,
+     * to the "lobby" endpoint for the specified game ID, appended with "/playersReady".
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game
+     * @param playersReady the number of players that are ready
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
 
     public static void setPlayersReady(int gameID, int playersReady) {
         try {
@@ -539,6 +791,15 @@ public class Client {
         }
     }
 
+    /**
+     * Increments the number of players that are ready in a specific game on the server.
+     * This method constructs an HTTP PUT request with no body, and sends it to the "lobby" endpoint for the specified game ID,
+     * appended with "/playersReady".
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void incrementPlayersReady(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -552,6 +813,16 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Periodically checks if all players are ready in a specific game on the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appended with "/playersReady". It repeatedly sends the request at fixed intervals and checks the response.
+     * If all players are ready, it completes the CompletableFuture with true.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game
+     * @return CompletableFuture<Boolean> a future that will be completed with true if all players are ready, or exceptionally if an error occurs
+     */
 
     public static CompletableFuture<Boolean> getPlayersReady(int gameID) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -584,6 +855,15 @@ public class Client {
         return future;
     }
 
+    /**
+     * Increments the round number for a specific game on the server.
+     * This method constructs an HTTP PUT request with no body, and sends it to the "lobby" endpoint for the specified game ID,
+     * appended with "/round".
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param gameID the unique ID of the game
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void incrementRoundNumber(int gameID) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -597,6 +877,15 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Retrieves the current round number for a specific game from the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appended with "/round". It processes the JSON response to return the round number as an integer.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param gameID the unique ID of the game
+     * @return int the current round number of the game; returns 0 if an error occurs
+     */
 
     public static int getRoundNumber(int gameID){
         try {
@@ -614,6 +903,16 @@ public class Client {
         }
     }
 
+    /**
+     * Increments the round number for a specific player in a specific game on the server.
+     * This method constructs an HTTP PUT request with no body, and sends it to the "lobby" endpoint for the specified game and player IDs,
+     * appended with "/round".
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param gameID the unique ID of the game
+     * @param playerID the unique ID of the player
+     * @return void This method does not return a value but may print an error stack trace if an exception occurs.
+     */
+
     public static void incrementPlayerRoundNumber(int gameID, int playerID){
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -627,6 +926,16 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Periodically checks if all players in a specific game are at the same round number on the server.
+     * This method constructs an HTTP GET request to the "lobby" endpoint for the specified game ID,
+     * appended with "/round/allReady". It repeatedly sends the request at fixed intervals and checks the response.
+     * If all players are at the same round, it completes the CompletableFuture with true.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param gameID the unique ID of the game
+     * @return CompletableFuture<Boolean> a future that will be completed with true if all players are at the same round, or exceptionally if an error occurs
+     */
 
     public static CompletableFuture<Boolean> allPlayersAtSameRound(int gameID) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();

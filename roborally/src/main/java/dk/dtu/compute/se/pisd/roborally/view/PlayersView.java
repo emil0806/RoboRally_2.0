@@ -39,6 +39,13 @@ public class PlayersView extends TabPane implements ViewObserver {
 
     private PlayerView[] playerViews;
 
+    /**
+     * Constructs a PlayersView for the given GameController.
+     * Initializes the view for the current player and sets the tab closing policy.
+     * Attaches this view as an observer to the board and updates the view.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @param gameController the game controller managing the game
+     */
     public PlayersView(GameController gameController) {
         board = gameController.board;
         int myPlayerID = board.getMyPlayerID();
@@ -61,6 +68,12 @@ public class PlayersView extends TabPane implements ViewObserver {
         update(board);
     }
 
+    /**
+     * Updates the view based on changes in the observed subject.
+     * If the subject is the board, selects the tab corresponding to the current player.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param subject the subject being observed for changes
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == board) {

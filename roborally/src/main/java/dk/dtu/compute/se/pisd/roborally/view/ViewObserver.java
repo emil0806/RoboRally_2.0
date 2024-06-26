@@ -35,6 +35,13 @@ public interface ViewObserver extends Observer {
 
     void updateView(Subject subject);
 
+    /**
+     * This default implementation of the update method ensures that ViewObserver implementations
+     * perform the update only in the FX application thread. The actual update of the view is done
+     * in the updateView() method.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param subject the subject being observed for changes
+     */
     @Override
     default void update(Subject subject) {
         // This default implementation of the update method makes sure that ViewObserver implementations

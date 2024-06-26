@@ -55,6 +55,11 @@ public class BoardView extends VBox implements ViewObserver {
 
     private SpaceEventHandler spaceEventHandler;
 
+    /**
+     * Constructs a BoardView with the specified GameController.
+     * Initializes the board view components and sets up the space event handler.
+     * @param gameController the game controller managing the game
+     */
     public BoardView(@NotNull GameController gameController) {
         board = gameController.board;
 
@@ -89,6 +94,10 @@ public class BoardView extends VBox implements ViewObserver {
         update(board);
     }
 
+    /**
+     * Updates the view based on changes in the observed subject.
+     * @param subject the subject being observed for changes
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == board) {
@@ -107,6 +116,10 @@ public class BoardView extends VBox implements ViewObserver {
             this.gameController = gameController;
         }
 
+        /**
+         * Handles mouse click events on space views.
+         * @param event the mouse event
+         */
         @Override
         public void handle(MouseEvent event) {
             Object source = event.getSource();

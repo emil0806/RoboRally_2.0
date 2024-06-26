@@ -14,6 +14,16 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Serializes the current state of the game board into a JSON string.
+ * This method constructs a BoardTemplate object from the current board state,
+ * including dimensions, phase, current player, priority antenna, checkpoints, spaces, and players.
+ * The BoardTemplate is then converted to a JSON string using Gson.
+ * @author Emil Leonhard Lauritzen s231331
+ * @param board the game board to serialize
+ * @return String a JSON representation of the board state
+ */
+
 public class SerializeGame {
     public static String serializeGame(Board board) {
         BoardTemplate boardTemplate = new BoardTemplate();
