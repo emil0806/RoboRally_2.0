@@ -15,12 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class CheckpointTest {
 
-    Board board = new Board(8, 8);
+    Board board = new Board(8, 8, 2);
     GameController gameController = new GameController(board);
 
     @Test
     void checkpointTest() {
-        Player player = new Player(board, null,"Player");
+        Player player = new Player(board, null,"Player", 1);
         player.setHeading(Heading.NORTH);
         player.setSpace(gameController.board.getSpace(1,1));
 

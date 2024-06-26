@@ -48,7 +48,10 @@ import java.util.List;
 public class LoadBoard {
 
     private static final String BOARDSFOLDER = "boards";
-    private static final String DEFAULTBOARD = "defaultboard";
+    private static final String DEFAULTBOARD = "Rotating Maze";
+    private static final String HIGHOCTANE = "High Octane";
+    private static final String FRACTIONATION = "Fractionation";
+    private static final String DEATHTRAP = "Death Trap";
     private static final String JSON_EXT = "json";
 
     private static final int DEFAULT_WIDTH = 8;
@@ -56,13 +59,20 @@ public class LoadBoard {
     private static final int DEFAULT_HEIGHT = 8;
 
     /**
-     * ...
-     *
-     * @author Emil Lauritzen, s231331@dtu.dk
+     * Loads a game board from a JSON resource file based on the given board name.
+     * This method retrieves the board configuration from a JSON file and constructs a Board object,
+     * setting up spaces, actions, walls, and player positions.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param boardname the name of the board to load
+     * @return Board the constructed Board object; returns a default Board if the resource file is not found or an error occurs
      */
+
     public static Board loadBoard(String boardname) {
-        if (boardname == null) {
-            boardname = DEFAULTBOARD;
+        switch (boardname) {
+            case DEFAULTBOARD -> boardname = DEFAULTBOARD;
+            case HIGHOCTANE -> boardname = HIGHOCTANE;
+            case DEATHTRAP -> boardname = DEATHTRAP;
+            case FRACTIONATION -> boardname = FRACTIONATION;
         }
 
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
@@ -95,7 +105,7 @@ public class LoadBoard {
                 result.setPriorityAntenna(result.getSpace(template.priorityAntenna.x, template.priorityAntenna.y));
                 for (int i = 0; i < template.players.size(); i++) {
                     PlayerTemplate playerTemplate = template.players.get(i);
-                    Player player = new Player(result, playerTemplate.color, playerTemplate.name);
+                    Player player = new Player(result, playerTemplate.color, playerTemplate.name, i);
                     if(i == template.current) {
                         result.setCurrentPlayer(player);
                     }
@@ -137,9 +147,9 @@ public class LoadBoard {
      * @param name, name of board
      */
     public static void saveBoard(Board board, String name) {
-        List<PlayerTemplate> playerTemplates = createPlayerTemplates(board);
 
-        BoardTemplate template = createBoardTemplate(board, playerTemplates);
+        String gameJson = SerializeGame.serializeGame(board);
+
         ClassLoader classLoader = LoadBoard.class.getClassLoader();
         // TODO: this is not very defensive, and will result in a NullPointerException
         //       when the folder "resources" does not exist! But, it does not need
@@ -162,7 +172,7 @@ public class LoadBoard {
         try {
             fileWriter = new FileWriter(filename);
             writer = gson.newJsonWriter(fileWriter);
-            gson.toJson(template, template.getClass(), writer);
+            writer.jsonValue(gameJson);
             writer.close();
         } catch (IOException e1) {
             if (writer != null) {
@@ -177,76 +187,5 @@ public class LoadBoard {
                 } catch (IOException e2) {}
             }
         }
-    }
-    /**
-     * ...
-     * @author Emil Lauritzen, s231331@dtu.dk
-     * @param board the playing board
-     * @param playerTemplates list of players
-     * @return boardTemplate
-     */
-    public static BoardTemplate createBoardTemplate(Board board, List<PlayerTemplate> playerTemplates) {
-        BoardTemplate boardTemplate = new BoardTemplate();
-        boardTemplate.width = board.width;
-        boardTemplate.height = board.height;
-        boardTemplate.phase = board.getPhase();
-        boardTemplate.players = playerTemplates;
-        boardTemplate.current = board.getPlayerNumber(board.getCurrentPlayer());
-        boardTemplate.priorityAntenna = new SpaceTemplate();
-        boardTemplate.priorityAntenna.x = board.getPriorityAntenna().x;
-        boardTemplate.priorityAntenna.y = board.getPriorityAntenna().y;
-        boardTemplate.priorityAntenna.actions = board.getPriorityAntenna().getActions();
-        boardTemplate.priorityAntenna.walls = board.getPriorityAntenna().getWalls();
-        boardTemplate.numOfCheckpoints = board.getNumOfCheckpoints();
-
-        for (int i = 0; i < board.width; i++) {
-            for (int j = 0; j < board.height; j++) {
-                Space space = board.getSpace(i, j);
-                if (!space.getWalls().isEmpty() || !space.getActions().isEmpty()) {
-                    SpaceTemplate spaceTemplate = new SpaceTemplate();
-                    spaceTemplate.x = space.x;
-                    spaceTemplate.y = space.y;
-                    spaceTemplate.actions.addAll(space.getActions());
-                    spaceTemplate.walls.addAll(space.getWalls());
-                    boardTemplate.spaces.add(spaceTemplate);
-                }
-            }
-        }
-        return boardTemplate;
-    }
-    /**
-     * ...
-     * @author Emil Lauritzen, s231331@dtu.dk
-     * @param board the playing board
-     * @return list of player templates
-     */
-    public static List<PlayerTemplate> createPlayerTemplates(Board board) {
-        List<PlayerTemplate> playerTemplates = new ArrayList<>();
-        for(int i = 0; i < board.getPlayersNumber(); i++) {
-            Player player = board.getPlayer(i);
-            PlayerTemplate playerTemplate = new PlayerTemplate();
-            playerTemplate.name = player.getName();
-            playerTemplate.color = player.getColor();
-            playerTemplate.space = new SpaceTemplate();
-            playerTemplate.space.walls = player.getSpace().getWalls();
-            playerTemplate.space.actions = player.getSpace().getActions();
-            playerTemplate.space.x = player.getSpace().x;
-            playerTemplate.space.y = player.getSpace().y;
-            playerTemplate.heading = player.getHeading();
-            playerTemplate.program = new CommandCardFieldTemplate[5];
-            for(int k = 0; k < playerTemplate.program.length; k++) {
-                playerTemplate.program[k] = new CommandCardFieldTemplate();
-                playerTemplate.program[k].card = player.getProgramField(k).getCard();
-                playerTemplate.program[k].visible = player.getProgramField(k).isVisible();
-            }
-            playerTemplate.cards = new CommandCardFieldTemplate[8];
-            for(int j = 0; j < playerTemplate.cards.length; j++) {
-                playerTemplate.cards[j] = new CommandCardFieldTemplate();
-                playerTemplate.cards[j].card = player.getCardField(j).getCard();
-                playerTemplate.cards[j].visible = player.getCardField(j).isVisible();
-            }
-            playerTemplates.add(playerTemplate);
-        }
-    return playerTemplates;
     }
 }

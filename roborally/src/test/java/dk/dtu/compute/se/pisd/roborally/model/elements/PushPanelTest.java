@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  */
 public class PushPanelTest {
-    Board board = new Board(8, 8);
+    Board board = new Board(8, 8, 2);
     GameController gameController = new GameController(board);
 
     @Test
     void pushPanelTest() {
-        Player player = new Player(board, null,"Player");
+        Player player = new Player(board, null,"Player", 1);
         player.setHeading(Heading.NORTH);
         player.setSpace(gameController.board.getSpace(3,3));
 
@@ -26,7 +26,6 @@ public class PushPanelTest {
         pushPanel.setHeading(Heading.NORTH);
         pushPanel.setActivationRegisters(new int[] {1, 3, 5});
         pushPanel.doAction(gameController, gameController.board.getSpace(3,3));
-
         assertEquals(player.getSpace(), board.getSpace(3,2));
     }
 }

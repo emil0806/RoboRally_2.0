@@ -48,6 +48,13 @@ public class RoboRallyMenuBar extends MenuBar {
 
     private MenuItem exitApp;
 
+    /**
+     * Constructs a RoboRallyMenuBar for the given AppController.
+     * Initializes the menu bar with file control options including new game, stop game, save game, load game, and exit.
+     * Sets up action handlers for each menu item and updates the menu based on the game state.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param appController the app controller managing the application
+     */
     public RoboRallyMenuBar(AppController appController) {
         this.appController = appController;
 
@@ -79,6 +86,12 @@ public class RoboRallyMenuBar extends MenuBar {
         update();
     }
 
+    /**
+     * Updates the visibility of the menu items based on the current game state.
+     * If a game is running, shows stop game and save game options, hides new game and load game options.
+     * If no game is running, shows new game and load game options, hides stop game and save game options.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     */
     public void update() {
         if (appController.isGameRunning()) {
             newGame.setVisible(false);

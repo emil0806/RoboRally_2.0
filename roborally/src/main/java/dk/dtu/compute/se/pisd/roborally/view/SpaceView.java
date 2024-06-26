@@ -58,6 +58,12 @@ public class SpaceView extends StackPane implements ViewObserver {
     public final Space space;
 
 
+    /**
+     * Constructs a SpaceView for the given Space.
+     * Sets the dimensions of the space view and attaches it as an observer to the space.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param space the space associated with this view
+     */
     public SpaceView(@NotNull Space space) {
         this.space = space;
 
@@ -75,6 +81,11 @@ public class SpaceView extends StackPane implements ViewObserver {
         update(space);
     }
 
+    /**
+     * Updates the player's representation on the space view.
+     * Draws the player's robot image on the canvas and rotates it based on the player's heading.
+     * @author Emil Leonhard Lauritzen s231331
+     */
     private void updatePlayer() {
         Player player = space.getPlayer();
         Canvas canvas = new Canvas(SpaceView.SPACE_WIDTH, SpaceView.SPACE_HEIGHT);
@@ -119,6 +130,12 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
     }
 
+    /**
+     * Updates the view based on changes in the observed subject.
+     * Draws the space view based on the current state, including field actions and walls.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param subject the subject being observed for changes
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {

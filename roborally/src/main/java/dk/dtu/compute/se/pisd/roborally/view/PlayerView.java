@@ -22,16 +22,17 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
-import dk.dtu.compute.se.pisd.roborally.controller.AppController;
+import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * ...
@@ -62,7 +63,17 @@ public class PlayerView extends Tab implements ViewObserver {
     private VBox playerInteractionPanel;
 
     private GameController gameController;
+    private Timer timer;
+    private TimerTask task;
 
+    /**
+     * Constructs a PlayerView for the given GameController and Player.
+     * Initializes the view with the player's name, color, program fields, command cards, and buttons.
+     * Attaches this view as an observer to the player's board and updates the view.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameController the game controller managing the game
+     * @param player the player associated with this view
+     */
     public PlayerView(@NotNull GameController gameController, @NotNull Player player) {
         super(player.getName());
         this.setStyle("-fx-text-base-color: " + player.getColor() + ";");
@@ -131,8 +142,16 @@ public class PlayerView extends Tab implements ViewObserver {
             player.board.attach(this);
             update(player.board);
         }
+
     }
 
+    /**
+     * Updates the view based on changes in the observed subject.
+     * Adjusts the background colors of the program card fields and handles the visibility and state of action buttons.
+     * Manages the interaction phase by displaying interaction options or waiting for opponent interactions.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param subject the subject being observed for changes
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == player.board) {
@@ -164,6 +183,9 @@ public class PlayerView extends Tab implements ViewObserver {
                     programPane.getChildren().remove(playerInteractionPanel);
                     programPane.add(buttonPanel, Player.NO_REGISTERS, 0);
                 }
+
+                cancelTimer();
+
                 switch (player.board.getPhase()) {
                     case INITIALISATION:
                         finishButton.setDisable(true);
@@ -174,7 +196,17 @@ public class PlayerView extends Tab implements ViewObserver {
                         break;
 
                     case PROGRAMMING:
-                        finishButton.setDisable(false);
+                        timer = new Timer();
+                        task = new TimerTask() {
+                            @Override
+                            public void run() {
+                                Platform.runLater(() -> {
+                                    finishButton.setDisable(!allProgramSlotsFilled());
+                                });
+                            }
+                        };
+                        timer.schedule(task, 0, 500);
+
                         executeButton.setDisable(true);
                         stepButton.setDisable(true);
                         break;
@@ -191,28 +223,87 @@ public class PlayerView extends Tab implements ViewObserver {
                         stepButton.setDisable(true);
                 }
 
-
             } else if (player.board.getPhase() == Phase.PLAYER_INTERACTION) {
-                if (!programPane.getChildren().contains(playerInteractionPanel)) {
-                    programPane.getChildren().remove(buttonPanel);
-                    programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
-                }
-                playerInteractionPanel.getChildren().clear();
+                if(player.getPlayerID() == gameController.board.getCurrentPlayer().getPlayerID()) {
+                    if (!programPane.getChildren().contains(playerInteractionPanel)) {
+                        programPane.getChildren().remove(buttonPanel);
+                        programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
+                    }
+                    playerInteractionPanel.getChildren().clear();
 
-                if (player.board.getCurrentPlayer() == player) {
+                    if (player.board.getCurrentPlayer() == player) {
 
-                    Button optionButton = new Button("Left");
-                    optionButton.setOnAction( e -> gameController.executeCommandOption(Command.LEFT));
-                    optionButton.setDisable(false);
-                    playerInteractionPanel.getChildren().add(optionButton);
+                        Button optionButton = new Button("Left");
+                        optionButton.setOnAction( e -> {
+                             Client.sendInteraction(gameController.board.getGameId(), player.getPlayerID(), gameController.board.getStep(), "Turn Left"); gameController.executeCommandOption(Command.LEFT);
+                        });
+                        optionButton.setDisable(false);
+                        playerInteractionPanel.getChildren().add(optionButton);
 
-                    optionButton = new Button("Right");
-                    optionButton.setOnAction( e -> gameController.executeCommandOption(Command.RIGHT));
-                    optionButton.setDisable(false);
-                    playerInteractionPanel.getChildren().add(optionButton);
+                        optionButton = new Button("Right");
+                        optionButton.setOnAction( e -> {
+                             Client.sendInteraction(gameController.board.getGameId(), player.getPlayerID(), gameController.board.getStep(), "Turn Right"); gameController.executeCommandOption(Command.RIGHT);
+                        });
+                        optionButton.setDisable(false);
+                        playerInteractionPanel.getChildren().add(optionButton);
+                    }
+                } else {
+                    Alert waitingForInteraction = new Alert(Alert.AlertType.WARNING);
+                    waitingForInteraction.setTitle("RoboRally");
+                    waitingForInteraction.setHeaderText(null);
+                    waitingForInteraction.getDialogPane().getButtonTypes().clear();  // Remove all buttons
+                    waitingForInteraction.setContentText("Waiting for an opponent to choose interaction");
+                    waitingForInteraction.show();
+
+                    Client.waitForInteraction(gameController.board.getGameId(), gameController.board.getCurrentPlayer().getPlayerID(), gameController.board.getStep()).thenAccept(allReady -> {
+                        if (allReady) {
+                            Platform.runLater(() -> {
+                                waitingForInteraction.setResult(ButtonType.OK);
+                                waitingForInteraction.close();
+                                gameController.setupMoves();
+                                gameController.board.setPhase(Phase.ACTIVATION);
+                                if (gameController.board.isStepMode()) {
+                                    gameController.executeStep();
+                                } else {
+                                    gameController.executePrograms();
+                                }
+                            });
+                        }
+                    }).exceptionally(ex -> {
+                        ex.printStackTrace();
+                        return null;
+                    });
                 }
             }
         }
+        if (timer != null && player.board.getPhase() != Phase.PROGRAMMING) {
+            timer.cancel();
+        }
+
     }
 
+    /**
+     * Checks if all program slots for the player are filled with command cards.
+     * @author David Kasper Vilmann Wellejus s220218
+     * @return boolean true if all program slots are filled, false otherwise
+     */
+    private boolean allProgramSlotsFilled() {
+        for (int i = 0; i < Player.NO_REGISTERS; i++) {
+            if (player.getProgramField(i).getCard() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Cancels the timer if it is running and sets it to null.
+     * @author David Kasper Vilmann Wellejus s220218
+     */
+    public void cancelTimer() {
+        if(timer != null){
+            timer.cancel();
+            timer = null;
+        }
+    }
 }

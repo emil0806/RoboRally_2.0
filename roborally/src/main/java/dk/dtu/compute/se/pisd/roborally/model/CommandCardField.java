@@ -37,6 +37,13 @@ public class CommandCardField extends Subject {
 
     private boolean visible;
 
+    /**
+     * Constructs a CommandCardField for the given player.
+     * Initializes the field with the player, sets the card to null, and makes the field visible.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param player the player to whom this command card field belongs
+     */
+
     public CommandCardField(Player player) {
         this.player = player;
         this. card = null;
@@ -47,6 +54,13 @@ public class CommandCardField extends Subject {
         return card;
     }
 
+    /**
+     * Sets the command card for this field.
+     * If the new card is different from the current card, it updates the card and notifies of the change.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param card the new command card to set
+     */
+
     public void setCard(CommandCard card) {
         if (card != this.card) {
             this.card = card;
@@ -54,10 +68,21 @@ public class CommandCardField extends Subject {
         }
     }
 
+    /**
+     * Checks if the command card field is visible.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return boolean true if the field is visible; false otherwise
+     */
     public boolean isVisible() {
         return visible;
     }
 
+    /**
+     * Sets the visibility of the command card field.
+     * If the new visibility state is different from the current state, it updates the visibility and notifies of the change.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param visible the new visibility state to set
+     */
     public void setVisible(boolean visible) {
         if (visible != this.visible) {
             this.visible = visible;

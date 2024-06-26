@@ -22,6 +22,8 @@
 package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
+import dk.dtu.compute.se.pisd.roborally.model.elements.Pits;
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,6 +63,7 @@ public class Board extends Subject {
     private int numOfCheckpoints;
 
     private Player winner;
+    private int myPlayerID;
 
     public Board(int width, int height, int numOfCheckpoints) {
         this.width = width;
@@ -204,43 +207,44 @@ public class Board extends Subject {
         int y = space.y;
         switch (heading) {
             case SOUTH:
-                if(y + 1 < height) {
-                    y = (y + 1) % height;
+                    y += 1;
                     break;
-                } else {
-                    return null;
-                }
             case WEST:
-                if(x - 1 >= 0) {
-                    x = (x + width - 1) % width;
+                    x -= 1;
                     break;
-                } else {
-                    return null;
-                }
             case NORTH:
-                if(y - 1 >= 0) {
-                    y = (y + height - 1) % height;
+                    y -= 1;
                     break;
-                } else {
-                    return null;
-                }
             case EAST:
-                if(x + 1 < width) {
-                    x = (x + 1) % width;
+                    x += 1;
                     break;
-                } else {
-                    return null;
+        }
+        Space result;
+        if((x < 0) || (x > (width - 1)) || (y < 0) || (y > (height - 1))) {
+            space.getPlayer().setSentToStartSpace(true);
+            result = space.getPlayer().getStartSpace();
+        } else {
+            result = getSpace(x, y);
+            for (FieldAction fieldAction : result.getActions()) {
+                if (fieldAction instanceof Pits) {
+                    space.getPlayer().setSentToStartSpace(true);
+                    result = space.getPlayer().getStartSpace();
                 }
+            }
+            if (result != null && result.getWalls().contains(heading.opposite())) {
+                return null;
+            }
         }
-
-        Space result = getSpace(x, y);
-        if (result != null && result.getWalls().contains(heading.opposite())) {
-            return null;
-        }
-
         return result;
     }
 
+    /**
+     * Retrieves the current status message of the game.
+     * This method returns a string containing the current phase, the name and heading of the current player,
+     * the number of checkpoints the player has, and the current step.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return String the status message of the game
+     */
     public String getStatusMessage() {
 
         return "Phase: " + getPhase().name() +
@@ -272,4 +276,13 @@ public class Board extends Subject {
     public void setWinner(Player winner) {
         this.winner = winner;
     }
+
+    public int getMyPlayerID() {
+        return myPlayerID;
+    }
+
+    public void setMyPlayerID(int playerID) {
+        this.myPlayerID = playerID;
+    }
+
 }

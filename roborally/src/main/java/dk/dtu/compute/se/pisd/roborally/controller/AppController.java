@@ -25,24 +25,22 @@ import dk.dtu.compute.se.pisd.designpatterns.observer.Observer;
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 
 import dk.dtu.compute.se.pisd.roborally.RoboRally;
+import dk.dtu.compute.se.pisd.roborally.client.Client;
 import dk.dtu.compute.se.pisd.roborally.fileaccess.LoadBoard;
 
 import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 
 import dk.dtu.compute.se.pisd.roborally.model.elements.PriorityAntenna;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
+import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * ...
@@ -55,10 +53,9 @@ public class AppController implements Observer {
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
     final private List<String> SAVE_SLOT_OPTIONS = Arrays.asList("Slot1", "Slot2", "Slot3");
     final private List<String> PLAYER_COLORS = Arrays.asList("red", "green", "blue", "orange", "grey", "magenta");
-    final private List<String> boardNames = Arrays.asList("defaultboard");
-    private List<Double> Start_Place = new ArrayList<>(Arrays.asList(1.1, 3.0, 4.1, 5.1, 6.0, 9.1));
-
+    final private List<String> boardNames = Arrays.asList("Rotating Maze", "High Octane", "Fractionation", "Death Trap");
     final private RoboRally roboRally;
+    private int count = 0;
 
     private GameController gameController;
 
@@ -92,40 +89,223 @@ public class AppController implements Observer {
 
 
             Optional<String> resultS = dialogS.showAndWait();
-            resultS.ifPresent(boardName -> {
-                Board board = LoadBoard.loadBoard(boardName);
-                gameController = new GameController(board);
-
-                for(int i = 0; i < board.width; i++) {
-                    for(int j = 0; j < board.height; j++) {
-                        for(FieldAction fieldAction : board.getSpace(i, j).getActions()) {
-                            if(fieldAction instanceof PriorityAntenna) {
-                                board.setPriorityAntenna(board.getSpace(i, j));
-                            }
-                        }
-                    }
-                }
-                int no = result.get();
-                for (int i = 0; i < no; i++) {
-                    Player player = new Player(board, PLAYER_COLORS.get(i), "Player " + (i + 1));
-                    ChoiceDialog<Double> choose = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
-                    choose.setTitle("Choose place to start ");
-                    choose.setHeaderText(" Player number " + (i + 1)  + " \n Select place to start: ");
-                    Optional<Double> startPlace = choose.showAndWait();
-                    board.addPlayer(player);
-                    Double sec = startPlace.get();
-                    int x = sec.intValue();
-                    int y = (int) Math.round((sec -x) * 10); // Convert decimal part to y
-                    player.setSpace(board.getSpace(x, y));
-                    player.setStartSpace(board.getSpace(x, y));
-                    Start_Place.remove(sec);
-                }
-                gameController.startProgrammingPhase();
-
-                roboRally.createBoardView(gameController);
-            });
+            if(resultS.isPresent()) {
+                Client.uploadGame(resultS.get(), 0, result.get(),0);
+                showAvailableGames();
+            }
         }
     }
+
+    /**
+     * Displays the available games by fetching the game list from the server
+     * and updating the lobby view.
+     * @author Emil Leonhard Lauritzen s231331
+     */
+    public void showAvailableGames() {
+        ArrayList<ArrayList<String>> listOfGames = Client.getGames();
+        roboRally.updateLobbyView(listOfGames);
+    }
+
+    /**
+     * Joins an existing game by prompting the user for their name and age,
+     * then sending the join request to the server. It handles player information
+     * and game setup steps, including waiting for all players to join and choose start positions.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game to join
+     * @return void This method does not return a value but may perform UI updates and server communications.
+     */
+
+    public void joinGame(int gameID) {
+        TextInputDialog dialogName = new TextInputDialog();
+        dialogName.setTitle("Player Information");
+        dialogName.setHeaderText("Enter your name");
+        Optional<String> resultName = dialogName.showAndWait();
+        List<Integer> ages = IntStream.rangeClosed(1, 100).boxed().toList();
+        ChoiceDialog<Integer> dialogAge = new ChoiceDialog<>(ages.get(0), ages);
+        dialogAge.setTitle("Player Information");
+        dialogAge.setHeaderText("Enter your age");
+        Optional<Integer> resultAge = dialogAge.showAndWait();
+        if(resultName.isPresent() && resultAge.isPresent()) {
+            int myPlayerID = Client.getNumOfPlayers(gameID);
+
+            Client.joinGame(gameID, myPlayerID, resultName.get(), resultAge.get());
+
+            Alert waitingToFillGame = new Alert(AlertType.INFORMATION, "Cancel", ButtonType.CANCEL);
+            PauseTransition delay = new PauseTransition(Duration.seconds(2));
+            waitingToFillGame.setTitle("Waiting for players to join game");
+            waitingToFillGame.setHeaderText("Game ID: " + gameID);
+            String playersName = "";
+            for (ArrayList<String> player : Client.getPlayers(gameID)) {
+                playersName += player.get(1) + ", ";
+            }
+            waitingToFillGame.setContentText("Players: " + playersName);
+            waitingToFillGame.setOnShown(e -> delay.playFromStart());
+            waitingToFillGame.setOnCloseRequest(e -> waitingToFillGame.close());
+            delay.setOnFinished(e -> {
+                showAvailableGames();
+                String playersName2 = "";
+                for (ArrayList<String> player : Client.getPlayers(gameID)) {
+                    playersName2 += player.get(1) + ", ";
+                }
+                waitingToFillGame.setContentText("Players: " + playersName2);
+                delay.playFromStart();
+                if (Client.getNumOfPlayers(gameID) == Client.getMaxNumOfPlayers(gameID)) {
+                    waitingToFillGame.close();
+                    waitingToFillGame.setResult(ButtonType.OK);
+                    delay.stop();
+                }
+            });
+            waitingToFillGame.showAndWait();
+            if (waitingToFillGame.getResult() == ButtonType.CLOSE || waitingToFillGame.getResult() == ButtonType.CANCEL) {
+                Client.leaveGame(gameID, myPlayerID);
+            }
+            if(Client.getNumOfPlayers(gameID) == Client.getMaxNumOfPlayers(gameID)) {
+                setupGame(gameID, myPlayerID);
+            }
+        }
+    }
+
+
+    /**
+     * Sets up the game by loading the board and configuring player positions.
+     * This method retrieves game information, loads the board, and initializes the game controller.
+     * It then prompts the player to choose a starting position and waits for all players to be ready before starting the game.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param gameID the unique ID of the game
+     * @param myPlayerID the unique ID of the player setting up the game
+     * @return void This method does not return a value but may perform UI updates and server communications.
+     */
+    public void setupGame(int gameID, int myPlayerID) {
+        ArrayList<String> gameInfo = Client.getGame(gameID);
+        Board board = LoadBoard.loadBoard(gameInfo.get(1));
+        if (board != null) {
+            board.setGameId(gameID);
+            gameController = new GameController(board);
+            board.setMyPlayerID(myPlayerID);
+        }
+
+        for (int i = 0; i < board.width; i++) {
+            for (int j = 0; j < board.height; j++) {
+                for (FieldAction fieldAction : board.getSpace(i, j).getActions()) {
+                    if (fieldAction instanceof PriorityAntenna) {
+                        board.setPriorityAntenna(board.getSpace(i, j));
+                    }
+                }
+            }
+        }
+        ArrayList<Double> Start_Place = new ArrayList<>(Client.getAvailableStartSpaces(gameID));
+        ChoiceDialog<Double> waitingForStartPosition = new ChoiceDialog<>(Start_Place.get(0), Start_Place);
+        waitingForStartPosition.setTitle("Waiting for players to choose start position");
+        waitingForStartPosition.setHeaderText("Start position");
+        waitingForStartPosition.setContentText("Waiting for players to choose start position");
+        waitingForStartPosition.setOnCloseRequest(e -> {
+            waitingForStartPosition.close(); Client.leaveGame(gameID, myPlayerID);
+        });
+        List<ArrayList<String>> players = Client.getPlayers(gameID);
+        Map<Integer, Integer> playerTurnList = new HashMap<>();
+        for (ArrayList<String> player : players) {
+            int playerID = Integer.parseInt(player.get(0));
+            int age = Integer.parseInt(player.get(2));
+            playerTurnList.put(playerID, age);
+        }
+        List<Map.Entry<Integer, Integer>> sortedPlayers = new ArrayList<>(playerTurnList.entrySet());
+        sortedPlayers.sort(Map.Entry.comparingByValue());
+
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    for(Double place : Client.getRemovedStartingPlace(gameID)) {
+                        waitingForStartPosition.getItems().remove(place);
+                    }
+                    int currentTurnPlayerID = sortedPlayers.get(Client.getTurnID(gameID)).getKey();
+
+                    if (currentTurnPlayerID == myPlayerID) {
+                        if (count == 0){
+                            waitingForStartPosition.setSelectedItem(Client.getAvailableStartSpaces(gameID).get(0));
+                            count ++;
+                        }
+                        waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(false);
+                        for (ButtonType buttonType : waitingForStartPosition.getDialogPane().getButtonTypes()) {
+                            Node button = waitingForStartPosition.getDialogPane().lookupButton(buttonType);
+                            button.setDisable(false);
+                        }
+                        waitingForStartPosition.setContentText("It is your turn to choose");
+                        waitingForStartPosition.setTitle("Choose place to start");
+                        waitingForStartPosition.setHeaderText("Select place to start");
+                    } else {
+                        waitingForStartPosition.getDialogPane().lookup(".combo-box").setDisable(true);
+                        for (ButtonType buttonType : waitingForStartPosition.getDialogPane().getButtonTypes()) {
+                            Node button = waitingForStartPosition.getDialogPane().lookupButton(buttonType);
+                            button.setDisable(true);
+                        }
+                        waitingForStartPosition.setContentText("Waiting for players to choose start position");
+                    }
+                });
+            }
+        };
+
+        timer.schedule(task, 0, 2000);
+
+        Optional<Double> result = waitingForStartPosition.showAndWait();
+        result.ifPresent(sec -> {
+            Client.setStartSpace(gameID, myPlayerID, result.get());
+            Client.setAvailableStartSpaces(gameID, sec);
+            Client.setTurnID(gameID);
+            timer.cancel();
+        });
+        Alert waitingAlert = new Alert(AlertType.WARNING);
+        waitingAlert.setTitle("Waiting for Players");
+        waitingAlert.setHeaderText(null);
+        waitingAlert.getDialogPane().getButtonTypes().clear();  // Remove all buttons
+        waitingAlert.setContentText("Waiting for the others to choose a start place");
+        waitingAlert.show();
+        Client.waitForAllUsersToBeReady(gameID).thenAccept(allReady -> {
+            if (allReady) {
+                Platform.runLater(() -> {
+                    waitingAlert.setResult(ButtonType.OK);
+                    waitingAlert.close();
+                    createPlayers(board, gameID);
+                    gameController.startProgrammingPhase();
+                    roboRally.createBoardView(gameController);
+                });
+            }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
+    }
+
+    /**
+     * Creates player objects and assigns them starting positions on the board.
+     * This method retrieves player information from the server, creates Player instances,
+     * and sets their starting positions based on the retrieved data.
+     * @author Emil Leonhard Lauritzen s231331
+     * @param board the game board on which the players will be placed
+     * @param gameID the unique ID of the game
+     * @return void This method does not return a value but initializes player objects and assigns them to the board.
+     */
+    public void createPlayers(Board board, int gameID) {
+        ArrayList<ArrayList<String>> players = Client.getPlayers(gameID);
+        for (int i = 0; i < players.size(); i++) {
+            ArrayList<String> playerInfo = players.get(i);
+            Player player = new Player(board, PLAYER_COLORS.get(i), playerInfo.get(1), Integer.parseInt(playerInfo.get(0)));
+            Double startSpace = Double.parseDouble(playerInfo.get(3));
+            int x = startSpace.intValue();
+            int y = (int) Math.round((startSpace - x) * 10); // Convert decimal part to y
+            player.setStartSpace(board.getSpace(x, y));
+            player.setSpace(board.getSpace(x, y));
+            board.addPlayer(player);
+        }
+    }
+
+    /**
+     * Saves the current game state by prompting the user to choose a save slot.
+     * This method displays a choice dialog for the user to select a save slot and then saves the game board to the chosen slot.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but performs a save operation if a game is in progress.
+     */
 
     public void saveGame() {
         // XXX needs to be implemented eventually
@@ -139,6 +319,14 @@ public class AppController implements Observer {
             }
         }
     }
+
+    /**
+     * Loads a saved game state by prompting the user to choose a load slot.
+     * This method displays a choice dialog for the user to select a load slot, then loads the game board from the chosen slot
+     * and initializes the game controller.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but loads a saved game and updates the game view.
+     */
 
     public void loadGame() {
         ChoiceDialog<String> dialog = new ChoiceDialog<>(SAVE_SLOT_OPTIONS.get(0), SAVE_SLOT_OPTIONS);
@@ -175,6 +363,14 @@ public class AppController implements Observer {
         return false;
     }
 
+
+    /**
+     * Exits the RoboRally application, prompting the user for confirmation.
+     * If a game is in progress, the user is given the option to cancel the exit or to save the game before exiting.
+     * @author Emil Leonhard Lauritzen s231331
+     * @return void This method does not return a value but may exit the application if confirmed by the user.
+     */
+
     public void exit() {
         if (gameController != null) {
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -182,7 +378,7 @@ public class AppController implements Observer {
             alert.setContentText("Are you sure you want to exit RoboRally?");
             Optional<ButtonType> result = alert.showAndWait();
 
-            if (!result.isPresent() || result.get() != ButtonType.OK) {
+            if (result.isEmpty() || result.get() != ButtonType.OK) {
                 return; // return without exiting the application
             }
         }
@@ -194,18 +390,39 @@ public class AppController implements Observer {
         }
     }
 
+
+    /**
+     * Checks if a game is currently running.
+     * This method returns true if the game controller is not null, indicating that a game is in progress.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @return boolean true if a game is running; false otherwise
+     */
+
     public boolean isGameRunning() {
         return gameController != null;
     }
 
-    static void showWinner(String name) {
+
+    /**
+     * Displays an alert showing the winner of the game.
+     * This method shows a confirmation alert indicating whether the player is the winner or not.
+     * If the player is the winner, a congratulatory message is shown; otherwise, it displays the name of the winning player.
+     * @author Klavs Medvee Pommer Blankensteiner s213383
+     * @param player the player who won the game
+     * @param board the game board
+     * @return void This method does not return a value but displays an alert with the game result.
+     */
+
+    static void showWinner(Player player, Board board) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("WINNER");
-        alert.setContentText("Congratulations!\n" + name + " have won the game!");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (!result.isPresent() || result.get() != ButtonType.OK) {
-            return;
+        if(player.getPlayerID() == board.getMyPlayerID()) {
+            alert.setTitle("WINNER");
+            alert.setContentText("Congratulations!\n" + "You have won the game!");
+        } else {
+            alert.setTitle("LOSER");
+            alert.setContentText("You lost!\n" + player.getName() + " have won the game!");
         }
+        alert.showAndWait();
     }
 
 
