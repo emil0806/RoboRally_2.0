@@ -35,10 +35,27 @@ Then the game should be imported as a project in intellij. Before proceeding the
 
 Remember to control your configuration to ensure that javafx is correctly sat up, especially if the user uses Windows, though the user have to include the module specifically to the users operating system (`javafx-base:win`, `javafx-controls:win`, `javafx-graphics:win`).
 
+You should follow the same steps as described before to open up the "roborally_spring_boot"-project.
+
 If the previous steps are performed the user is now ready to run the game.
 
-Click on the play button close to the upper right corner and a window will popup.
-Choose "File" -> "New game" and select the amount of players that are going to participate in the game and select "defaultboard". The "defaultboard" is made with 8 rows and 8 columns of squares. Then choose a position where each player want to start.
-
-
-
+1. Run the server by clicking on the green run/play button which is located near the top right corner of the roborally_spring_boot project
+2. Wait for the server to establish a connection (the terminal will tell when the application is started)
+3. Open the roborally project
+4. Click on the play button close to the upper right corner and a window will popup
+5. Click "New game"-buttonand those board and number of players
+6. When the game is created click "Join game"-button to participate in the game
+7. Enter name and age
+8. Open the roborally project again
+9. Click on the play button to open another window
+10. Click "Refresh"-button
+11. Choose to create new game or join game
+12. If new game -> repeat from 5
+13. If join game, enter name and age -> repeat from 9 until game is full
+14. When a game is full you will be asked to choose start space.
+15. The board and players will appear when all players have chosen.
+16. Choose 5 programming cards be clicking and dragging the cards from the lower row to the empty upper fields
+17. Click "finnish programming"-button when done.
+18. When all players are done programming click either "execute program" button or "execute current program" button
+19. You win by reaching all checkpoint as the first player.
+20. Have fun!
